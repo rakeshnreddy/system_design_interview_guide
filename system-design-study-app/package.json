@@ -37,6 +37,7 @@
     "jsdom": "^24.1.1",
     "@testing-library/react": "^16.0.0",
     "@testing-library/jest-dom": "^6.4.8",
-    "@vitest/ui": "^1.6.0"
+    "@vitest/ui": "^1.6.0",
+    "@tailwindcss/theme-preset-v3": "^0.1.0"
   }
 }
