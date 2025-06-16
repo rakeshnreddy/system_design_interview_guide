@@ -132,7 +132,8 @@ export const interviewApproachAppData = {
             "**Ask for feedback:** Periodically, you can ask, 'Does this make sense?' or 'Am I on the right track?'"
           ]
         }
-      },
+      ]
+    },
       {
         id: "practice-and-preparation",
         title: "Preparation Strategies",
