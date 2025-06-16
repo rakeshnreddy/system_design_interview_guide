@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = {
   root: true,
   globals: {
@@ -22,8 +23,8 @@ module.exports = {
     sourceType: "module",
   },
   ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
+    "lib/**/*", // Ignore built files, relative to this .eslintrc.js
+    "generated/**/*", // Ignore generated files, relative to this .eslintrc.js
   ],
   plugins: [
     "@typescript-eslint",
@@ -33,6 +34,8 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
-    'no-unused-vars': 'warn', // example of other rules you might have
+    // Disable base rule to prefer the TypeScript-specific version
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
   },
 };
