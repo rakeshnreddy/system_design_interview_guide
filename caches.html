@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Caching Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutral Slate -->
+    <!-- Application Structure Plan: The application is structured as a modular single-page app with a persistent sidebar for navigation, rather than a linear document scroll. This architecture was chosen to promote non-linear, topic-focused learning. Users can jump between distinct sections (Fundamentals, Cachepedia, Patterns, Scenarios, Practice) based on their study needs, allowing for both deep dives into specific topics and high-level comparisons. This task-oriented flow transforms passive reading into an active exploration, which is more effective for retaining complex system design concepts. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key Metrics Table -> Goal: Inform -> Viz: Interactive Stat Cards -> Interaction: Click to reveal modal with interview deep-dive questions -> Justification: Breaks down dense info into digestible blocks and adds a layer of expert guidance.
+        - Report Info: Cache Category Trade-Offs -> Goal: Compare -> Viz: Chart.js Radar Chart -> Interaction: Selecting a cache type dynamically updates the chart -> Justification: Provides an immediate, high-impact visual comparison of multiple competing factors.
+        - Report Info: Write Pattern Flows -> Goal: Organize -> Viz: HTML/CSS Flexbox Flowcharts -> Interaction: Visual data flow path -> Justification: Creates a clear, professional representation of complex data flows.
+        - Report Info: Q&A Flashcards -> Goal: Practice -> Viz: Click-to-Flip Card Component -> Interaction: Click to reveal answer, buttons to cycle -> Justification: Encourages active recall, a proven study technique.
+        - Report Info: Eviction Policies -> Goal: Compare -> Viz: Interactive Tabbed View -> Interaction: Click tabs to switch content -> Justification: Allows for direct comparison of complex algorithmic trade-offs in a clean UI.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .nav-link { transition: all 0.2s ease-in-out; }
+        .nav-link.active { background-color: #c2410c; color: white; }
+        .nav-link:not(.active):hover { background-color: #f3f4f6; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; border-radius: 0.75rem; }
+        .flashcard-back { transform: rotateY(180deg); }
+        .modal-overlay { transition: opacity 0.3s ease; }
+        .flowchart-step { border: 2px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 0.5rem; text-align: center; background-color: white; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
+        .flowchart-arrow { display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: bold; font-size: 1.5rem; }
+        .tab-btn { transition: all 0.2s ease; }
+        .tab-btn.active { border-color: #c2410c; color: #c2410c; background-color: #fff7ed; }
+        .info-icon { display: inline-block; cursor: pointer; position: relative; }
+        .info-tooltip { visibility: hidden; width: 280px; background-color: #1f2937; color: #fff; text-align: left; border-radius: 6px; padding: 8px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -140px; opacity: 0; transition: opacity 0.3s; font-weight: normal; font-size: 0.8rem; line-height: 1.4; }
+        .info-icon:hover .info-tooltip { visibility: visible; opacity: 1; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #c2410c; animation: spin 1s ease infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Decision Tree Flowchart Styles */
+        .dt-container { display: flex; align-items: flex-start; overflow-x: auto; padding: 1rem; }
+        .dt-node { flex-shrink: 0; display: flex; align-items: center; }
+        .dt-question, .dt-answer { background-color: white; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); width: 280px; }
+        .dt-answer { background-color: #f0fdf4; border-color: #bbf7d0; cursor: pointer; }
+        .dt-answer.active { border-color: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.4); }
+        .dt-answer .answer-title { font-weight: 600; color: #166534; }
+        .dt-branches { display: flex; flex-direction: column; justify-content: space-around; margin-left: 20px; position: relative; }
+        .dt-branch { display: flex; align-items: center; }
+        .dt-branch-line { width: 40px; height: 2px; background-color: #cbd5e1; position: relative; }
+        .dt-branch-line::after { content: '▶'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%); font-size: 1rem; color: #94a3b8; }
+        .dt-branch-label { position: absolute; left: 5px; top: -20px; background-color: #f8fafc; padding: 0 4px; color: #64748b; font-size: 0.8rem; font-weight: 500; }
+        .dt-examples { display: none; margin-top: 1rem; border-top: 1px dashed #bbf7d0; padding-top: 1rem; }
+        .dt-examples.visible { display: block; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <nav id="main-nav" class="w-16 md:w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
+            <div class="p-4 border-b border-slate-200">
+                <h1 class="text-xl font-bold text-slate-900 hidden md:block">Caching Guide</h1>
+                <div class="text-2xl font-bold text-slate-900 md:hidden text-center">🧠</div>
+            </div>
+            <div class="flex-grow">
+                <a href="#fundamentals" data-view="fundamentals" class="nav-link active flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">📖</span><span class="ml-4 hidden md:inline">Fundamentals</span>
+                </a>
+                <a href="#cachepedia" data-view="cachepedia" class="nav-link flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">📚</span><span class="ml-4 hidden md:inline">Cachepedia</span>
+                </a>
+                <a href="#patterns" data-view="patterns" class="nav-link flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">🎨</span><span class="ml-4 hidden md:inline">Patterns & Policies</span>
+                </a>
+                <a href="#scenarios" data-view="scenarios" class="nav-link flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">💼</span><span class="ml-4 hidden md:inline">Case Studies</span>
+                </a>
+                <a href="#practice" data-view="practice" class="nav-link flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">🏋️</span><span class="ml-4 hidden md:inline">Practice Tools</span>
+                </a>
+                <a href="#code" data-view="code" class="nav-link flex items-center p-4 text-sm font-medium text-slate-700">
+                    <span class="text-2xl">💻</span><span class="ml-4 hidden md:inline">Code Library</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
+            
+            <!-- Fundamentals View -->
+            <div id="view-fundamentals" class="space-y-8">
+                <div class="prose max-w-none">
+                    <h1>Mastering Caching Fundamentals</h1>
+                    <p>Welcome to your definitive guide to mastering caching for system design interviews. In E5+ interviews, simply saying "I'll use a cache" is insufficient. This section covers the bedrock concepts you must know. A cache is a high-speed data storage layer that stores a subset of data so that future requests for that data are served up faster than by accessing the data's primary storage location. Click on any metric card for a deeper interview guide.</p>
+                </div>
+                
+                <div id="metrics-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+                
+                <div class="prose max-w-none bg-white p-6 rounded-lg shadow-sm">
+                    <h2>Core Terminology</h2>
+                    <dl id="terminology-list" class="space-y-4"></dl>
+                </div>
+            </div>
+
+            <!-- Cachepedia View -->
+            <div id="view-cachepedia" class="hidden space-y-8">
+                 <div class="prose max-w-none">
+                    <h1>Cachepedia: A Deep-Dive</h1>
+                    <p>This is the core of our study. For each category, it is critical to understand the architecture, the trade-offs, and precisely when and why you would choose it. Use the selector below to explore different cache types and see how their characteristics, strengths, and weaknesses are visualized.</p>
+                </div>
+                <div class="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm">
+                    <label for="cache-type-selector" class="font-semibold">Select Cache Type:</label>
+                    <select id="cache-type-selector" class="p-2 border rounded-md bg-white focus:ring-2 focus:ring-orange-600 focus:border-orange-600"></select>
+                </div>
+                <div id="cachepedia-content" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
+            </div>
+
+            <!-- Patterns & Policies View -->
+            <div id="view-patterns" class="hidden space-y-8">
+                <div class="prose max-w-none">
+                    <h1>Caching Patterns and Policies</h1>
+                    <p>How you keep your cache and database synchronized is a critical decision in system design. This section explores the common write policies. Each has significant trade-offs in terms of consistency, performance, and complexity. Understanding these patterns is key to justifying your design choices in an interview.</p>
+                </div>
+                <div id="write-patterns-container" class="space-y-12"></div>
+                <div class="prose max-w-none pt-8">
+                     <h2>Eviction Policies</h2>
+                     <p>When a cache is full, it must decide which item to discard to make room for a new one. This decision is governed by an eviction policy. The choice of policy depends heavily on the access patterns of your data.</p>
+                </div>
+                <div id="eviction-policies-container" class="bg-white p-6 rounded-lg shadow-sm"></div>
+            </div>
+
+            <!-- Case Studies View -->
+            <div id="view-scenarios" class="hidden space-y-8">
+                <div class="prose max-w-none">
+                    <h1>Case Studies: Caching in Action</h1>
+                    <p>Theory is one thing, but applying it to real-world problems is what interviews are all about. Select a system design problem below to see a detailed breakdown of caching considerations, including which caches to use, where to place them, and how to manage the biggest risks involved.</p>
+                </div>
+                <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4 bg-white p-4 rounded-lg shadow-sm">
+                    <div class="flex-grow flex items-center space-x-4">
+                        <label for="scenario-selector" class="font-semibold">Select Case Study:</label>
+                        <select id="scenario-selector" class="p-2 border rounded-md bg-white focus:ring-2 focus:ring-orange-600 focus:border-orange-600"></select>
+                    </div>
+                    <button id="generate-ai-scenario-btn" class="w-full md:w-auto flex items-center justify-center px-4 py-2 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition-colors">
+                        ✨ Generate AI-Powered Scenario
+                    </button>
+                </div>
+                <div id="scenario-content" class="bg-white p-6 rounded-lg shadow-sm prose max-w-none"></div>
+            </div>
+
+            <!-- Practice View -->
+            <div id="view-practice" class="hidden space-y-8">
+                <div class="prose max-w-none">
+                    <h1>Practice Tools</h1>
+                    <p>Solidify your knowledge with these interactive tools. Use the decision tree to walk through the process of selecting a cache, and then test your recall with flashcards.</p>
+                </div>
+
+                <!-- NEW single-column layout -->
+                <div class="space-y-8">
+                    <!-- Decision Tree takes full width -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-xl font-bold mb-4">Interactive Decision Tree</h2>
+                        <p class="text-sm text-slate-500 mb-4">Scroll horizontally to explore the full decision path.</p>
+                        <div id="decision-tree-container" class="bg-slate-50 border border-slate-200 rounded-lg"></div>
+                    </div>
+
+                    <!-- Flashcards are placed below -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-xl font-bold mb-4">Flashcards</h2>
+                        <div id="flashcard-container" class="w-full max-w-lg mx-auto h-64 perspective-1000"></div>
+                        <div id="flashcard-controls" class="mt-4 flex justify-center space-x-4"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code Library View -->
+            <div id="view-code" class="hidden space-y-8">
+                <div class="prose max-w-none">
+                    <h1>Code Library</h1>
+                    <p>Talk is cheap. Being able to sketch out a quick implementation or infrastructure definition shows a deeper level of understanding. Here are some copy-paste ready snippets for common caching scenarios.</p>
+                </div>
+                <div id="code-snippets-container" class="space-y-8"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Metric Modal Structure -->
+    <div id="metric-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-full overflow-y-auto">
+            <div id="modal-content" class="p-8"></div>
+        </div>
+    </div>
+    
+    <!-- AI Scenario Modal Structure -->
+    <div id="ai-scenario-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+             <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-xl font-bold">✨ AI-Powered Scenario Practice</h2>
+                <button id="close-ai-modal" class="text-2xl font-bold text-slate-500 hover:text-slate-800">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6">
+                 <div id="ai-scenario-problem-container" class="prose max-w-none">
+                    <div class="flex items-center justify-center h-48"><div class="spinner"></div></div>
+                 </div>
+                 <div class="space-y-2">
+                     <label for="ai-scenario-solution" class="font-semibold">Your Proposed Solution:</label>
+                     <textarea id="ai-scenario-solution" class="w-full h-48 p-2 border rounded-md" placeholder="Describe your caching strategy here. Which caches would you use? Where would you place them? How would you handle invalidation?"></textarea>
+                 </div>
+                 <div class="text-center">
+                     <button id="get-ai-feedback-btn" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50">
+                        ✨ Get AI Feedback
+                    </button>
+                 </div>
+                 <div id="ai-scenario-feedback-container" class="prose max-w-none bg-slate-50 p-4 rounded-lg hidden">
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+<script type="module">
+    const appData = {
+        metrics: [
+            { id: 'hit-ratio', name: 'Hit Ratio', description: "The single most important measure of cache effectiveness.", talk: "My primary goal is to achieve a hit ratio of over 95% for read-heavy data.", deepDive: { title: "Deep Dive: Hit Ratio", questions: ["How would you handle a sudden drop in hit ratio?", "What are the second-order effects of a low hit ratio?", "How does hit ratio relate to cost savings?"], answers: ["**Alerting & Investigation:** A sharp drop triggers an alert. I'd first check for bad deployments, network issues to the cache cluster, or a 'hot key' problem overwhelming a single node. It could also mean a change in user traffic patterns.", "**Second-Order Effects:** A low hit ratio means more requests hit the database, increasing DB CPU load, latency, and operational costs. This can cascade into system-wide slowdowns and potentially violate SLOs.", "**Cost Savings:** Every percentage point increase in hit ratio directly translates to a reduction in database load. I would quantify this by saying, 'A 5% improvement in hit ratio could allow us to scale down our database read replicas by one size, saving $X per month.'"] } },
+            { id: 'latency', name: 'Latency', description: "Caching should drastically reduce read latency.", talk: "We'll measure p99 latency for hits vs. misses. A hit should be sub-millisecond.", deepDive: { title: "Deep Dive: Latency", questions: ["Why measure p99 latency and not the average?", "What could cause high latency even on a cache hit?", "How do you balance latency vs. consistency?"], answers: ["**Why p99?:** Average latency can hide problems. A p99 of 200ms means 1% of your users are having a very slow experience, even if the average is 20ms. For user-facing systems, tail latency is what matters.", "**Causes of High Latency:** Network congestion between the app and cache server, a very large object that takes time to deserialize, or a 'noisy neighbor' problem on the cache node can all increase latency.", "**Balancing Act:** This is the core trade-off. For something like a user's session data, I'd prioritize low latency with eventual consistency. For inventory in an e-commerce system, I'd accept slightly higher latency on checkout to read from the source of truth, ensuring strong consistency."] } },
+            { id: 'throughput', name: 'Throughput', description: "Ensures the cache itself doesn't become a bottleneck.", talk: "The distributed cache cluster needs to handle 1M RPS at peak.", deepDive: { title: "Deep Dive: Throughput", questions: ["How do you scale cache throughput?", "What's the difference between scaling reads and writes?", "When does the cache become a bottleneck?"], answers: ["**Scaling Throughput:** For reads, you can add more replicas to the cache cluster. For writes, you need to scale the primary nodes, often through sharding (partitioning) the keyspace across more primary nodes.", "**Reads vs. Writes:** Read scaling is generally easier. Write scaling is harder as it often requires re-sharding the data, which is a complex operation.", "**Bottleneck:** The cache can become a bottleneck if a single key becomes too 'hot' (accessed millions of times per second), overwhelming the CPU of the node that owns it. This requires hot-key detection and mitigation strategies like client-side caching or splitting the key."] } },
+            { id: 'cost', name: 'Cost Per Request', description: "Helps justify the expense and informs decisions on cache size and TTL.", talk: "By serving 99% of read traffic, the cache lowers the cost per request.", deepDive: { title: "Deep Dive: Cost", questions: ["How do you calculate the ROI of a cache?", "What are the hidden costs of caching?", "How does TTL affect cost?"], answers: ["**Calculating ROI:** I'd compare the cost of the cache cluster (instances, network traffic) against the savings from reduced database load. For example: `Savings = (DB Queries Avoided * Cost per DB Query) - Cache Cluster Cost`. A positive result means a good ROI.", "**Hidden Costs:** These include operational overhead (managing, patching, monitoring the cluster), development complexity, and the cost of debugging stale data issues.", "**TTL & Cost:** A shorter TTL means more frequent cache misses and higher database load (higher cost). A longer TTL reduces database load but increases the memory footprint of the cache (higher cost) and the risk of staleness. It's a balancing act tuned to the data's access patterns."] } }
+        ],
+        terminology: [
+            { term: 'Cache Hit', definition: 'When requested data is found in the cache. This is the ideal scenario.' },
+            { term: 'Cache Miss', definition: "When requested data is not found in the cache, forcing the application to fetch it from the primary datastore. This adds latency." },
+            { term: 'Time to Live (TTL)', definition: "An expiration policy on a cache key. After the duration, the key is evicted. It's a simple way to handle invalidation for data that can tolerate some staleness." },
+            { term: 'Staleness', definition: 'When the data in the cache no longer matches the data in the primary datastore. A certain degree of staleness is often an acceptable trade-off for performance.' },
+            { term: 'Cache Coherency', definition: 'The process of ensuring that data in the cache and the source of truth remain synchronized. Strong coherency is expensive; most systems opt for eventual consistency.' }
+        ],
+        cachepedia: {
+            'local': { name: 'Local (In-Process) Cache', prosCons: { pros: ['Extremely Fast (no network)', 'Simple to Implement', 'No Extra Infrastructure'], cons: ['Limited Size', 'Data Duplication', 'Coherency Issues'] }, tradeoffs: { Latency: 5, Consistency: 1, Cost: 5, Scalability: 1 }, whenToUse: "Caching data that is frequently accessed but small and relatively static, like 'hot' configuration data, feature flags, or user permissions that are read on almost every request.", soundbite: "I'll start with an in-process cache using Caffeine for feature flags. This gives us microsecond-level latency for this critical data with minimal overhead." },
+            'distributed': { name: 'Distributed In-Memory Cache', prosCons: { pros: ['Large Scale', 'Shared State', 'Data Persistence (Redis)'], cons: ['Network Latency', 'Single Point of Failure', 'More Complex & Costly'] }, tradeoffs: { Latency: 4, Consistency: 4, Cost: 2, Scalability: 5 }, whenToUse: "The backbone of most large-scale systems. Caching session data, user profiles, results of expensive queries, etc. For a Facebook News Feed, the generated feed for each user can be stored in a massive Redis cluster.", soundbite: "To handle read traffic for our social feed, I'll introduce a Redis cluster using the cache-aside pattern. On a write, the writer service will update the database and then issue an invalidation to the cache." },
+            'multi-level': { name: 'Multi-Level / Hierarchical Cache', prosCons: { pros: ['Optimized Latency', 'Reduces Network Traffic'], cons: ['Increased Complexity', 'Complex Invalidation'] }, tradeoffs: { Latency: 4.5, Consistency: 3, Cost: 3, Scalability: 4 }, whenToUse: "Hyper-scale systems where even distributed cache latency is too high for the very hottest data. Ideal for a 'power law' distribution of access, like caching metadata for YouTube's top 100 trending videos in L1.", soundbite: "Given the bimodal access pattern, I propose a multi-level cache: a small in-process L1 for the top 1% of entities and a large Redis L2 for the rest." },
+            'cdn': { name: 'Edge Cache / CDN', prosCons: { pros: ['Reduced User Latency', 'Massive Scalability & DDoS Protection', 'High Availability'], cons: ['Primarily for Public Data', 'Costly', 'Difficult Invalidation'] }, tradeoffs: { Latency: 5, Consistency: 2, Cost: 2, Scalability: 5 }, whenToUse: "The primary use case is for static assets: all images, videos, JS/CSS files for your website. Also good for public, non-personalized API responses. For Instagram, all user photos and video clips are served via a CDN.", soundbite: "To ensure a fast global user experience, my first step is to place a CDN like CloudFront in front of our application. All static assets will be served from the edge." },
+            'database': { name: 'Database-Backed Cache', prosCons: { pros: ['Simplifies Application Logic', 'Data is already in the DB ecosystem', 'Good for complex queries'], cons: ['Higher latency than in-memory', 'Can still overload the DB', 'Replicas can have lag'] }, tradeoffs: { Latency: 2, Consistency: 3, Cost: 4, Scalability: 3 }, whenToUse: "When you need to cache the results of complex joins or aggregations that are expensive for the DB to compute on the fly. A materialized view for an analytics dashboard is a classic example. Read replicas are used to scale read-heavy workloads without affecting the primary DB.", soundbite: "To offload our analytics dashboard, instead of adding a separate cache, I'll create a materialized view in the database that is refreshed every hour. This simplifies the architecture and keeps the logic within the database." }
+        },
+        writePatterns: [
+            { name: 'Cache-Aside (Lazy Loading)', description: 'The application is responsible for reading from the database on a cache miss and populating the cache. Most common and versatile.', pros: ['Resilient to cache failure (app can still read from DB).', 'DB and cache data models can differ.'], cons: ['Higher latency on cache miss (3 network hops: App->Cache, App->DB, App->Cache).', 'Can lead to stale data if invalidation fails.'] },
+            { name: 'Write-Through', description: 'The application writes to the cache, and the cache synchronously writes to the database. Ensures consistency.', pros: ['Guaranteed consistency between cache and DB.', 'Reads are always fast and data is fresh.'], cons: ['Higher write latency (must wait for both systems).', 'Cache can be a single point of failure for writes.'] },
+            { name: 'Write-Back (Write-Behind)', description: 'The application writes only to the cache (very fast). The cache asynchronously writes to the database later.', pros: ['Extremely low write latency and high write throughput.', 'Absorbs write spikes, protecting the DB.'], cons: ['High risk of data loss if cache fails before persisting.', 'Much more complex to implement correctly.'] }
+        ],
+        evictionPolicies: [
+            { name: 'LRU (Least Recently Used)', description: 'Discards the item that has not been used for the longest period. It assumes that data used recently is more likely to be used again.', complexity: 'O(1) using a doubly linked list and a hash map.', useCase: 'Good general-purpose policy, effective for most workloads where recent access is a good predictor of future access.' },
+            { name: 'LFU (Least Frequently Used)', description: 'Discards the item that has been used the fewest times. It keeps popular items regardless of when they were last accessed.', complexity: 'More complex than LRU, often O(log n) or uses multiple data structures.', useCase: 'Ideal when some items are consistently more popular than others, even if accessed intermittently (e.g., a popular product configuration). Avoids evicting a popular item just because of a temporary burst of requests for other items.' },
+            { name: 'FIFO (First-In, First-Out)', description: 'Discards the item that has been in the cache the longest, regardless of how often or recently it was accessed. Simple to implement.', complexity: 'O(1) using a simple queue.', useCase: 'Rarely optimal for application caches. Can be used in simple scenarios where data has no specific access pattern or all items have a similar lifecycle.' }
+        ],
+        scenarios: {
+            'feed': { name: 'Feed & Content Delivery', questions: [ { q: "Which cache type(s)?", a: "<strong>Distributed Cache (Redis Cluster)</strong> for the 'Feed Cache' (post IDs). <strong>CDN</strong> for the actual content (images, videos)." }, { q: "Invalidation Strategy?", a: "For 'fan-out-on-write', a new post triggers updates to all followers' cached feeds. For the CDN, use URL versioning or API calls to invalidate edited content."} ] },
+            'search': { name: 'Search & Ranking', questions: [ { q: "Which cache type(s)?", a: "<strong>Distributed Cache (Redis/Memcached)</strong> to cache results for common queries. Key = hash(query + filters)." }, { q: "Biggest Risk?", a: "The 'long tail' of unique queries making caching ineffective. Mitigate by only caching queries seen > N times, or caching result components instead of the full list."} ] },
+            'ecommerce': { name: 'E-commerce & Transactions', questions: [ { q: "Biggest Risk?", a: "<strong>Selling out-of-stock items due to stale cache reads.</strong> Mitigation: For the final 'checkout' action, <strong>bypass the cache entirely</strong> and perform an atomic read-and-decrement directly against the primary database." }, { q: "Invalidation Strategy?", a: "Use a <strong>write-through</strong> or explicit invalidation strategy. The service that updates inventory/price must *immediately* delete the corresponding key from the cache."} ] },
+            'messaging': { name: 'Messaging & Real-Time', questions: [ { q: "What to cache?", a: "<strong>User metadata</strong> (profile pics, usernames), <strong>group chat information</strong> (member lists), and <strong>connection status/endpoints</strong> are great candidates for caching in Redis. Don't cache message content for long, especially in E2E encrypted systems." } ] },
+            'url-shortener': { name: 'URL Shortener', questions: [ { q: "Describe the caching layers.", a: "A multi-layer approach is ideal. <strong>1. Browser Cache:</strong> The redirect response (301) is cached by the browser. <strong>2. CDN:</strong> Cache redirects for popular public links. <strong>3. Distributed Cache (Redis):</strong> The core lookup table `short_url -> long_url`. <strong>4. Local Cache:</strong> An in-process cache on each redirector service for the top 10k URLs." } ] }
+        },
+        flashcards: [
+            { q: "When to choose LFU over LRU?", a: "Choose LFU when historical access frequency is a better predictor of future access than recency. An item accessed often but not *just now* would be evicted by LRU but kept by LFU." },
+            { q: "What is the 'thundering herd' problem and how do you prevent it?", a: "It's when a high-traffic cached item expires, causing a massive number of concurrent requests to hit the database. Prevent with: 1) Locking (only one request regenerates) or 2) stale-while-revalidate (serve stale data while refreshing in the background)." },
+            { q: "Describe a race condition in a cache-aside system.", a: "Service A reads from cache (miss). Service B updates DB and invalidates cache. Service A writes its old, stale data back into the cache. Mitigation: Use write-through or versioning on cache items." },
+            { q: "How do you handle caching for personalized, paginated results?", a: "Cache the first page of results in Redis with a short TTL. For subsequent pages, which are less frequently accessed, go directly to the database. This provides a good balance of performance and cost." },
+            { q: "What is a 'Cache-Poisoning' attack?", a: "An attacker intentionally inserts malicious or invalid data into a cache. When other users request this data, they receive the malicious payload. Mitigation: Strict input validation on all parameters that form a cache key and on the data being written to the cache." },
+            { q: "How would you cache a user's timeline/feed?", a: "Use a Redis `ZSET` (sorted set). Score = timestamp, value = post ID. This allows efficient pagination (`ZREVRANGEBYSCORE`). Cache the full post objects separately in a Redis Hash." }
+        ],
+        codeSnippets: [
+            { lang: 'Python: Cache-Aside with Redis', code: "import redis\nimport json\n\n# Connect to Redis\nr = redis.Redis(host='localhost', port=6379, db=0)\n\ndef get_user_data(user_id):\n    cache_key = f'user:{user_id}'\n    cached_data = r.get(cache_key)\n    if cached_data:\n        return json.loads(cached_data)\n\n    # db_data = get_from_db(user_id)\n    db_data = {'name': 'Jane Doe', 'id': user_id}\n    if db_data:\n        r.setex(cache_key, 3600, json.dumps(db_data))\n    return db_data" },
+            { lang: 'Terraform: ElastiCache (Redis) Cluster', code: "resource \"aws_elasticache_cluster\" \"main\" {\n  cluster_id           = \"redis-cluster-prod\"\n  engine               = \"redis\"\n  node_type            = \"cache.t3.medium\"\n  num_cache_nodes      = 3\n  parameter_group_name = \"default.redis7\"\n  port                 = 6379\n}" }
+        ],
+        decisionTree: {
+            question: "Is your data latency-sensitive?",
+            info: "Latency-sensitive data directly impacts how fast the system feels to the user. Caching is the primary tool to reduce read latency for user-facing requests.",
+            tradeoffs: ["User Experience vs. Infrastructure Cost", "Read Performance vs. System Complexity"],
+            yes: {
+                question: "Does data need to be shared across multiple services/servers?",
+                info: "If multiple application servers need the same cached data, a local cache will lead to inconsistencies and wasted memory. A shared cache solves this but adds network latency.",
+                tradeoffs: ["Data Coherency vs. Speed", "Scalability vs. Simplicity"],
+                yes: {
+                    question: "You need a Distributed Cache (e.g., Redis). Is consistency with the DB critical on writes?",
+                    info: "This is a core trade-off. Does the system absolutely need the cache to be in sync with the database after every write, even if it slows down writes?",
+                    tradeoffs: ["Write Consistency vs. Write Latency", "Data Freshness vs. Implementation Complexity"],
+                    yes: { 
+                        answer: "Use Write-Through Cache",
+                        examples: [
+                            { system: "E-commerce & Transactions", useCase: "Updating product price or stock count. The write must be reflected in the cache immediately to prevent users seeing stale data." },
+                            { system: "Community & Social Platforms", useCase: "Changing a user's username. The update must be consistent everywhere immediately."}
+                        ]
+                    },
+                    no: { 
+                        question: "Is your workload extremely write-heavy?",
+                        info: "If the system needs to handle a very high volume of writes, offloading that pressure from the database is a primary concern.",
+                        tradeoffs: ["Write Throughput vs. Data Durability", "Performance vs. Risk of Data Loss"],
+                        yes: {
+                             answer: "Use Write-Back Cache",
+                             examples: [
+                                { system: "Infrastructure & Utility Components", useCase: "For an Ad Click Aggregator, counting clicks per ad. Writes are extremely frequent, and losing a few clicks in case of a cache failure is often an acceptable risk." },
+                                { system: "Community & Social Platforms", useCase: "Counting 'likes' or 'views' on a post. The write latency needs to be minimal, and eventual consistency is sufficient."}
+                             ]
+                        },
+                        no: {
+                            answer: "Use Cache-Aside (The Default Choice)",
+                            examples: [
+                                { system: "Feed & Content Delivery", useCase: "Caching a user's generated news feed. The feed is read often, and on a miss, the application fetches it and populates the cache." },
+                                { system: "Search & Ranking", useCase: "Caching the results for a popular search query. The application checks the cache first, and if the results aren't there, it runs the query and caches the results." },
+                                { system: "Community & Social Platforms", useCase: "Caching a user's profile data. This is the classic example of read-heavy, write-infrequent data perfect for cache-aside."}
+                            ]
+                        }
+                    }
+                },
+                no: { 
+                    answer: "Use a Local (In-Process) Cache",
+                    examples: [
+                        { system: "URL Shortener", useCase: "Caching the top 1,000 most accessed URLs on *each* redirector service instance to avoid network calls for the hottest links." },
+                        { system: "Search & Ranking", useCase: "Caching system-level configuration, feature flags, or A/B test settings on API gateway instances to make decisions with microsecond latency."}
+                    ]
+                }
+            },
+            no: {
+                question: "Is the goal to cache results of complex DB queries or aggregations?",
+                info: "If the bottleneck isn't simple row access but rather computationally expensive queries (e.g., JOINs, GROUP BYs), the caching strategy can live closer to the database itself.",
+                tradeoffs: ["Application Simplicity vs. DB Load", "Freshness vs. Compute Cost"],
+                yes: { 
+                    answer: "Use Database-Backed Caching",
+                    examples: [
+                        { system: "Infrastructure & Utility Components", useCase: "An analytics dashboard for an Ad Click Aggregator could be powered by a Materialized View that pre-computes hourly stats, avoiding expensive real-time queries." },
+                        { system: "E-commerce & Transactions", useCase: "Using Database Read Replicas to serve product catalog browsing and search traffic, isolating it from the primary database that handles transactional orders."}
+                    ]
+                },
+                no: {
+                    question: "Is your data static content (images, JS, CSS) served to global users?",
+                    info: "If the goal is to reduce latency by moving content physically closer to users around the world, a CDN is the appropriate tool.",
+                    tradeoffs: ["Global Latency vs. Cost", "Ease of Invalidation vs. Performance"],
+                    yes: {
+                        answer: "Use an Edge Cache / CDN",
+                        examples: [
+                            { system: "Feed & Content Delivery", useCase: "Serving all images and videos for an Instagram or YouTube feed from the edge location closest to the user." },
+                            { system: "File Storage & Collaboration", useCase: "Serving the core JavaScript application bundle for a service like Google Docs or Dropbox from a CDN." }
+                        ]
+                     },
+                    no: { answer: "Re-evaluate if Caching is the right solution for this specific problem.", examples: [] }
+                }
+            }
+        }
+    };
+
+    // --- State & App Logic ---
+    let currentView = 'fundamentals';
+    let currentCacheType = 'local';
+    let currentScenario = 'feed';
+    let currentFlashcardIndex = 0;
+    let currentEvictionPolicy = 'LRU';
+    let radarChart = null;
+
+    const views = { fundamentals: document.getElementById('view-fundamentals'), cachepedia: document.getElementById('view-cachepedia'), patterns: document.getElementById('view-patterns'), scenarios: document.getElementById('view-scenarios'), practice: document.getElementById('view-practice'), code: document.getElementById('view-code'), };
+    const navLinks = document.querySelectorAll('#main-nav a');
+    const metricModal = document.getElementById('metric-modal');
+    const aiScenarioModal = document.getElementById('ai-scenario-modal');
+
+    function switchView(viewName) {
+        currentView = viewName;
+        Object.values(views).forEach(v => v.classList.add('hidden'));
+        views[currentView].classList.remove('hidden');
+        navLinks.forEach(link => link.classList.toggle('active', link.dataset.view === viewName));
+        window.location.hash = viewName;
+    }
+
+    function showMetricModal(metricId) {
+        const metric = appData.metrics.find(m => m.id === metricId);
+        if (!metric || !metric.deepDive) return;
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `<div class="flex justify-between items-start"><h2 class="text-2xl font-bold mb-4">${metric.deepDive.title}</h2><button id="close-modal" class="text-2xl font-bold text-slate-500 hover:text-slate-800">&times;</button></div><div class="space-y-4">${metric.deepDive.questions.map((q, i) => `<div><h3 class="font-semibold text-slate-800">${q}</h3><p class="text-slate-600 mt-1">${metric.deepDive.answers[i]}</p></div>`).join('')}</div>`;
+        metricModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideMetricModal() {
+        metricModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function showAiScenarioModal() {
+        aiScenarioModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideAiScenarioModal() {
+        aiScenarioModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+    
+    // --- Render Functions ---
+    function renderFundamentals() {
+        const metricsContainer = document.getElementById('metrics-container');
+        metricsContainer.innerHTML = appData.metrics.map(metric => `
+            <div data-metric-id="${metric.id}" class="bg-white p-6 rounded-lg shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
+                <h3 class="font-bold text-lg text-slate-900">${metric.name}</h3>
+                <p class="text-sm text-slate-600 mt-2">${metric.description}</p>
+                <p class="text-xs text-orange-700 bg-orange-100 rounded-full px-3 py-1 mt-4 inline-block">"${metric.talk}"</p>
+            </div>
+        `).join('');
+        
+        const terminologyList = document.getElementById('terminology-list');
+        terminologyList.innerHTML = appData.terminology.map(item => `
+            <div>
+                <dt class="font-semibold text-slate-900">${item.term}</dt>
+                <dd class="text-slate-700 mt-1">${item.definition}</dd>
+            </div>
+        `).join('');
+    }
+
+    function renderRadarChart() {
+        const ctx = document.getElementById('radarChart')?.getContext('2d');
+        if (!ctx) return;
+        if (radarChart) radarChart.destroy();
+        const data = appData.cachepedia[currentCacheType];
+        radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: { labels: Object.keys(data.tradeoffs), datasets: [{ label: data.name, data: Object.values(data.tradeoffs), fill: true, backgroundColor: 'rgba(234, 88, 12, 0.2)', borderColor: 'rgb(234, 88, 12)', pointBackgroundColor: 'rgb(234, 88, 12)', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: 'rgb(234, 88, 12)' }] },
+            options: { maintainAspectRatio: false, scales: { r: { angleLines: { color: 'rgba(0,0,0,0.1)' }, grid: { color: 'rgba(0,0,0,0.1)' }, pointLabels: { font: { size: 14 } }, suggestedMin: 0, suggestedMax: 5, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
+        });
+    }
+
+    function renderCachepedia() {
+        const contentArea = document.getElementById('cachepedia-content');
+        const data = appData.cachepedia[currentCacheType];
+        contentArea.innerHTML = `
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-xl mb-4">Pros & Cons</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><h4 class="font-semibold text-green-700 mb-2">Pros</h4><ul class="list-disc list-inside space-y-1">${data.prosCons.pros.map(p => `<li>${p}</li>`).join('')}</ul></div>
+                        <div><h4 class="font-semibold text-red-700 mb-2">Cons</h4><ul class="list-disc list-inside space-y-1">${data.prosCons.cons.map(c => `<li>${c}</li>`).join('')}</ul></div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm prose max-w-none">
+                    <h3 class="font-bold text-xl">When to Use</h3><p>${data.whenToUse}</p>
+                    <blockquote class="border-l-4 border-orange-500 pl-4 text-slate-700"><p class="font-semibold">Interview Sound-bite:</p><p>${data.soundbite}</p></blockquote>
+                </div>
+            </div>
+            <div class="space-y-6">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-xl mb-4">Trade-Off Matrix</h3><div class="chart-container"><canvas id="radarChart"></canvas></div>
+                </div>
+            </div>`;
+        renderRadarChart();
+    }
+
+    function renderWritePatterns() {
+        const container = document.getElementById('write-patterns-container');
+        container.innerHTML = appData.writePatterns.map(pattern => {
+            let flowHtml = '';
+            if (pattern.name.includes('Cache-Aside')) {
+                flowHtml = `<div class="flex items-center space-x-2"><div class="flowchart-step">App</div> <div class="flowchart-arrow">↔</div> <div class="flowchart-step">Cache</div> <div class="flowchart-arrow">↔</div> <div class="flowchart-step">DB</div></div>`;
+            } else if (pattern.name.includes('Write-Through')) {
+                flowHtml = `<div class="flex items-center space-x-2"><div class="flowchart-step">App</div> <div class="flowchart-arrow">→</div> <div class="flowchart-step">Cache</div> <div class="flowchart-arrow">→</div> <div class="flowchart-step">DB</div></div>`;
+            } else { // Write-Back
+                flowHtml = `<div class="flex items-center space-x-2"><div class="flowchart-step">App</div> <div class="flowchart-arrow">→</div> <div class="flowchart-step">Cache</div> <div class="text-slate-500 mx-2">(later)</div> <div class="flowchart-arrow">→</div> <div class="flowchart-step">DB</div></div>`;
+            }
+            return `<div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="font-bold text-xl mb-2">${pattern.name}</h3><p class="text-sm text-slate-600 mb-4">${pattern.description}</p>
+                <div class="mb-6"><h4 class="font-semibold mb-2">Data Flow:</h4>${flowHtml}</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div><h4 class="font-semibold text-green-700 mb-2">Pros</h4><ul class="list-disc list-inside space-y-1">${pattern.pros.map(p => `<li>${p}</li>`).join('')}</ul></div>
+                    <div><h4 class="font-semibold text-red-700 mb-2">Cons</h4><ul class="list-disc list-inside space-y-1">${pattern.cons.map(c => `<li>${c}</li>`).join('')}</ul></div>
+                </div></div>`;
+        }).join('');
+    }
+    
+    function renderEvictionPolicies() {
+        const container = document.getElementById('eviction-policies-container');
+        const policy = appData.evictionPolicies.find(p => p.name.startsWith(currentEvictionPolicy));
+        container.innerHTML = `<div class="flex border-b border-slate-200 mb-4">${appData.evictionPolicies.map(p => `<button data-policy="${p.name.split(' ')[0]}" class="tab-btn px-4 py-2 border-b-2 font-medium text-sm ${currentEvictionPolicy === p.name.split(' ')[0] ? 'active' : 'border-transparent text-slate-500 hover:text-slate-700'}">${p.name.split(' ')[0]}</button>`).join('')}</div>
+            <div id="policy-details"><h3 class="font-bold text-lg">${policy.name}</h3><p class="text-sm text-slate-600 mt-2">${policy.description}</p>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div><p class="font-semibold">Complexity:</p><p class="font-mono bg-slate-100 inline-block px-2 py-1 rounded">${policy.complexity}</p></div>
+                    <div><p class="font-semibold">Ideal Use Case:</p><p>${policy.useCase}</p></div>
+                </div></div>`;
+    }
+    
+    function renderScenarios() {
+        const contentArea = document.getElementById('scenario-content');
+        const data = appData.scenarios[currentScenario];
+        contentArea.innerHTML = `<h2 class="!text-2xl !mb-6">${data.name}</h2><dl class="space-y-6">${data.questions.map(item => `<div><dt class="font-semibold text-lg text-slate-900">${item.q}</dt><dd class="mt-2 pl-4 border-l-2 border-slate-200">${item.a}</dd></div>`).join('')}</dl>`;
+    }
+
+    function renderDecisionTree() {
+        const container = document.getElementById('decision-tree-container');
+
+        // Helper to generate a unique ID for examples
+        let exampleIdCounter = 0;
+        const getExampleId = () => `dt-example-${exampleIdCounter++}`;
+
+        function buildTree(node) {
+            // Base case: This is an answer node
+            if (node.answer) {
+                const exampleId = getExampleId();
+                const examplesHtml = (node.examples && node.examples.length > 0) ? `
+                    <div id="${exampleId}" class="dt-examples">
+                        <h5 class="font-semibold text-sm text-slate-600">Relevant Use Cases:</h5>
+                        <ul class="mt-1 space-y-2 text-xs">
+                            ${node.examples.map(ex => `
+                                <li class="bg-slate-100 p-2 rounded-md">
+                                    <strong class="text-slate-800">${ex.system}:</strong>
+                                    <span class="text-slate-600">${ex.useCase}</span>
+                                </li>`).join('')}
+                        </ul>
+                    </div>` : '';
+
+                return `<div class="dt-node">
+                            <div class="dt-answer" data-example-id="${exampleId}">
+                                <div class="answer-title">${node.answer}</div>
+                                ${examplesHtml ? `<div class="text-xs text-slate-500 mt-2">(Click to see examples)</div>` : ''}
+                                ${examplesHtml}
+                            </div>
+                        </div>`;
+            }
+
+            // Recursive case: This is a question node
+            const yesBranchHtml = buildTree(node.yes);
+            const noBranchHtml = buildTree(node.no);
+
+            return `<div class="dt-node">
+                        <div class="dt-question">
+                            <h4 class="font-semibold flex items-center">
+                                ${node.question}
+                                <span class="info-icon ml-2 text-blue-500 font-bold">ⓘ
+                                    <span class="info-tooltip">${node.info}</span>
+                                </span>
+                            </h4>
+                            <div class="text-xs text-slate-500 mt-2 flex flex-wrap gap-2">
+                                <span class="font-bold">Trade-offs:</span>
+                                ${node.tradeoffs.map(t => `<span class="bg-white border border-slate-200 px-2 py-0.5 rounded-full">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="dt-branches">
+                             <div class="dt-branch">
+                                <div class="dt-branch-line"><span class="dt-branch-label">YES</span></div>
+                                ${yesBranchHtml}
+                             </div>
+                             <div class="dt-branch mt-16">
+                                <div class="dt-branch-line"><span class="dt-branch-label">NO</span></div>
+                                ${noBranchHtml}
+                             </div>
+                        </div>
+                    </div>`;
+        }
+
+        container.innerHTML = `<div class="dt-container">${buildTree(appData.decisionTree)}</div>`;
+        
+        // Add event listeners for the clickable answers
+        container.querySelectorAll('.dt-answer').forEach(answerNode => {
+            const exampleId = answerNode.dataset.exampleId;
+            const exampleEl = document.getElementById(exampleId);
+            if(exampleEl) {
+                answerNode.addEventListener('click', (e) => {
+                    // Prevent click from bubbling if we click on a link inside the examples
+                    if (e.target.tagName === 'A') return;
+                    
+                    answerNode.classList.toggle('active');
+                    exampleEl.classList.toggle('visible');
+                });
+            }
+        });
+    }
+    
+    function renderFlashcard() {
+        const card = appData.flashcards[currentFlashcardIndex];
+        const container = document.getElementById('flashcard-container');
+        const controls = document.getElementById('flashcard-controls');
+        container.innerHTML = `<div class="flashcard w-full h-full" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner">
+            <div class="flashcard-front bg-orange-500 text-white shadow-lg"><p class="text-xl font-semibold">${card.q}</p><p class="text-sm mt-4 opacity-80">(Click to reveal)</p></div>
+            <div class="flashcard-back bg-slate-700 text-white shadow-lg"><p class="text-base">${card.a}</p></div>
+        </div></div>`;
+        controls.innerHTML = `<button id="prev-card" class="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300 disabled:opacity-50">Prev</button>
+            <span class="p-2">${currentFlashcardIndex + 1} / ${appData.flashcards.length}</span>
+            <button id="next-card" class="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300 disabled:opacity-50">Next</button>`;
+        document.getElementById('prev-card').disabled = currentFlashcardIndex === 0;
+        document.getElementById('next-card').disabled = currentFlashcardIndex === appData.flashcards.length - 1;
+    }
+
+    function renderPracticeTools() {
+        renderDecisionTree();
+        renderFlashcard();
+    }
+
+    function renderCode() {
+        const container = document.getElementById('code-snippets-container');
+        container.innerHTML = appData.codeSnippets.map(snippet => `
+            <div class="bg-gray-800 text-white p-6 rounded-lg shadow-sm">
+                 <h3 class="font-semibold text-lg mb-4 text-gray-300">${snippet.lang}</h3>
+                 <pre class="text-sm overflow-x-auto p-4 bg-gray-900 rounded"><code>${snippet.code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+            </div>`).join('');
+    }
+
+    function simpleMarkdownToHtml(markdown) {
+        return markdown
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // --- AI Feature Functions ---
+    async function handleGenerateScenario() {
+        const problemContainer = document.getElementById('ai-scenario-problem-container');
+        const feedbackContainer = document.getElementById('ai-scenario-feedback-container');
+        document.getElementById('ai-scenario-solution').value = '';
+        feedbackContainer.classList.add('hidden');
+        problemContainer.innerHTML = '<div class="flex items-center justify-center h-48"><div class="spinner"></div></div>';
+        showAiScenarioModal();
+
+        const prompt = "You are a senior staff engineer at a FAANG company. Generate a novel, detailed system design problem that requires a deep understanding of caching strategies. The problem should describe a specific product, its key features, and clear constraints on read/write traffic, data consistency, and latency requirements. Format the response as simple HTML.";
+        
+        try {
+            const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                problemContainer.innerHTML = simpleMarkdownToHtml(text);
+            } else {
+                problemContainer.innerHTML = '<p class="text-red-500">Error: Could not generate a scenario. Please try again.</p>';
+            }
+        } catch (error) {
+            console.error("Error generating AI scenario:", error);
+            problemContainer.innerHTML = '<p class="text-red-500">An error occurred while contacting the AI. Please check the console and try again.</p>';
+        }
+    }
+
+    async function handleGetFeedback() {
+        const problem = document.getElementById('ai-scenario-problem-container').innerText;
+        const solution = document.getElementById('ai-scenario-solution').value;
+        const feedbackContainer = document.getElementById('ai-scenario-feedback-container');
+        const feedbackButton = document.getElementById('get-ai-feedback-btn');
+
+        if (!solution.trim()) {
+            alert("Please enter your solution first.");
+            return;
+        }
+
+        feedbackContainer.classList.remove('hidden');
+        feedbackContainer.innerHTML = '<div class="flex items-center justify-center"><div class="spinner"></div></div>';
+        feedbackButton.disabled = true;
+
+        const prompt = `As a system design interview coach, analyze the following scenario and the user's proposed solution. Provide constructive feedback focusing on their caching strategy.
+        
+        **Problem:**
+        ${problem}
+
+        **User's Solution:**
+        ${solution}
+
+        **Your Task:**
+        1.  Start with a one-sentence summary of the user's approach.
+        2.  Create a "Strengths" section, highlighting good ideas in their solution.
+        3.  Create an "Areas for Improvement" section, pointing out potential risks, bottlenecks, or missed opportunities.
+        4.  Suggest specific alternative caching strategies or improvements.
+        5.  Format the entire response as simple, clean HTML using paragraphs, bold tags for headings, and unordered lists for bullet points. Do not include markdown characters.`;
+
+        try {
+            const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const result = await response.json();
+
+            if (result.candidates && result.candidates.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                feedbackContainer.innerHTML = text; // Assumes model returns HTML as requested
+            } else {
+                feedbackContainer.innerHTML = '<p class="text-red-500">Error: Could not get feedback. Please try again.</p>';
+            }
+        } catch (error) {
+            console.error("Error getting AI feedback:", error);
+            feedbackContainer.innerHTML = '<p class="text-red-500">An error occurred while contacting the AI. Please check the console and try again.</p>';
+        } finally {
+            feedbackButton.disabled = false;
+        }
+    }
+
+
+    // --- Event Listeners ---
+    navLinks.forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); switchView(link.dataset.view); }));
+    document.getElementById('metrics-container').addEventListener('click', (e) => { const card = e.target.closest('[data-metric-id]'); if (card) showMetricModal(card.dataset.metricId); });
+    metricModal.addEventListener('click', (e) => { if (e.target.id === 'metric-modal' || e.target.id === 'close-modal' || e.target.parentElement.id === 'close-modal') hideMetricModal(); });
+    document.getElementById('cache-type-selector').addEventListener('change', (e) => { currentCacheType = e.target.value; renderCachepedia(); });
+    document.getElementById('scenario-selector').addEventListener('change', (e) => { currentScenario = e.target.value; renderScenarios(); });
+    document.getElementById('eviction-policies-container').addEventListener('click', (e) => { const btn = e.target.closest('.tab-btn'); if (btn) { currentEvictionPolicy = btn.dataset.policy; renderEvictionPolicies(); } });
+    document.getElementById('flashcard-controls').addEventListener('click', (e) => { if (e.target.id === 'prev-card' && currentFlashcardIndex > 0) { currentFlashcardIndex--; renderFlashcard(); } if (e.target.id === 'next-card' && currentFlashcardIndex < appData.flashcards.length - 1) { currentFlashcardIndex++; renderFlashcard(); } });
+    
+    // AI Listeners
+    document.getElementById('generate-ai-scenario-btn').addEventListener('click', handleGenerateScenario);
+    document.getElementById('get-ai-feedback-btn').addEventListener('click', handleGetFeedback);
+    document.getElementById('close-ai-modal').addEventListener('click', hideAiScenarioModal);
+    aiScenarioModal.addEventListener('click', (e) => { if(e.target.id === 'ai-scenario-modal') hideAiScenarioModal(); });
+
+
+    // --- Initial Load ---
+    function fullRender() {
+        const initialView = window.location.hash.substring(1) || 'fundamentals';
+        const cachepediaSelector = document.getElementById('cache-type-selector');
+        cachepediaSelector.innerHTML = Object.keys(appData.cachepedia).map(key => `<option value="${key}">${appData.cachepedia[key].name}</option>`).join('');
+        cachepediaSelector.value = currentCacheType;
+        const scenarioSelector = document.getElementById('scenario-selector');
+        scenarioSelector.innerHTML = Object.keys(appData.scenarios).map(key => `<option value="${key}">${appData.scenarios[key].name}</option>`).join('');
+        scenarioSelector.value = currentScenario;
+        renderFundamentals();
+        renderCachepedia();
+        renderWritePatterns();
+        renderEvictionPolicies();
+        renderScenarios();
+        renderPracticeTools();
+        renderCode();
+        if (views[initialView]) switchView(initialView);
+        else switchView('fundamentals');
+    }
+    
+    fullRender();
+
+</script>
+</body>
+</html>
