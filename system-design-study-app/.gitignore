@@ -14,7 +14,7 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json # Keep extensions.json
+!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -22,7 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Firebase DataConnect generated files and emulator data
-dataconnect-generated/
-dataconnect/.dataconnect/

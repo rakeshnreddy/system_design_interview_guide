@@ -1,10 +1,6 @@
 /* eslint-env node */
 module.exports = {
   root: true,
-  globals: {
-    module: 'readonly',
-    exports: 'readonly',
-  },
   env: {
     es6: true,
     node: true,
@@ -23,8 +19,9 @@ module.exports = {
     sourceType: "module",
   },
   ignorePatterns: [
-    "lib/**/*", // Ignore built files, relative to this .eslintrc.js
-    "generated/**/*", // Ignore generated files, relative to this .eslintrc.js
+    "/lib/**/*", // Ignore built files.
+    "/generated/**/*", // Ignore generated files.
+    ".eslintrc.js", // Ignore this configuration file
   ],
   plugins: [
     "@typescript-eslint",
@@ -34,8 +31,5 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
-    // Disable base rule to prefer the TypeScript-specific version
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
   },
 };
