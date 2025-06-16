@@ -1,7 +1,7 @@
 // src/components/databases/SectionAiSimulatorDB.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button';
+import Card from '../common/Card';
+import Button from '../common/Button';
 // Note: Actual Gemini API call logic would be more complex and ideally in a service hook.
 
 const SectionAiSimulatorDB = ({ geminiKey, isAiLoading, setIsAiLoading, aiProblem, setAiProblem }) => {

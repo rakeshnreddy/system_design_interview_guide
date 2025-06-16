@@ -1,6 +1,6 @@
 // src/components/databases/SectionSummaryDB.jsx
 import React from 'react';
-import Card from '../../common/Card';
+import Card from '../common/Card';
 
 const summaryData = [
   { type: "Relational (SQL)", model: "Tables with rows & columns, predefined schema", consistency: "Strong (ACID)", scalability: "Vertical, Read Replicas, Sharding (complex)", useCases: "Transactions, complex queries, data integrity crucial (finance, ERP)" },

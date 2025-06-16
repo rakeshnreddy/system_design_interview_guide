@@ -5,13 +5,15 @@ import { getFirestore } from 'firebase/firestore';
 
 // IMPORTANT: User must replace this with their actual Firebase configuration.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // Replace
-  authDomain: "YOUR_AUTH_DOMAIN", // Replace
-  projectId: "YOUR_PROJECT_ID", // Replace
-  storageBucket: "YOUR_STORAGE_BUCKET", // Replace
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace
-  appId: "YOUR_APP_ID" // Replace
+  apiKey: "AIzaSyB0u158CV_r_DxdTxqIZ2YvfKs4WQTMll8",
+  authDomain: "system-design-prep-guide.firebaseapp.com",
+  databaseURL: "https://system-design-prep-guide-default-rtdb.firebaseio.com",
+  projectId: "system-design-prep-guide",
+  storageBucket: "system-design-prep-guide.firebasestorage.app",
+  messagingSenderId: "891325508499",
+  appId: "1:891325508499:web:6b0633441c4a0af0ee1666"
 };
+
 
 let app, auth, db;
 

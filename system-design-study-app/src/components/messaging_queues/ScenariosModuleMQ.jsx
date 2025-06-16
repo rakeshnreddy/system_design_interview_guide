@@ -3,7 +3,7 @@ import Card from '../common/Card';
 import Button from '../common/Button';
 // IMPORTANT: User must provide their Gemini API key here for AI features to work.
 // This should ideally be handled via environment variables or a secure config service in a real app.
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; // Replace with your actual key
+const GEMINI_API_KEY = "AIzaSyBFYfB6q6jTlXchN0t24-8THXXxXUn-ehU"; // Replace with your actual key
 
 // Helper components (can be moved to a common file if used elsewhere)
 const LoadingSpinner = () => (

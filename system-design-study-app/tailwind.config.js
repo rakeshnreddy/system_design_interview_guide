@@ -2,8 +2,11 @@
 export default {
   darkMode: 'class',
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./index.html", // Path to your main HTML file
+    "./src/**/*.{js,ts,jsx,tsx,vue}", // Path to all relevant source files
+    // Add any other paths where you use Tailwind classes
+    // For example, if you have components outside src:
+    // "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -24,16 +27,16 @@ export default {
           dark: '#eab308', // yellow-500
         },
         neutral: {
-          50: '#f8fafc',  // slate-50
-          100: '#f1f5f9', // slate-100
-          200: '#e2e8f0', // slate-200
-          300: '#cbd5e1', // slate-300
-          400: '#94a3b8', // slate-400
-          500: '#64748b', // slate-500
-          600: '#475569', // slate-600
-          700: '#334155', // slate-700
-          800: '#1e293b', // slate-800
-          900: '#0f172a', // slate-900
+          '50': '#f8fafc',  // slate-50
+          '100': '#f1f5f9', // slate-100
+          '200': '#e2e8f0', // slate-200
+          '300': '#cbd5e1', // slate-300
+          '400': '#94a3b8', // slate-400
+          '500': '#64748b', // slate-500
+          '600': '#475569', // slate-600
+          '700': '#334155', // slate-700
+          '800': '#1e293b', // slate-800
+          '900': '#0f172a', // slate-900
         },
         success: '#22c55e', // green-500
         error: '#ef4444',   // red-500

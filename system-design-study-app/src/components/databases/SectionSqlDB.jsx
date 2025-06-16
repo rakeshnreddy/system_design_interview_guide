@@ -1,7 +1,7 @@
 // src/components/databases/SectionSqlDB.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button'; // For potential AI query button if added later
+import Card from '../common/Card';
+import Button from '../common/Button'; // For potential AI query button if added later
 
 // AccordionItem Component (can be moved to a common components folder if used elsewhere)
 const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) => {

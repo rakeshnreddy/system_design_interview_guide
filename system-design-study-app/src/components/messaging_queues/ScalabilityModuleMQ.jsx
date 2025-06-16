@@ -100,8 +100,8 @@ const ScalabilityModuleMQ = () => {
             <div className="my-4 p-3 border rounded-md bg-neutral-100 dark:bg-neutral-800/60 shadow-sm text-center">
                 <p className="font-semibold text-neutral-700 dark:text-neutral-200">Diagram Placeholder: Push vs. Pull</p>
                 <div className="flex justify-around mt-2 text-sm">
-                    <div className="w-2/5 p-2 border border-dashed dark:border-neutral-600 rounded">Broker --(pushes)--> Consumer</div>
-                    <div className="w-2/5 p-2 border border-dashed dark:border-neutral-600 rounded">Consumer --(pulls from)--> Broker</div>
+                    <div className="w-2/5 p-2 border border-dashed dark:border-neutral-600 rounded">Broker --(pushes)--&gt; Consumer</div>
+                    <div className="w-2/5 p-2 border border-dashed dark:border-neutral-600 rounded">Consumer --(pulls from)--&gt; Broker</div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 // src/components/databases/SectionReplicationDB.jsx
 import React from 'react';
-import Card from '../../common/Card';
+import Card from '../common/Card';
 
 const SectionReplicationDB = () => {
   return (
@@ -38,7 +38,7 @@ const SectionReplicationDB = () => {
         <div>
           <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-3">Quorum-Based Replication</h2>
           <p>
-            Writes must be acknowledged by a majority (a quorum) of replicas before being considered successful (e.g., W > N/2). Reads must query a quorum of replicas (R > N/2). If W + R > N, it ensures strong consistency (at least one node read from has the latest write).
+            Writes must be acknowledged by a majority (a quorum) of replicas before being considered successful (e.g., W &gt; N/2). Reads must query a quorum of replicas (R &gt; N/2). If W + R &gt; N, it ensures strong consistency (at least one node read from has the latest write).
           </p>
           <p className="mt-2"><strong>Pros:</strong> Balances consistency, availability, and partition tolerance (often used in systems like Cassandra or Dynamo-style databases).</p>
           <p><strong>Cons:</strong> Can have higher latency for reads and writes due to coordination. Requires careful tuning of W, R, and N values.</p>

@@ -8,7 +8,7 @@ import Card from '../components/common/Card'; // Already exists
 import StickySidebarDB from '../components/databases/StickySidebarDB';
 
 // IMPORTANT: User must provide their Gemini API key here for AI features in SectionAiSimulatorDB
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
+const GEMINI_API_KEY = "AIzaSyBFYfB6q6jTlXchN0t24-8THXXxXUn-ehU";
 
 // Placeholder components until actual ones are created and imported
 // const StickySidebarDBPlaceholder = ({ sections, activeSection, onNavClick }) => ( ... ); // Removed

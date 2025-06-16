@@ -1,6 +1,6 @@
 // src/components/databases/SectionWideColumnDB.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
+import Card from '../common/Card';
 
 const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) => {
     const isOpen = idx === openIdx;

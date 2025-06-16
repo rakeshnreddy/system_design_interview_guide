@@ -1,7 +1,7 @@
 // src/components/caches/PatternsView.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button'; // For tab controls
+import Card from '../common/Card';
+import Button from '../common/Button'; // For tab controls
 
 const PatternsView = ({ appData }) => {
   const [activeTab, setActiveTab] = useState('writePatterns'); // 'writePatterns' or 'evictionPolicies'

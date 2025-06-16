@@ -9,7 +9,21 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 
 // Import actual app data
-import { cachesAppData } from '../../data/cachesAppData';
+import { cachesAppData } from '../data/cachesAppData';
+import FundamentalsView from '../components/caches/FundamentalsView';
+import CachepediaView from '../components/caches/CachepediaView';
+
+import PatternsView from '../components/caches/PatternsView';
+
+  // const FundamentalsView = ({ appData }) => <PlaceholderView title="Fundamentals" appData={appData} />; Removed placeholder
+import ScenariosView from '../components/caches/ScenariosView';
+
+  // const CachepediaView = ({ appData }) => <PlaceholderView title="Cachepedia" appData={appData} />; Removed placeholder
+import PracticeView from '../components/caches/PracticeView';
+
+import CodeLibraryView from '../components/caches/CodeLibraryView';
+
+
 
 const CachesPage = () => {
   const [currentView, setCurrentView] = useState('fundamentals');
@@ -21,7 +35,7 @@ const CachesPage = () => {
 
   // IMPORTANT: User must provide their Gemini API key here.
   // This should ideally be managed via environment variables in a real application.
-  const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; // TODO: Remind user to fill this
+  const GEMINI_API_KEY = "AIzaSyBFYfB6q6jTlXchN0t24-8THXXxXUn-ehU"; // TODO: Remind user to fill this
 
   useEffect(() => {
     const hashView = window.location.hash.substring(1);
@@ -102,8 +116,6 @@ const CachesPage = () => {
     }
   };
 
-import FundamentalsView from '../components/caches/FundamentalsView';
-
   // --- Placeholder View Components (to be replaced by imports) ---
   const PlaceholderView = ({ title, appData }) => (
     <div className="p-4">
@@ -117,17 +129,6 @@ import FundamentalsView from '../components/caches/FundamentalsView';
         </Card>
     </div>
   );
-import CachepediaView from '../components/caches/CachepediaView';
-
-import PatternsView from '../components/caches/PatternsView';
-
-  // const FundamentalsView = ({ appData }) => <PlaceholderView title="Fundamentals" appData={appData} />; Removed placeholder
-import ScenariosView from '../components/caches/ScenariosView';
-
-  // const CachepediaView = ({ appData }) => <PlaceholderView title="Cachepedia" appData={appData} />; Removed placeholder
-import PracticeView from '../components/caches/PracticeView';
-
-import CodeLibraryView from '../components/caches/CodeLibraryView';
 
   // const PatternsView = ({ appData }) => <PlaceholderView title="Patterns & Policies" appData={appData} />; Removed placeholder
   // const ScenariosView = ({ appData, onGenerateAIScenario }) => ( ... ); Removed placeholder

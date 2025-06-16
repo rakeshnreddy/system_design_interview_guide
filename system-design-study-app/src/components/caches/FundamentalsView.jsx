@@ -1,8 +1,8 @@
 // src/components/caches/FundamentalsView.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Modal from '../../common/Modal';
-import Button from '../../common/Button'; // If needed for modal actions
+import Card from '../common/Card';
+import Modal from '../common/Modal';
+import Button from '../common/Button'; // If needed for modal actions
 
 const FundamentalsView = ({ appData }) => {
   const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);

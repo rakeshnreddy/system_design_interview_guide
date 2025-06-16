@@ -1,7 +1,7 @@
 // src/components/caches/ScenariosView.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button';
+import Card from '../common/Card';
+import Button from '../common/Button';
 
 const ScenariosView = ({ appData, onGenerateAIScenario }) => {
   const [selectedScenario, setSelectedScenario] = useState(null);

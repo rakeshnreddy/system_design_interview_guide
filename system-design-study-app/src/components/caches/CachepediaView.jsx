@@ -1,7 +1,7 @@
 // src/components/caches/CachepediaView.jsx
 import React, { useState, useEffect } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button'; // For potential future actions
+import Card from '../common/Card';
+import Button from '../common/Button'; // For potential future actions
 // Radar Chart related imports - these will cause errors if chart.js and react-chartjs-2 are not installed
 import { Radar } from 'react-chartjs-2';
 import {
@@ -181,13 +181,13 @@ const CachepediaView = ({ appData }) => {
         <div className="my-4 p-4 border border-neutral-300 dark:border-neutral-600 rounded-md bg-neutral-100 dark:bg-neutral-800/60 shadow-sm">
              <p className="font-semibold text-center text-xl text-neutral-700 dark:text-neutral-200 mb-3">Visual: Multi-Level Cache Flow</p>
              <div className="space-y-2 text-base text-neutral-600 dark:text-neutral-300 font-mono">
-                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">App Server --> L1 Cache (In-Process/Memory)</div>
+                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">App Server --&gt; L1 Cache (In-Process/Memory)</div>
                  <div className="pl-4">|</div>
                  <div className="pl-4">V</div>
-                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">L1 Cache --> L2 Cache (Distributed, e.g., Redis/Memcached)</div>
+                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">L1 Cache --&gt; L2 Cache (Distributed, e.g., Redis/Memcached)</div>
                  <div className="pl-10">|</div>
                  <div className="pl-10">V</div>
-                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">L2 Cache --> Origin Database</div>
+                 <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">L2 Cache --&gt; Origin Database</div>
              </div>
              {/* TODO: Add detailed diagram for multi-level cache architecture */}
          </div>

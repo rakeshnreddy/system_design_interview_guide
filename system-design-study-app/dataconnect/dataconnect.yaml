@@ -1,0 +1,12 @@
+specVersion: "v1"
+serviceId: "system-design-study-app"
+location: "us-west1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "system-design-study-app-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

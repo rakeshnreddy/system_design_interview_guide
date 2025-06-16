@@ -1,6 +1,6 @@
 // src/components/caches/CodeLibraryView.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
+import Card from '../common/Card';
 // A proper syntax highlighter would be ideal here, e.g., Prism.js or react-syntax-highlighter.
 // For now, using a simple pre/code block.
 // To use react-syntax-highlighter:

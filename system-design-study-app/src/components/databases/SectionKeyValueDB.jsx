@@ -1,6 +1,6 @@
 // src/components/databases/SectionKeyValueDB.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
+import Card from '../common/Card';
 
 // AccordionItem (Assuming it might be slightly different or want to keep it co-located for now)
 // If identical to SectionSqlDB's, this could be moved to a common component.

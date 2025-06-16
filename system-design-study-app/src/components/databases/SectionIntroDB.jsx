@@ -1,6 +1,6 @@
 // src/components/databases/SectionIntroDB.jsx
 import React from 'react';
-import Card from '../../common/Card'; // Using global Card component
+import Card from '../common/Card'; // Using global Card component
 
 const SectionIntroDB = () => {
   return (

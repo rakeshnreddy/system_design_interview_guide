@@ -1,7 +1,7 @@
 // src/components/databases/SectionPolyglotDB.jsx
 import React, { useState } from 'react';
-import Card from '../../common/Card';
-import Button from '../../common/Button';
+import Card from '../common/Card';
+import Button from '../common/Button';
 
 const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) => {
     const isOpen = idx === openIdx;
