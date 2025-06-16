@@ -1,0 +1,930 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+
+// --- Icon Components (using inline SVG for simplicity) ---
+const BookOpen = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
+const BrainCircuit = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M12 5a3 3 0 1 0-5.993.134"/><path d="M12 5a3 3 0 1 1 5.993.134"/><path d="M15 12a3 3 0 1 0-5.993.134"/><path d="M15 12a3 3 0 1 1 5.993.134"/><path d="M5 19a3 3 0 1 0-5.993.134"/><path d="M5 19a3 3 0 1 1 5.993.134"/><path d="M19 19a3 3 0 1 0-5.993.134"/><path d="M19 19a3 3 0 1 1 5.993.134"/><path d="M12 12h.01"/><path d="M12 12a3 3 0 0 1-3-3"/><path d="M12 12a3 3 0 0 0-3 3"/><path d="m15.5 15.5.01.01"/><path d="M9.01 9.01 9 9"/><path d="m5.5 15.5.01.01"/><path d="M19 12h.01"/><path d="M18.5 8.5.01.01"/><path d="M12 5a3 3 0 0 1-3-3m0 0a3 3 0 0 0-3 3"/><path d="M12 19a3 3 0 0 1-3 3m0 0a3 3 0 0 0-3-3"/></svg>;
+const AlertTriangle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>;
+const CheckCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-green-500"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
+const XCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-red-500"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>;
+const Sparkles = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="m12 3-1.5 5-5-1.5 5 5-1.5 5 5-1.5 5 1.5-1.5-5 5-5-5 1.5z"/></svg>;
+
+
+// --- Firebase Configuration & Initialization ---
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'mq-study-guide-default';
+
+let app, auth, db;
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+} catch (e) {
+    console.error("Firebase initialization error:", e);
+}
+
+
+// --- Data for Modules ---
+const scenarioCategories = {
+    'High-Throughput Data Ingestion': {
+        description: 'Systems that must ingest and process a massive, continuous stream of events, often from many sources.',
+        examples: ['Log Aggregation', 'Ad Click Aggregator', 'IoT Sensor Data'],
+        primaryChoice: 'Apache Kafka',
+        secondaryChoice: 'Google Cloud Pub/Sub, AWS Kinesis',
+        tradeOffs: 'Kafka offers the highest throughput and strongest ordering guarantees (per-partition) but comes with significant operational overhead. Managed services like Pub/Sub or Kinesis trade some performance and control for dramatically lower operational complexity and cost-effectiveness at smaller scales.',
+        e5Points: [
+            '**Partitioning Strategy:** "I\'d partition by `user_id` to ensure ordering for a single user\'s events, but for a system like ad-clicks, partitioning by `ad_id` might be better for hotspot mitigation."',
+            '**Durability vs. Latency:** "We can configure Kafka\'s producer `acks` setting. `acks=all` provides the strongest durability but higher latency. For real-time metrics where some loss is tolerable, `acks=1` would be a reasonable trade-off."',
+            '**Consumer Lag Monitoring:** "Monitoring consumer group lag is critical. If lag increases, it\'s an early warning that our consumer fleet is under-provisioned or a consumer is stuck, and we need to autoscale or alert an on-call engineer."',
+        ]
+    },
+    'Distributed Task Processing': {
+        description: 'Systems where a producer creates discrete jobs that need to be reliably completed by a pool of workers.',
+        examples: ['Image Resizing Service', 'Video Transcoding Pipeline', 'Report Generation'],
+        primaryChoice: 'Amazon SQS / RabbitMQ',
+        secondaryChoice: 'Celery (with RabbitMQ/Redis backend)',
+        tradeOffs: 'SQS is a fully managed, highly scalable solution, perfect when you don\'t want to manage brokers. RabbitMQ offers more flexibility with complex routing (e.g., topic, header exchanges) and protocol support (AMQP, MQTT), but requires self-hosting. Celery is a high-level framework on top of these that simplifies task definition and scheduling in code.',
+        e5Points: [
+            '**Visibility Timeout:** "In SQS, I\'d carefully tune the visibility timeout. It should be long enough for a task to complete, but not so long that a failed worker holds a message for an excessive time before it\'s retried."',
+            '**Dead-Letter Queues (DLQ):** "For any task queue, configuring a DLQ is non-negotiable. After a message fails a few times (e.g., 3 retries), we must move it to a DLQ for offline analysis to prevent a single poison pill from halting all processing."',
+            '**Idempotency:** "Since at-least-once delivery is the standard, our workers must be idempotent. I\'d ensure this by having the worker check a persistent store (like DynamoDB or Redis) using the message\'s unique ID to see if it has already been processed before starting work."',
+        ]
+    },
+    'Real-time Fan-Out & Notifications': {
+        description: 'Systems where a single event needs to be broadcast to a large number of subscribers with very low latency.',
+        examples: ['Live Comments', 'Breaking News Alerts', 'Stock Ticker Updates'],
+        primaryChoice: 'Redis Pub/Sub or a specialized service like Ably/Pusher',
+        secondaryChoice: 'Google Pub/Sub (in push mode), AWS SNS',
+        tradeOffs: 'Redis is incredibly fast for ephemeral, low-latency fan-out but offers weak delivery guarantees ("fire-and-forget"). Managed services like SNS or Pub/Sub provide better durability and retry mechanisms but with slightly higher latency. Kafka can also do fan-out with consumer groups, but is generally overkill and higher latency for this specific pattern.',
+         e5Points: [
+            '**Latency over Durability:** "In this use case, we are optimizing for speed, not guaranteed delivery. If a user misses a single live comment, it\'s acceptable. Therefore, a low-latency system like Redis Pub/Sub is a better fit than a durability-focused one like Kafka."',
+            '**Connection Management:** "The messaging system itself is only half the problem. The fan-out service needs to manage potentially millions of persistent connections (WebSockets). This service should be sharded by `channel_id` or `topic` to scale horizontally."',
+            '**Thundering Herd:** "For a massive fan-out, you need to be careful not to create a thundering herd problem where all subscribers try to reconnect or fetch data at once. The fan-out service needs to handle this with proper backoff and jitter strategies."',
+        ]
+    }
+};
+
+// --- Main Application Component ---
+const App = () => {
+    // --- State Management ---
+    const [activeModule, setActiveModule] = useState('intro');
+    const [user, setUser] = useState(null);
+    const [progress, setProgress] = useState({ quizScores: {}, pipelineScores: {} });
+    const [isAuthReady, setIsAuthReady] = useState(false);
+   
+    // --- Firebase Authentication & Data Loading Effect ---
+    useEffect(() => {
+        if (!auth) return;
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                setUser(currentUser);
+                const docRef = doc(db, `artifacts/${appId}/users/${currentUser.uid}/progress`, 'main');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setProgress(docSnap.data());
+                } else {
+                    const initialProgress = { quizScores: {}, pipelineScores: {} };
+                    await setDoc(docRef, initialProgress);
+                    setProgress(initialProgress);
+                }
+            } else {
+                await signInAnonymously(auth).catch(err => console.error("Anonymous sign-in error:", err));
+            }
+            setIsAuthReady(true);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // --- Function to Save Progress ---
+    const saveProgress = async (newProgress) => {
+        if (user && db) {
+            const finalProgress = { ...progress, ...newProgress };
+            setProgress(finalProgress);
+            const docRef = doc(db, `artifacts/${appId}/users/${user.uid}/progress`, 'main');
+            await setDoc(docRef, finalProgress, { merge: true });
+        }
+    };
+
+    // --- UI Components ---
+    const Card = ({ children, className = '' }) => (
+        <div className={`bg-white dark:bg-gray-800/50 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 mb-6 ${className}`}>
+            {children}
+        </div>
+    );
+
+    const Highlight = ({ children, color = 'blue', onMouseEnter, onMouseLeave, className='' }) => {
+        const colors = {
+            blue: 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200',
+            green: 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200',
+            yellow: 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200',
+            gray: 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+        };
+        return <code className={`px-2 py-1 rounded-md font-mono text-sm ${colors[color]} ${className}`} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>{children}</code>;
+    };
+    
+    const TalkTrack = ({ children }) => (
+        <div className="my-4 p-4 border-l-4 border-indigo-500 bg-indigo-50 dark:bg-gray-800 dark:border-indigo-400">
+            <p className="text-gray-600 dark:text-gray-300 italic">"{children}"</p>
+        </div>
+    );
+    
+    const CodeBlock = ({ language, children }) => (
+        <div className="my-4 bg-gray-900 rounded-lg overflow-hidden">
+            <div className="p-2 bg-gray-800 text-right text-xs text-gray-400">{language}</div>
+            <pre className="p-4 text-sm text-white overflow-x-auto">
+                <code>{children}</code>
+            </pre>
+        </div>
+    );
+    
+    const GeminiButton = ({ onClick, loading, children }) => (
+        <button
+            onClick={onClick}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-md hover:from-purple-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+        >
+            <Sparkles />
+            {loading ? 'Generating...' : children}
+        </button>
+    );
+
+    // --- Content Modules ---
+    const IntroModule = () => (
+        <div>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">The Meta E5 Messaging Queue Study Guide</h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">An expert-level guide to mastering messaging systems for top-tier system design interviews. This guide focuses on scalable architectures, nuanced trade-offs, and the specific language needed to impress at a Meta E5 level.</p>
+            <div className="grid md:grid-cols-2 gap-4">
+                 <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">Learning Objectives</h3>
+                    <ul className="list-disc list-inside space-y-1 text-green-700 dark:text-green-300">
+                        <li>Master all MQ architectural patterns</li>
+                        <li>Articulate complex trade-offs at scale</li>
+                        <li>Speak fluently with E5-level "talk-tracks"</li>
+                         <li>Anticipate and answer deep follow-up questions</li>
+                    </ul>
+                </div>
+                 <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Interview Goals</h3>
+                    <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
+                        <li>Demonstrate architectural maturity</li>
+                        <li>Justify choices based on cost, ops, and scale</li>
+                        <li>Confidently lead the design discussion</li>
+                    </ul>
+                </div>
+            </div>
+             <Card className="mt-6">
+                <h3 className="text-xl font-bold mb-3">Your Progress</h3>
+                {isAuthReady && progress ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                     <div>
+                        <p className="text-2xl font-bold text-indigo-500">{progress.quizScores?.quiz1 || 0} / 2</p>
+                        <p className="text-sm text-gray-500">Quiz Score</p>
+                    </div>
+                     <div>
+                        <p className="text-2xl font-bold text-indigo-500">{progress.pipelineScores?.pipeline1 === 100 ? 'Solved' : 'Not Solved'}</p>
+                        <p className="text-sm text-gray-500">Pipeline Challenge</p>
+                    </div>
+                </div>
+                ) : <p>Loading progress...</p>}
+            </Card>
+        </div>
+    );
+    
+    const DeepDiveModule = () => {
+        const categories = [
+            { 
+                title: "Point-to-Point Queues (e.g., SQS, RabbitMQ)", 
+                when: "Decoupling microservices, background job processing, task dispatching.",
+                tradeoffs: "Key concept is the 'visibility timeout': a message is hidden, not deleted, when read. If the consumer fails to ACK (acknowledge) within the timeout, the message reappears for another consumer to process. This provides at-least-once delivery.",
+                code: {
+                    sqs: `// AWS SQS SDK v3 Example (Node.js)
+import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
+const sqsClient = new SQSClient({ region: "us-east-1" });
+const queueUrl = "YOUR_QUEUE_URL";
+
+// Producer
+const sendParams = {
+  QueueUrl: queueUrl,
+  MessageBody: JSON.stringify({ taskId: 123, job: "resizeImage" }),
+};
+await sqsClient.send(new SendMessageCommand(sendParams));
+
+// Consumer
+const receiveParams = { QueueUrl: queueUrl, MaxNumberOfMessages: 1 };
+const { Messages } = await sqsClient.send(new ReceiveMessageCommand(receiveParams));
+if (Messages && Messages.length > 0) {
+  const message = Messages[0];
+  console.log("Processing:", message.Body);
+  // ... do work ...
+  const deleteParams = { QueueUrl: queueUrl, ReceiptHandle: message.ReceiptHandle };
+  await sqsClient.send(new DeleteMessageCommand(deleteParams)); // Acknowledge
+}`,
+                    rabbitmq: `// RabbitMQ Example (amqplib for Node.js)
+import amqp from 'amqplib';
+const connection = await amqp.connect('amqp://localhost');
+const channel = await connection.createChannel();
+const queue = 'task_queue';
+
+// Producer
+await channel.assertQueue(queue, { durable: true });
+channel.sendToQueue(queue, Buffer.from(JSON.stringify({ task: 'send_email' })), { persistent: true });
+
+// Consumer
+await channel.assertQueue(queue, { durable: true });
+channel.consume(queue, (msg) => {
+  if (msg) {
+    console.log("Processing:", msg.content.toString());
+    // ... do work ...
+    channel.ack(msg); // Acknowledge
+  }
+}, { noAck: false });`
+                }
+            },
+            {
+                title: "Distributed Streaming Platforms (e.g., Kafka)",
+                when: "High-volume real-time data pipelines, event sourcing, stream processing.",
+                tradeoffs: "Provides a persistent, replayable log. Key concepts are partitions (for parallelism) and consumer groups (for sharing load). Guarantees exactly-once processing with more effort (EOS).",
+                 code: {
+                    kafka: `// KafkaJS Example (Node.js)
+import { Kafka } from 'kafkajs';
+const kafka = new Kafka({ clientId: 'my-app', brokers: ['kafka:9092'] });
+
+// Producer
+const producer = kafka.producer();
+await producer.connect();
+await producer.send({
+  topic: 'user-events',
+  messages: [{ value: JSON.stringify({ userId: 'u1', event: 'login' }) }],
+});
+
+// Consumer
+const consumer = kafka.consumer({ groupId: 'analytics-group' });
+await consumer.connect();
+await consumer.subscribe({ topic: 'user-events', fromBeginning: true });
+await consumer.run({
+  eachMessage: async ({ topic, partition, message }) => {
+    console.log({
+      value: message.value.toString(),
+    });
+  },
+});`
+                 }
+            },
+        ];
+        
+        return (
+            <Card>
+                <h2 className="text-3xl font-bold mb-4">Module 1: MQ Deep Dive & Code</h2>
+                <div className="space-y-8">
+                {categories.map(cat => (
+                    <div key={cat.title} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <h3 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">{cat.title}</h3>
+                        <p className="mt-1"><strong>When to use:</strong> {cat.when}</p>
+                        <p className="mt-1"><strong>Trade-offs & Concepts:</strong> {cat.tradeoffs}</p>
+                        {cat.code.sqs && <>
+                            <h4 className="mt-4 font-semibold">Amazon SQS Example</h4>
+                            <CodeBlock language="javascript">{cat.code.sqs}</CodeBlock>
+                        </>}
+                        {cat.code.rabbitmq && <>
+                            <h4 className="mt-4 font-semibold">RabbitMQ Example</h4>
+                            <CodeBlock language="javascript">{cat.code.rabbitmq}</CodeBlock>
+                        </>}
+                         {cat.code.kafka && <>
+                            <h4 className="mt-4 font-semibold">Apache Kafka Example</h4>
+                            <CodeBlock language="javascript">{cat.code.kafka}</CodeBlock>
+                        </>}
+                    </div>
+                ))}
+                </div>
+            </Card>
+        );
+    };
+
+    const GuaranteesModule = () => (
+        <Card>
+            <h2 className="text-3xl font-bold mb-4">Module 2: Guarantees & Idempotency</h2>
+            <p className="mb-6">This is where complexity meets reality. Understanding these guarantees is non-negotiable for a senior engineer.</p>
+            
+            <h3 className="text-2xl font-semibold mb-3">Delivery Semantics</h3>
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h4 className="font-bold text-red-600 dark:text-red-400">At-Most-Once</h4>
+                    <p className="text-sm">Messages may be lost but are never redelivered. Use for non-critical data where loss is acceptable (e.g., metrics).</p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h4 className="font-bold text-yellow-600 dark:text-yellow-400">At-Least-Once</h4>
+                    <p className="text-sm">Messages are never lost but may be redelivered. This is the most common default. Requires idempotent consumers to prevent issues from duplicate processing.</p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <h4 className="font-bold text-green-600 dark:text-green-400">Exactly-Once</h4>
+                    <p className="text-sm">Every message is delivered and processed exactly one time. The "holy grail," but requires complex coordination between the broker and consumer (e.g., Kafka's transactional API).</p>
+                </div>
+            </div>
+
+            <h3 className="text-2xl font-semibold mt-8 mb-3">Idempotency & Error Handling Flow</h3>
+            <p className="mb-4">Since at-least-once is common, you MUST talk about idempotency. Here is the "memory palace" illustration of the flow.</p>
+             <TalkTrack>To handle message redeliveries, I'll design my consumers to be idempotent. When a consumer receives a message, it will first check if the message ID has already been processed by looking it up in a Redis cache or database. If it has, it will simply acknowledge the message without reprocessing it. If a message repeatedly fails, we'll move it to a Dead-Letter Queue (DLQ) for manual inspection, preventing it from blocking the main queue.</TalkTrack>
+            <svg viewBox="0 0 500 200" className="w-full h-auto my-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <defs><marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" /></marker></defs>
+                {/* Main Queue */}
+                <rect x="20" y="80" width="80" height="40" rx="5" fill="#dbeafe" stroke="#bfdbfe"/><text x="60" y="105" textAnchor="middle" fontSize="10">Main Queue</text>
+                {/* Consumer */}
+                <rect x="210" y="40" width="80" height="120" rx="5" fill="#dcfce7" stroke="#bbf7d0"/><text x="250" y="105" textAnchor="middle" fontSize="10">Consumer</text>
+                <text x="250" y="60" textAnchor="middle" fontSize="8" fill="gray">1. Check Processed IDs</text>
+                <text x="250" y="80" textAnchor="middle" fontSize="8" fill="gray">2. Process Message</text>
+                <text x="250" y="130" textAnchor="middle" fontSize="8" fill="gray">3. Add ID, ACK Msg</text>
+                {/* DLQ */}
+                <rect x="400" y="80" width="80" height="40" rx="5" fill="#fee2e2" stroke="#fecaca"/><text x="440" y="105" textAnchor="middle" fontSize="10">DLQ</text>
+                {/* Arrows */}
+                <path d="M105 100 h 100" stroke="#9ca3af" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)"/>
+                <path d="M295 80 C 350 80, 350 80, 395 100" stroke="#ef4444" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)"/>
+                <text x="340" y="75" fontSize="8" fill="red">Max Retries Hit</text>
+                {/* Idempotency DB */}
+                <ellipse cx="250" cy="180" rx="60" ry="15" fill="#f3e8ff" stroke="#c084fc"/>
+                <text x="250" y="184" textAnchor="middle" fontSize="8">Processed IDs DB (Redis/Dynamo)</text>
+                <path d="M250 155 v 10" stroke="#c084fc" strokeWidth="1" fill="none" markerEnd="url(#arrow-flow)"/>
+            </svg>
+        </Card>
+    );
+    
+    const ScalabilityModule = () => (
+        <Card>
+            <h2 className="text-3xl font-bold mb-4">Module 3: Scalability & Reliability Patterns</h2>
+            <p className="mb-6">Knowing MQ types is good; knowing how to scale them is what distinguishes a senior engineer.</p>
+            
+            <div className="space-y-8">
+                <div>
+                    <h3 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">Consumer Scaling: Push vs. Pull</h3>
+                    <p className="mt-2">How consumers get messages is a fundamental design choice.</p>
+                    <ul className="list-disc list-inside mt-2 space-y-2">
+                        <li><strong>Pull Model (e.g., Kafka, SQS):</strong> Consumers ask the broker for messages. This is great for managing consumer load, as each consumer pulls messages at its own pace. It prevents overwhelming a slow consumer.</li>
+                        <li><strong>Push Model (e.g., RabbitMQ, Webhooks):</strong> The broker sends messages directly to a pre-configured consumer. This can result in lower latency as there's no polling delay, but it risks overwhelming a consumer if there's a sudden spike in messages.</li>
+                    </ul>
+                    <TalkTrack>For our high-throughput analytics pipeline, I'd choose a pull-based system like Kafka. This allows our processing workers to fetch batches of events at their own capacity, preventing them from being overloaded during traffic spikes and giving us more control over load management.</TalkTrack>
+                </div>
+
+                <div>
+                    <h3 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">Broker Clustering & Leader Election</h3>
+                    <p className="mt-2">A single broker is a single point of failure. Brokers are clustered for high availability. One broker is elected as the "leader" to coordinate state.</p>
+                     <svg viewBox="0 0 350 150" className="w-full h-auto my-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                        <text x="175" y="15" textAnchor="middle" fontSize="10" className="fill-current text-gray-500">Kafka Cluster</text>
+                        {/* Brokers */}
+                        <g>
+                            <rect x="50" y="50" width="60" height="60" rx="30" className="fill-green-200 dark:fill-green-800 stroke-green-400"/>
+                            <text x="80" y="85" textAnchor="middle" fontSize="10" className="fill-current">Leader</text>
+                        </g>
+                         <g>
+                            <rect x="150" y="50" width="60" height="60" rx="30" className="fill-blue-200 dark:fill-blue-800 stroke-blue-400"/>
+                            <text x="180" y="85" textAnchor="middle" fontSize="10" className="fill-current">Follower</text>
+                        </g>
+                         <g>
+                            <rect x="250" y="50" width="60" height="60" rx="30" className="fill-blue-200 dark:fill-blue-800 stroke-blue-400"/>
+                            <text x="280" y="85" textAnchor="middle" fontSize="10" className="fill-current">Follower</text>
+                        </g>
+                        {/* Arrows */}
+                        <path d="M110 80 C 130 60, 140 60, 150 70" stroke="currentColor" strokeWidth="1" fill="none" strokeDasharray="4"/>
+                        <path d="M110 90 C 130 110, 140 110, 150 100" stroke="currentColor" strokeWidth="1" fill="none" strokeDasharray="4"/>
+                        <text x="135" y="70" fontSize="8" className="fill-current">Replication</text>
+                    </svg>
+                    <p>When a leader fails, a new one is elected from the followers. Systems like ZooKeeper or Raft consensus protocols are often used for this coordination.</p>
+                </div>
+
+                 <div>
+                    <h3 className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">Partition Rebalancing</h3>
+                    <p className="mt-2">In Kafka, when a consumer joins or leaves a consumer group, the broker re-distributes the partitions among the remaining consumers. This is called a rebalance. While essential for elasticity, rebalances can pause all processing for that group, a phenomenon known as a "stop-the-world" event. Modern clients have improved this, but it's a key operational detail to know.</p>
+                    <TalkTrack>We need to be mindful of consumer rebalancing. Frequent restarts or flapping consumers could cause performance degradation due to stop-the-world rebalances. We should monitor rebalance events and aim for stable consumer deployments.</TalkTrack>
+                </div>
+            </div>
+        </Card>
+    );
+
+    const FrameworksModule = () => {
+        return (
+            <Card>
+                <h2 className="text-3xl font-bold mb-4">Module 4: Decision Framework</h2>
+                <p className="mb-6">This expanded flowchart helps you navigate the trade-offs and map them directly to common interview problems.</p>
+                <div className="w-full overflow-x-auto">
+                    <svg viewBox="0 0 1100 500" className="w-full h-auto my-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 min-w-[1100px]">
+                        <defs><marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4f46e5" /></marker></defs>
+                        <g>
+                            <rect x="450" y="20" width="200" height="40" rx="20" fill="#e0e7ff" stroke="#a5b4fc"/>
+                            <text x="550" y="45" textAnchor="middle" fontSize="12">Start: Assess Primary Need</text>
+                        </g>
+                        <path d="M 550 60 V 100" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" />
+                        <g>
+                            <rect x="400" y="100" width="300" height="50" rx="5" fill="#fef9c3" stroke="#fde68a"/>
+                            <text x="550" y="120" textAnchor="middle" fontSize="12">Complex, multi-step business process</text>
+                            <text x="550" y="135" textAnchor="middle" fontSize="12">with retries & state management?</text>
+                        </g>
+                        <path d="M 400 125 H 200 V 180" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" /><text x="300" y="120" fontSize="10" fill="#4f46e5">Yes</text>
+                        <path d="M 700 125 H 800 V 180" stroke="#4f46e5" strokeWidth="2" fill="none" /><text x="750" y="120" fontSize="10" fill="#4f46e5">No</text>
+                        <g>
+                            <rect x="120" y="180" width="160" height="80" rx="5" fill="#d1fae5" stroke="#6ee7b7"/>
+                            <text x="200" y="200" textAnchor="middle" fontWeight="bold" fontSize="12">Workflow Engine</text>
+                            <text x="200" y="220" textAnchor="middle" fontSize="10">(e.g., AWS Step Functions)</text>
+                            <text x="200" y="245" textAnchor="middle" fill="#4f46e5" fontSize="9">Use for: E-commerce Orders</text>
+                        </g>
+                        <path d="M 800 180 V 210" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" />
+                        <g>
+                            <rect x="650" y="210" width="300" height="50" rx="5" fill="#fef9c3" stroke="#fde68a"/>
+                            <text x="800" y="230" textAnchor="middle" fontSize="12">Massive throughput ({'>'}100k msg/s) and</text>
+                            <text x="800" y="245" textAnchor="middle" fontSize="12">replayable event history needed?</text>
+                        </g>
+                        <path d="M 650 235 H 450 V 290" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" /><text x="550" y="230" fontSize="10" fill="#4f46e5">Yes</text>
+                        <path d="M 950 235 H 1050 V 290" stroke="#4f46e5" strokeWidth="2" fill="none" /><text x="1000" y="230" fontSize="10" fill="#4f46e5">No</text>
+                        <g>
+                            <rect x="370" y="290" width="160" height="80" rx="5" fill="#d1fae5" stroke="#6ee7b7"/>
+                            <text x="450" y="310" textAnchor="middle" fontWeight="bold" fontSize="12">Streaming Platform</text>
+                            <text x="450" y="330" textAnchor="middle" fontSize="10">(e.g., Kafka, Pulsar)</text>
+                            <text x="450" y="355" textAnchor="middle" fill="#4f46e5" fontSize="9">Use for: Feeds, Analytics</text>
+                        </g>
+                        <path d="M 1050 290 V 320" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" />
+                         <g>
+                            <rect x="900" y="320" width="300" height="50" rx="5" fill="#fef9c3" stroke="#fde68a"/>
+                            <text x="1050" y="340" textAnchor="middle" fontSize="12">Fan-out to many independent services</text>
+                             <text x="1050" y="355" textAnchor="middle" fontSize="12">OR simple background jobs?</text>
+                        </g>
+                        <path d="M 900 345 H 700 V 400" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" /><text x="800" y="340" fontSize="10" fill="#4f46e5">Fan-out</text>
+                        <path d="M 1200 345 H 1300 V 400" stroke="#4f46e5" strokeWidth="2" fill="none" markerEnd="url(#arrow-flow)" /><text x="1250" y="340" fontSize="10" fill="#4f46e5">Jobs</text>
+                        <g>
+                            <rect x="620" y="400" width="160" height="80" rx="5" fill="#d1fae5" stroke="#6ee7b7"/>
+                            <text x="700" y="420" textAnchor="middle" fontWeight="bold" fontSize="12">Pub/Sub</text>
+                            <text x="700" y="440" textAnchor="middle" fontSize="10">(e.g., Google Pub/Sub, SNS)</text>
+                            <text x="700" y="465" textAnchor="middle" fill="#4f46e5" fontSize="9">Use for: Notifications</text>
+                        </g>
+                        <g>
+                            <rect x="1220" y="400" width="160" height="80" rx="5" fill="#d1fae5" stroke="#6ee7b7"/>
+                            <text x="1300" y="420" textAnchor="middle" fontWeight="bold" fontSize="12">Point-to-Point Queue</text>
+                            <text x="1300" y="440" textAnchor="middle" fontSize="10">(e.g., SQS, RabbitMQ)</text>
+                            <text x="1300" y="465" textAnchor="middle" fill="#4f46e5" fontSize="9">Use for: File processing</text>
+                        </g>
+                    </svg>
+                </div>
+            </Card>
+        );
+    };
+    
+    const ScenariosModule = () => {
+        const [activeCategory, setActiveCategory] = useState(Object.keys(scenarioCategories)[0]);
+        const [geminiResponse, setGeminiResponse] = useState({ loading: false, text: '', error: null, type: null });
+
+        const handleGenerate = async (type) => {
+            setGeminiResponse({ loading: true, text: '', error: null, type: type });
+            const currentCategory = scenarioCategories[activeCategory];
+            const prompt = type === 'analogy' ? 
+                `Create a simple, non-technical analogy to help an engineer remember the following system design concept for an interview.
+                System: ${activeCategory} (${currentCategory.examples.join(', ')})
+                Recommended MQ Architecture: ${currentCategory.primaryChoice}
+                Reason: ${currentCategory.tradeOffs}
+                Analogy:` : 
+                `You are a Meta E5 system design interviewer. I have just proposed a solution for designing a "${activeCategory}" system using "${currentCategory.primaryChoice}".
+                My reasoning is: "${currentCategory.tradeOffs}".
+                One of my talking points was: "${currentCategory.e5Points[0]}"
+                Based on this, ask me one difficult, specific follow-up question that a senior interviewer would ask to probe for deeper understanding. The question should challenge my assumptions or force me to consider edge cases and operational realities.`;
+
+            try {
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API call failed with status: ${response.status}`);
+                const result = await response.json();
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    setGeminiResponse({ loading: false, text: result.candidates[0].content.parts[0].text, error: null, type: type });
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+            } catch (error) {
+                console.error("Gemini API error:", error);
+                setGeminiResponse({ loading: false, text: '', error: `Failed to generate ${type}. Please try again.`, type: type });
+            }
+        };
+
+        return (
+            <Card>
+                <h2 className="text-3xl font-bold mb-4">Module 5: E5 Interview Scenarios & Follow-ups</h2>
+                <p className="mb-6">Select an architectural pattern to see a detailed breakdown and practice answering tough follow-up questions.</p>
+                
+                <div className="mb-6">
+                    <label htmlFor="scenario-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select an Architectural Pattern:</label>
+                    <select 
+                        id="scenario-category" 
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        value={activeCategory}
+                        onChange={(e) => {
+                            setActiveCategory(e.target.value);
+                            setGeminiResponse({ loading: false, text: '', error: null, type: null });
+                        }}
+                    >
+                        {Object.keys(scenarioCategories).map(q => <option key={q}>{q}</option>)}
+                    </select>
+                </div>
+
+                {activeCategory && (
+                    <div className="border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6">
+                        <h3 className="text-2xl font-bold text-indigo-800 dark:text-indigo-200 mb-2">{activeCategory}</h3>
+                        <p className="text-sm italic text-indigo-600 dark:text-indigo-400 mb-4">e.g., {scenarioCategories[activeCategory].examples.join(', ')}</p>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200">Architectural Choices & Trade-offs</h4>
+                                <ul className="list-disc list-inside mt-2 space-y-1">
+                                    <li><strong>Primary Choice:</strong> <Highlight color="green">{scenarioCategories[activeCategory].primaryChoice}</Highlight></li>
+                                    <li><strong>Secondary Choice:</strong> <Highlight color="yellow">{scenarioCategories[activeCategory].secondaryChoice}</Highlight></li>
+                                </ul>
+                                <p className="text-gray-700 dark:text-gray-300 mt-2">{scenarioCategories[activeCategory].tradeOffs}</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200">E5-Level Discussion Points</h4>
+                                <div className="space-y-3 mt-2">
+                                    {scenarioCategories[activeCategory].e5Points.map((track, i) => (
+                                        <div key={i} className="flex items-start">
+                                            <span className="text-indigo-500 mr-3 mt-1">&#10148;</span>
+                                            <p className="text-gray-600 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: track.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-sm">$1</code>') }}></p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="mt-6 border-t dark:border-gray-700 pt-6">
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Interview Simulation</h4>
+                                <div className="flex flex-wrap gap-4">
+                                    <GeminiButton onClick={() => handleGenerate('analogy')} loading={geminiResponse.loading && geminiResponse.type === 'analogy'}>
+                                       ✨ Generate Analogy
+                                    </GeminiButton>
+                                    <GeminiButton onClick={() => handleGenerate('followup')} loading={geminiResponse.loading && geminiResponse.type === 'followup'}>
+                                       ✨ Ask a Follow-up
+                                    </GeminiButton>
+                                </div>
+                                {geminiResponse.text && (
+                                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                                        <p className="font-semibold text-yellow-800 dark:text-yellow-200">{geminiResponse.type === 'analogy' ? 'Analogy:' : 'Interviewer\'s Follow-up:'}</p>
+                                        <p className="mt-2 text-yellow-700 dark:text-yellow-300 whitespace-pre-wrap">{geminiResponse.text}</p>
+                                    </div>
+                                )}
+                                {geminiResponse.error && <p className="mt-2 text-sm text-red-500">{geminiResponse.error}</p>}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Card>
+        );
+    };
+
+    const CheatSheetModule = () => {
+        const [activeTech, setActiveTech] = useState(null);
+        
+        const cheatSheetData = {
+            'Kafka': {
+                identity: 'A distributed, partitioned, replicated commit log service.',
+                concepts: {
+                    'Partitions': 'The core unit of parallelism. Ordering is guaranteed only within a partition.',
+                    'Consumer Groups': 'Allows a group of consumers to share work by consuming from different partitions of a topic.',
+                    'Offsets': 'A unique, sequential ID for each message within a partition that consumers use to track their position.',
+                    'Log Compaction': 'Ensures Kafka retains at least the last known value for each message key within a log partition.',
+                    'KRaft/Zookeeper': 'The consensus protocol used for metadata management and leader election (KRaft is the modern replacement for Zookeeper).'
+                },
+                strengths: ['Extreme Throughput (1M+ msgs/sec)', 'High Durability & Replayability', 'Rich Ecosystem (Connect, Streams)'],
+                pitfalls: ['High Operational Complexity', 'Higher Latency than In-Memory Queues', '"Stop-the-world" Rebalances'],
+                antiPatterns: ['RPC-style request/reply', 'Simple tasks where SQS is cheaper/easier']
+            },
+            'RabbitMQ': {
+                identity: 'A flexible, multi-protocol message broker focused on complex routing.',
+                concepts: {
+                    'Exchanges': 'Receives messages from producers and pushes them to queues based on routing keys, headers, or bindings.',
+                    'Bindings': 'A "link" between an exchange and a queue.',
+                    'Queues': 'The buffer that stores messages for consumers.',
+                    'AMQP Protocol': 'The Advanced Message Queuing Protocol, the default protocol for RabbitMQ, providing robust messaging features.',
+                    'Message Acknowledgement': 'Confirms that a message has been successfully processed by a consumer.'
+                },
+                strengths: ['Complex Routing Logic (Topic, Headers)', 'Protocol Support (AMQP, MQTT, STOMP)', 'Mature Tooling & Community'],
+                pitfalls: ['Lower Throughput than Kafka', 'Clustering can be complex', 'Message ordering is not as strict as Kafka\'s partitions'],
+                antiPatterns: ['Log aggregation at massive scale', 'Long-term, replayable event storage']
+            },
+             'SQS': {
+                identity: 'A fully managed, highly scalable, and reliable point-to-point message queue service.',
+                concepts: {
+                    'Standard vs. FIFO Queues': 'Standard offers high throughput with at-least-once delivery and best-effort ordering. FIFO guarantees exactly-once processing and strict ordering, with lower throughput.',
+                    'Visibility Timeout': 'The period during which SQS prevents other consumers from receiving and processing a message.',
+                    'Dead-Letter Queue (DLQ)': 'A separate queue where messages are sent after failing processing a configured number of times.',
+                    'Long Polling': 'Reduces empty responses by waiting for a message to arrive in the queue before responding, lowering cost.'
+                },
+                strengths: ['Zero Operational Overhead', 'Virtually Infinite Scalability', 'Excellent integration with AWS ecosystem'],
+                pitfalls: ['Limited to queueing (no streaming/pub-sub logic)', 'FIFO queues have lower throughput limits', 'Can be more expensive at very high volume vs self-hosted'],
+                antiPatterns: ['High-performance computing with sub-millisecond latency needs', 'Complex routing logic']
+            }
+        };
+
+        const [tooltip, setTooltip] = useState({visible: false, text: '', x: 0, y: 0});
+        const tooltipRef = useRef(null);
+
+        const showTooltip = (e, text) => {
+            if(!tooltipRef.current) return;
+            const rect = e.target.getBoundingClientRect();
+            const tooltipRect = tooltipRef.current.getBoundingClientRect();
+            setTooltip({
+                visible: true, 
+                text, 
+                x: rect.left + (rect.width / 2) - (tooltipRect.width / 2), 
+                y: rect.top - tooltipRect.height - 5
+            });
+        };
+        const hideTooltip = () => {
+            setTooltip({visible: false, text: '', x: 0, y: 0});
+        };
+
+        return (
+            <Card>
+                <h2 className="text-3xl font-bold mb-4">Module 6: Interactive E5 Cheat Sheet</h2>
+                <p className="mb-6">Click on a technology to get the key talking points, pitfalls, and concepts you need to remember for the interview. Hover over concepts for a quick definition.</p>
+                
+                {tooltip.visible && <div ref={tooltipRef} style={{left: tooltip.x, top: tooltip.y}} className="fixed bg-gray-800 text-white text-xs rounded py-1 px-2 z-50 transition-opacity duration-300">
+                    {tooltip.text}
+                </div>}
+
+                <div className="flex justify-center gap-4 mb-6">
+                    {Object.keys(cheatSheetData).map(tech => (
+                        <button key={tech} onClick={() => setActiveTech(tech)}
+                                className={`px-6 py-3 rounded-lg font-semibold transition-all ${activeTech === tech ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                            {tech}
+                        </button>
+                    ))}
+                </div>
+                {activeTech && (
+                    <div className="p-6 border-t-4 border-indigo-500 bg-gray-50 dark:bg-gray-800/50 rounded-lg animate-fade-in">
+                        <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{activeTech}</h3>
+                        <p className="italic text-gray-600 dark:text-gray-400 mt-1">{cheatSheetData[activeTech].identity}</p>
+
+                        <div className="mt-4">
+                            <h4 className="font-semibold mb-2">Key Concepts:</h4>
+                             <div className="flex flex-wrap gap-2">
+                                {Object.entries(cheatSheetData[activeTech].concepts).map(([concept, definition]) => (
+                                    <Highlight key={concept} color="gray" className="cursor-pointer"
+                                         onMouseEnter={(e) => showTooltip(e, definition)} 
+                                         onMouseLeave={hideTooltip}>
+                                         {concept}
+                                    </Highlight>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6 mt-6">
+                            <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+                                <h4 className="font-semibold text-green-800 dark:text-green-200">Strengths / Talking Points</h4>
+                                <ul className="list-disc list-inside mt-2 space-y-1 text-sm text-green-700 dark:text-green-300">
+                                    {cheatSheetData[activeTech].strengths.map(s => <li key={s}>{s}</li>)}
+                                </ul>
+                            </div>
+                             <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
+                                <h4 className="font-semibold text-red-800 dark:text-red-200">Pitfalls / Anti-Patterns</h4>
+                                <ul className="list-disc list-inside mt-2 space-y-1 text-sm text-red-700 dark:text-red-300">
+                                    {cheatSheetData[activeTech].pitfalls.map(p => <li key={p}>{p}</li>)}
+                                     {cheatSheetData[activeTech].antiPatterns.map(p => <li key={p}>{p}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Card>
+        );
+    };
+
+    const PracticeModule = () => {
+        // Quiz state
+        const [quizScore, setQuizScore] = useState(progress.quizScores?.quiz1 || 0);
+        const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+        const [selectedAnswer, setSelectedAnswer] = useState(null);
+        const [showFeedback, setShowFeedback] = useState(false);
+    
+        const quizQuestions = [
+            { question: "For a photo upload service that needs to resize images and run content moderation, which MQ is best?", answers: ["Streaming (Kafka)", "Point-to-Point (SQS)", "Workflow Engine", "Redis Pub/Sub"], correct: 1, explanation: "This is a classic 'background job' use case. A P2P queue like SQS is perfect for decoupling the upload service from the various processing workers." },
+            { question: "For a stock trading app broadcasting real-time price updates with lowest possible latency, what's the best choice?", answers: ["Workflow Engine", "Kafka", "Redis Pub/Sub", "SQS"], correct: 2, explanation: "Redis Pub/Sub is designed for extremely low-latency fan-out and is ideal for scenarios like live notifications where some message loss is acceptable." }
+        ];
+    
+        const handleAnswer = (index) => {
+            setSelectedAnswer(index);
+            setShowFeedback(true);
+            if (index === quizQuestions[currentQuestionIndex].correct && !showFeedback) { // Only increment score on first attempt
+                 setQuizScore((s) => (s || 0) + 1);
+            }
+        };
+
+        const nextQuestion = () => {
+            setShowFeedback(false);
+            setSelectedAnswer(null);
+            if(currentQuestionIndex < quizQuestions.length - 1) {
+              setCurrentQuestionIndex(currentQuestionIndex + 1);
+            } else {
+               saveProgress({ quizScores: { ...progress.quizScores, 'quiz1': quizScore } });
+            }
+        };
+        
+        // Pipeline builder state
+        const [items, setItems] = useState([
+            {id: 1, name: 'Web Client', type: 'producer'},
+            {id: 2, name: 'SQS Queue', type: 'queue'},
+            {id: 3, name: 'Kafka Topic', type: 'stream'},
+            {id: 4, name: 'Lambda Worker', type: 'consumer'},
+        ]);
+        const [pipeline, setPipeline] = useState([]);
+        const [connections, setConnections] = useState([]);
+        const [selectedForConnection, setSelectedForConnection] = useState(null);
+        const [pipelineResult, setPipelineResult] = useState(null);
+        const dropZoneRef = useRef(null);
+
+        const handleDragStart = (e, item) => e.dataTransfer.setData('application/json', JSON.stringify(item));
+
+        const handleDrop = (e) => {
+            e.preventDefault();
+            const item = JSON.parse(e.dataTransfer.getData('application/json'));
+            const dropZoneBounds = dropZoneRef.current.getBoundingClientRect();
+            const x = e.clientX - dropZoneBounds.left;
+            const y = e.clientY - dropZoneBounds.top;
+            setPipeline([...pipeline, { ...item, instanceId: Date.now(), x, y }]);
+        };
+        
+        const handleItemClick = (itemInstance) => {
+            if (!selectedForConnection) {
+                setSelectedForConnection(itemInstance);
+            } else {
+                if(selectedForConnection.instanceId !== itemInstance.instanceId) {
+                    setConnections([...connections, {from: selectedForConnection.instanceId, to: itemInstance.instanceId}]);
+                }
+                setSelectedForConnection(null);
+            }
+        };
+
+        const checkPipelineSolution = () => {
+            const hasProducer = pipeline.some(p => p.type === 'producer');
+            const hasQueue = pipeline.some(p => p.type === 'queue');
+            const hasConsumer = pipeline.some(p => p.type === 'consumer');
+            const hasStream = pipeline.some(p => p.type === 'stream');
+
+            const producer = pipeline.find(p => p.type === 'producer');
+            const queue = pipeline.find(p => p.type === 'queue');
+            const consumer = pipeline.find(p => p.type === 'consumer');
+
+            const conn1 = connections.some(c => c.from === producer?.instanceId && c.to === queue?.instanceId);
+            const conn2 = connections.some(c => c.from === queue?.instanceId && c.to === consumer?.instanceId);
+            
+            if(hasProducer && hasQueue && hasConsumer && !hasStream && conn1 && conn2 && pipeline.length === 3) {
+                setPipelineResult({correct: true, message: "Correct! This is a solid architecture for background job processing."});
+                 saveProgress({ pipelineScores: { ...progress.pipelineScores, 'pipeline1': 100 } });
+            } else {
+                setPipelineResult({correct: false, message: "Not quite. The standard pattern is Producer -> Queue -> Consumer. Check your components and connections."});
+                saveProgress({ pipelineScores: { ...progress.pipelineScores, 'pipeline1': 0 } });
+            }
+        };
+
+
+        return (
+            <Card>
+                <h2 className="text-3xl font-bold mb-4">Module 7: Practice & Gamification</h2>
+                
+                <h3 className="text-2xl font-semibold mb-3 mt-6">Pipeline Builder</h3>
+                <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                    <p className="font-semibold mb-2">Challenge: Design an image processing pipeline.</p>
+                    <p className="text-sm mb-4">A web client uploads an image. Design a system to reliably process it in the background using a worker.</p>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="w-full md:w-1/4 p-2 border-r dark:border-gray-700">
+                             <h4 className="font-bold mb-2">Components</h4>
+                             {items.map(item => (
+                                <div key={item.id} draggable onDragStart={(e) => handleDragStart(e, item)}
+                                     className="p-2 my-1 bg-white dark:bg-gray-700 rounded shadow cursor-grab border-l-4 border-indigo-500">
+                                    {item.name}
+                                </div>
+                             ))}
+                        </div>
+                        <div ref={dropZoneRef} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}
+                             className="w-full md:w-3/4 h-80 bg-gray-100 dark:bg-gray-900 rounded-lg relative overflow-hidden">
+                            {pipeline.map(item => (
+                                <div key={item.instanceId} 
+                                     onClick={() => handleItemClick(item)}
+                                     style={{left: item.x - 50, top: item.y - 20, position: 'absolute'}}
+                                     className={`p-2 w-28 text-center text-xs bg-white dark:bg-gray-700 rounded shadow cursor-pointer border-2 ${selectedForConnection?.instanceId === item.instanceId ? 'border-green-500' : 'border-gray-300'}`}>
+                                    {item.name}
+                                </div>
+                            ))}
+                            <svg className="absolute top-0 left-0 w-full h-full" pointerEvents="none">
+                                {connections.map((conn, i) => {
+                                    const fromItem = pipeline.find(p => p.instanceId === conn.from);
+                                    const toItem = pipeline.find(p => p.instanceId === conn.to);
+                                    if(!fromItem || !toItem) return null;
+                                    return <line key={i} x1={fromItem.x} y1={fromItem.y} x2={toItem.x} y2={toItem.y} stroke="rgb(79 70 229)" strokeWidth="2" />;
+                                })}
+                            </svg>
+                        </div>
+                    </div>
+                     <div className="mt-4 flex items-center gap-4">
+                        <button onClick={checkPipelineSolution} className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Check Solution</button>
+                         <button onClick={() => {setPipeline([]); setConnections([]); setPipelineResult(null);}} className="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">Reset</button>
+                        {pipelineResult && <p className={`font-bold ${pipelineResult.correct ? 'text-green-500' : 'text-red-500'}`}>{pipelineResult.message}</p>}
+                    </div>
+                </div>
+
+                <h3 className="text-2xl font-semibold mb-3 mt-8">Scenario Quiz</h3>
+                <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                    {currentQuestionIndex < quizQuestions.length ? (
+                        <div>
+                            <p className="font-semibold mb-4">{quizQuestions[currentQuestionIndex].question}</p>
+                            <div className="space-y-2">
+                                {quizQuestions[currentQuestionIndex].answers.map((ans, i) => (
+                                    <button key={i} onClick={() => handleAnswer(i)} disabled={showFeedback} className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${ showFeedback && i === quizQuestions[currentQuestionIndex].correct ? 'border-green-500 bg-green-100 dark:bg-green-900/50' : showFeedback && i === selectedAnswer ? 'border-red-500 bg-red-100 dark:bg-red-900/50' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700' }`}>{ans}</button>
+                                ))}
+                            </div>
+                            {showFeedback && (
+                                <div className={`mt-4 p-3 rounded-lg ${selectedAnswer === quizQuestions[currentQuestionIndex].correct ? 'bg-green-100 dark:bg-green-900/50' : 'bg-red-100 dark:bg-red-900/50'}`}>
+                                    <p className="font-bold">{selectedAnswer === quizQuestions[currentQuestionIndex].correct ? 'Correct!' : 'Incorrect.'}</p>
+                                    <p className="text-sm">{quizQuestions[currentQuestionIndex].explanation}</p>
+                                    <button onClick={nextQuestion} className="mt-2 bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg hover:bg-indigo-700"> {currentQuestionIndex < quizQuestions.length - 1 ? 'Next' : 'Finish Quiz'}</button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="font-bold text-xl">Quiz Complete!</p>
+                            <p>Your score: {quizScore} / {quizQuestions.length}</p>
+                            <button onClick={() => { setCurrentQuestionIndex(0); setQuizScore(0); setSelectedAnswer(null); setShowFeedback(false); }} className="mt-4 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Try Again</button>
+                        </div>
+                    )}
+                </div>
+            </Card>
+        );
+    };
+
+
+    const renderModuleContent = () => {
+        switch (activeModule) {
+            case 'intro': return <IntroModule />;
+            case 'deepDive': return <DeepDiveModule />;
+            case 'guarantees': return <GuaranteesModule />;
+            case 'scalability': return <ScalabilityModule />;
+            case 'frameworks': return <FrameworksModule />;
+            case 'scenarios': return <ScenariosModule />;
+            case 'cheatsheets': return <CheatSheetModule />;
+            case 'practice': return <PracticeModule />;
+            default: return <IntroModule />;
+        }
+    };
+    
+    // --- Left Sidebar Navigation ---
+    const Sidebar = () => {
+        const navItems = [
+            { id: 'intro', label: 'Introduction', icon: <BookOpen/> },
+            { id: 'deepDive', label: '1. MQ Deep Dive', icon: <BookOpen/> },
+            { id: 'guarantees', label: '2. Guarantees', icon: <AlertTriangle/> },
+            { id: 'scalability', label: '3. Scalability', icon: <BookOpen/> },
+            { id: 'frameworks', label: '4. Decision Frameworks', icon: <BrainCircuit/> },
+            { id: 'scenarios', label: '5. E5 Scenarios', icon: <BrainCircuit/> },
+            { id: 'cheatsheets', label: '6. E5 Cheat Sheet', icon: <BrainCircuit/> },
+            { id: 'practice', label: '7. Practice', icon: <BrainCircuit/> },
+        ];
+
+        return (
+             <div className="w-64 bg-gray-50 dark:bg-gray-900/80 border-r border-gray-200 dark:border-gray-800/50 p-4 flex flex-col">
+                <h2 className="text-lg font-bold text-indigo-700 dark:text-indigo-400 mb-4">MQ E5 Guide</h2>
+                 <nav className="flex-grow">
+                    <ul>
+                        {navItems.map(item => (
+                            <li key={item.id}>
+                                <a href="#"
+                                   className={`flex items-center space-x-3 px-3 py-2 my-1 rounded-md text-sm font-medium transition-colors ${activeModule === item.id ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-200' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                   onClick={(e) => { e.preventDefault(); setActiveModule(item.id); }}
+                                >
+                                    {item.icon}
+                                    <span>{item.label}</span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+                 {user && <div className="text-xs text-gray-400 truncate mt-4">User ID: {user.uid}</div>}
+             </div>
+        );
+    };
+
+    // --- Main App Layout ---
+    return (
+        <div className="flex h-screen bg-white dark:bg-gray-900 font-sans text-gray-900 dark:text-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 overflow-y-auto">
+                <style>{`
+                    .animate-fade-in {
+                        animation: fadeIn 0.5s ease-in-out;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `}</style>
+                {renderModuleContent()}
+            </main>
+        </div>
+    );
+};
+
+export default App;
