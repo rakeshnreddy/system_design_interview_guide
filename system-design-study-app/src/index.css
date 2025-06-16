@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200;
+    /* Smoother font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Example: More opinionated heading styles (optional) */
+  /*
+  h1 { @apply text-4xl font-bold mb-4; }
+  h2 { @apply text-3xl font-semibold mb-3; }
+  h3 { @apply text-2xl font-semibold mb-2; }
+  */
+}
