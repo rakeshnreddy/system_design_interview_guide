@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * Renders an interactive decision tree based on provided data.
+ * Users can click through options to reach a recommendation.
+ * @param {object} props - The component props.
+ * @param {object} props.treeData - The data structure for the decision tree.
+ * @param {string} [props.treeData.title="Decision Tree"] - The title of the decision tree.
+ * @param {string} props.treeData.startNode - The key of the starting node in `treeData.nodes`.
+ * @param {object} props.treeData.nodes - An object where each key is a node ID.
+ * @param {string} props.treeData.nodes[nodeId].question - The question for the current node.
+ * @param {string} [props.treeData.nodes[nodeId].description] - Optional description for the question.
+ * @param {Array<object>} props.treeData.nodes[nodeId].options - Array of options for the current node.
+ * @param {string} props.treeData.nodes[nodeId].options[].answer - The text for the option button.
+ * @param {string} [props.treeData.nodes[nodeId].options[].description] - Optional description for the option.
+ * @param {string} [props.treeData.nodes[nodeId].options[].nextNode] - The key of the next node if this option is chosen.
+ * @param {string} [props.treeData.nodes[nodeId].options[].recommendation] - The recommendation text if this option leads to a final answer.
+ */
 function InteractiveDecisionTree({ treeData }) {
   if (!treeData || !treeData.nodes || !treeData.startNode) {
-    return <p className="text-red-500">Error: Decision tree data is invalid or missing.</p>;
+    return <p className="text-red-500 p-4">Error: Decision tree data is invalid or missing.</p>; // Added padding
   }
 
   const [currentNodeKey, setCurrentNodeKey] = useState(treeData.startNode);

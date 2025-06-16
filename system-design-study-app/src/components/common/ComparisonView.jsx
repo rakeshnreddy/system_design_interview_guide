@@ -1,8 +1,20 @@
 import React from 'react';
 
+/**
+ * Displays a comparison table for two items across multiple features.
+ * @param {object} props - The component props.
+ * @param {string} [props.comparisonTitle="Technology Comparison"] - The main title for the comparison.
+ * @param {string} [props.item1Name="Item 1"] - The name of the first item being compared.
+ * @param {string} [props.item2Name="Item 2"] - The name of the second item being compared.
+ * @param {Array<object>} props.featuresData - Array of feature objects to compare.
+ * @param {string} props.featuresData[].featureName - The name of the feature.
+ * @param {string} props.featuresData[].item1Detail - Detail for the first item for this feature.
+ * @param {string} props.featuresData[].item2Detail - Detail for the second item for this feature.
+ * @param {string} [props.summaryText] - Optional summary text to display below the table.
+ */
 function ComparisonView({ comparisonTitle, item1Name, item2Name, featuresData, summaryText }) {
   if (!featuresData || featuresData.length === 0) {
-    return <p className="text-red-500">No comparison data available.</p>;
+    return <p className="text-red-500 p-4">No comparison data available.</p>; // Added padding for consistency
   }
 
   return (

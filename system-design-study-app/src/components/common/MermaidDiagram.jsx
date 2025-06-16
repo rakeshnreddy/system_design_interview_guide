@@ -19,6 +19,12 @@ mermaid.initialize({
   // }
 });
 
+/**
+ * Renders a Mermaid diagram from a string definition.
+ * @param {object} props - The component props.
+ * @param {string} props.diagramDefinition - The Mermaid diagram definition string.
+ * @param {string} [props.diagramId] - An optional unique ID for the diagram. If not provided, a random one will be generated.
+ */
 const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const containerRef = useRef(null);
   // Ensure diagramId is always a string and valid for DOM IDs

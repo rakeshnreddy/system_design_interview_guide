@@ -2,8 +2,12 @@ import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 function ScenariosView({ appData }) {
-  if (!appData || !appData.scenarios) {
-    return <Typography>Loading scenario data...</Typography>;
+  if (!appData) {
+    return <Typography className="p-4">Loading scenario data...</Typography>;
+  }
+
+  if (!appData.scenarios || appData.scenarios.length === 0) {
+    return <Typography className="p-4">No load balancing scenario data available.</Typography>;
   }
 
   return (

@@ -2,8 +2,12 @@ import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 function TypesView({ appData }) {
-  if (!appData || !appData.lbTypes) {
-    return <Typography>Loading load balancer types data...</Typography>;
+  if (!appData) {
+    return <Typography className="p-4">Loading load balancer types data...</Typography>;
+  }
+
+  if (!appData.lbTypes || appData.lbTypes.length === 0) {
+    return <Typography className="p-4">No load balancer type data available.</Typography>;
   }
 
   return (

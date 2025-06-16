@@ -1,5 +1,18 @@
 import React from 'react';
 
+/**
+ * A customizable button component.
+ * @param {object} props - The component props.
+ * @param {React.ReactNode} props.children - The content of the button.
+ * @param {Function} [props.onClick] - Optional click handler.
+ * @param {'primary' | 'secondary' | 'danger' | 'outline' | 'ghost'} [props.variant='primary'] - The button's style variant.
+ * @param {'sm' | 'md' | 'lg'} [props.size='md'] - The button's size.
+ * @param {React.ReactNode} [props.leftIcon] - Optional icon to display to the left of the children.
+ * @param {React.ReactNode} [props.rightIcon] - Optional icon to display to the right of the children.
+ * @param {string} [props.className] - Additional CSS classes to apply to the button.
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled.
+ * @param {'button' | 'submit' | 'reset'} [props.type='button'] - The button's type.
+ */
 const Button = ({
   children,
   onClick,

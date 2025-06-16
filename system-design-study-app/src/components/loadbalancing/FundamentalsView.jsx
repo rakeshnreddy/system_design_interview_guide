@@ -2,8 +2,8 @@ import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 function FundamentalsView({ appData }) {
-  if (!appData || !appData.metrics || !appData.terminology) {
-    return <Typography>Loading data...</Typography>;
+  if (!appData) {
+    return <Typography className="p-4">Loading data...</Typography>;
   }
 
   return (
@@ -17,9 +17,12 @@ function FundamentalsView({ appData }) {
           Key Metrics
         </Typography>
         <List>
-          {appData.metrics.map((metric) => (
-            <React.Fragment key={metric.id}>
-              <ListItem>
+          {!appData.metrics || appData.metrics.length === 0 ? (
+            <ListItem><ListItemText primary="No metrics data available." /></ListItem>
+          ) : (
+            appData.metrics.map((metric) => (
+              <React.Fragment key={metric.id}>
+                <ListItem>
                 <ListItemText
                   primary={metric.name}
                   secondary={metric.description}
@@ -36,9 +39,12 @@ function FundamentalsView({ appData }) {
           Core Terminology
         </Typography>
         <List>
-          {appData.terminology.map((term) => (
-            <React.Fragment key={term.term}>
-              <ListItem>
+          {!appData.terminology || appData.terminology.length === 0 ? (
+            <ListItem><ListItemText primary="No terminology data available." /></ListItem>
+          ) : (
+            appData.terminology.map((term) => (
+              <React.Fragment key={term.term}>
+                <ListItem>
                 <ListItemText
                   primary={term.term}
                   secondary={term.definition}
