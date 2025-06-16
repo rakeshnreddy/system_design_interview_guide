@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Guide to Database Selection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* A lighter, professional blue-gray */
+            color: #1e293b; /* slate-800 */
+        }
+        .db-section {
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .db-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .sticky-nav a {
+            transition: all 0.2s ease-in-out;
+            border-left: 3px solid transparent;
+        }
+        .sticky-nav a.active {
+            border-left-color: #4f46e5; /* indigo-600 */
+            background-color: #eef2ff; /* indigo-50 */
+            color: #3730a3; /* indigo-800 */
+            transform: translateX(4px);
+        }
+        .tradeoff-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+        .signal-card {
+            background-color: #f1f5f9;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .accordion-button {
+            transition: background-color 0.2s ease;
+        }
+        .accordion-content {
+            overflow: hidden;
+        }
+        .ai-answer-box {
+             background-color: #eef2ff;
+             border: 1px dashed #c7d2fe;
+             border-radius: 0.5rem;
+             padding: 1rem;
+             margin-top: 1rem;
+             font-size: 0.9rem;
+             color: #3730a3;
+        }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+    <div class="max-w-screen-xl mx-auto flex">
+        <!-- Sticky Sidebar Navigation -->
+        <aside class="w-1/4 hidden lg:block sticky top-0 h-screen py-12 pr-8">
+            <nav class="flex flex-col space-y-2 sticky-nav">
+                <h3 class="font-bold text-lg mb-4 text-slate-900">Navigation</h3>
+                <a href="#intro" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">The First Question</a>
+                <h3 class="font-bold text-lg mt-4 mb-2 text-slate-900">Database Categories</h3>
+                <a href="#sql" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Relational (SQL)</a>
+                <a href="#key-value" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Key-Value Stores</a>
+                <a href="#wide-column" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Wide-Column Stores</a>
+                <a href="#document" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Document Databases</a>
+                <a href="#search" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Search Indexes</a>
+                <a href="#graph" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Graph Databases</a>
+                <a href="#polyglot" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">Putting It All Together</a>
+                <a href="#ai-simulator" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-r-lg">AI Interview Simulator</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="w-full lg:w-3/4 p-4 md:p-8 lg:p-12">
+
+            <header class="mb-12">
+                <h1 class="text-4xl font-extrabold text-slate-900">Database Deep Dive: A Reverse Mapping</h1>
+                <p class="mt-4 text-lg text-slate-600">The expert's guide to choosing a database in a system design interview. Start with the database type to master its core trade-offs and ideal use cases.</p>
+            </header>
+
+            <!-- 0. Intro Visual -->
+            <section id="intro" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">The First Question You Must Answer</h2>
+                <p class="text-slate-600 mb-6">Every database discussion starts with the CAP Theorem. Your choice between Consistency and Availability dictates your path.</p>
+                <div class="bg-slate-50 p-6 rounded-lg">
+                    <div class="text-center font-bold text-slate-700">Distributed System</div>
+                    <div class="flex justify-center"><div class="h-8 w-px bg-slate-400"></div></div>
+                    <div class="text-center font-bold text-slate-700">Must have Partition Tolerance (P)</div>
+                    <div class="flex justify-center"><div class="h-8 w-px bg-slate-400"></div></div>
+                    <div class="flex justify-center">
+                        <svg width="200" height="50">
+                            <line x1="0" y1="25" x2="100" y2="0" stroke="#94a3b8" stroke-width="2"/>
+                            <line x1="100" y1="0" x2="200" y2="25" stroke="#94a3b8" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 rounded-lg bg-blue-50 border border-blue-200">
+                             <h3 class="font-bold text-blue-800">Choose Consistency (CP)</h3>
+                             <p class="text-sm text-blue-700 mt-1">Correctness over availability. Better to return an error than wrong data.</p>
+                             <div class="mt-3 font-mono text-xs text-blue-600">&#8594; SQL, Graph DBs</div>
+                        </div>
+                        <div class="text-center p-4 rounded-lg bg-green-50 border border-green-200">
+                             <h3 class="font-bold text-green-800">Choose Availability (AP)</h3>
+                             <p class="text-sm text-green-700 mt-1">Uptime over perfect consistency. Better to be online with stale data.</p>
+                             <div class="mt-3 font-mono text-xs text-green-600">&#8594; Key-Value, Document, Wide-Column</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. Relational (SQL) -->
+            <section id="sql" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">1. Relational Databases (SQL)</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">Organizes data into tables with predefined schemas. The gold standard for reliability and data integrity, using Structured Query Language (SQL) and enforcing ACID transactions.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">PostgreSQL</span>
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">MySQL</span>
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">MS SQL Server</span>
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">Oracle DB</span>
+                                 <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">MariaDB</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg><p class="mt-2 text-xs font-semibold">Transactions</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg><p class="mt-2 text-xs font-semibold">Structured Data</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><p class="mt-2 text-xs font-semibold">Complex Joins</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Fortress of Consistency</h4>
+                            <p class="text-sm text-slate-500 mt-2">SQL databases are like a fortress. They provide immense strength, protection, and integrity (ACID) for the data inside. Everything is structured and predictable.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Scaling Challenge</h4>
+                             <p class="text-sm text-slate-500 mt-2">But expanding a fortress is hard. You can build the walls higher (vertical scaling), but building a whole new fortress and connecting it (horizontal scaling/sharding) is a massive, complex project.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- E5 DEEP DIVE ACCORDION -->
+                <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. Advanced Data Modeling (Normalization)</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"We'll start with a normalized schema (likely 3NF) to ensure data integrity and minimize redundancy. This means using foreign keys to link tables like `users`, `orders`, and `products`. For a many-to-many relationship, like `products` and `order_items`, we'll use a join table. This is the correct default for transactional data."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. Scalability & Performance Patterns</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"To scale reads, we'll implement **Read Replicas**. The primary node handles all writes, which are then asynchronously replicated to one or more read-only replicas. This offloads read traffic. For write scaling, we'll need to consider **Sharding** (horizontal partitioning), likely by `customer_id`. This introduces complexity, like losing cross-shard transaction guarantees, which we must handle in the application. We must also consider our sharding key carefully to avoid **hot spots**."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Consistency & Concurrency</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"The database provides ACID guarantees, but we should be specific. Most modern SQL DBs use **MVCC (Multi-Version Concurrency Control)**, which gives each transaction a snapshot of the data, allowing reads and writes to not block each other, improving concurrency. We will likely use the default `READ COMMITTED` **isolation level**, but for critical operations like transferring funds, we might need to elevate to `SERIALIZABLE` to prevent phantom reads, at a performance cost."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 4 ? 0 : 4)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>4. Operational Excellence</span><svg :class="{'rotate-180': open === 4}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 4"><div class="p-4 pt-0"><p class="text-slate-600">"We need a robust **backup and restore** strategy, likely using point-in-time recovery (PITR). We'll monitor key metrics like query latency, connection pooling, and index hit rates. Using a **managed service** like AWS RDS or Google Cloud SQL is preferable to offload the operational burden of patching, backups, and managing replicas, though it comes at a higher direct cost than self-hosting."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-sql" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., Explain MVCC in more detail"><button onclick="handleAIQuery('sql')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-sql" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>E-commerce & Financial Systems:</strong> The <span class="font-semibold text-green-700">Primary</span> choice.</li>
+                        <li><strong>File Storage & Collaboration (Dropbox):</strong> <span class="font-semibold text-green-700">Primary</span> choice for metadata.</li>
+                        <li><strong>On-Demand Services (Uber):</strong> <span class="font-semibold text-green-700">Primary</span> choice for trip state.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- 2. Key-Value Stores -->
+            <section id="key-value" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">2. Key-Value Stores</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">The simplest NoSQL model. Stores data as a dictionary or hash map. Optimized for fetching a value using a single key, providing extreme low latency and massive horizontal scalability.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">Redis</span>
+                                <span class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">Amazon DynamoDB</span>
+                                <span class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">Memcached</span>
+                                <span class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">Riak</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg><p class="mt-2 text-xs font-semibold">Simple Lookups</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg><p class="mt-2 text-xs font-semibold">Extreme Speed</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><p class="mt-2 text-xs font-semibold">Caching Layer</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Data Superhighway</h4>
+                            <p class="text-sm text-slate-500 mt-2">Using a Key-Value store is like taking a direct superhighway. You provide the key (the destination address) and you get the value back at maximum speed. It's point-to-point and incredibly efficient.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">No Scenic Routes</h4>
+                             <p class="text-sm text-slate-500 mt-2">The trade-off is that there are no other routes. You cannot ask "find me all destinations with a blue door". You only have one way to get your data: by its exact key. Any other query requires a slow, manual search of every address.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. Advanced Data Modeling</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"Our data modeling is entirely driven by our access patterns. We need to design the keys carefully. For example, to get all items in a user's shopping cart, we can use a **composite key** like `user#123_cart`. For a URL shortener, the key is the generated hash. The value is just a blob of data; we can't query its contents. For a cache like Redis, we might use more advanced structures like **Hashes** to store user profile fields or **Sorted Sets** for a real-time leaderboard."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. Scalability & Performance Patterns</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"Scalability is native via **partitioning/sharding**. The hash of the key determines which node the data lives on. This allows for near-linear horizontal scaling. For a cache like Redis, we'd implement a **cache eviction policy** like LRU (Least Recently Used) to manage memory. A key performance consideration is avoiding **'hot keys'**—a single key receiving massive traffic, which can overload a single node."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Consistency & Concurrency</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"This is an **AP system**, so we default to eventual consistency for high availability. For a system like DynamoDB, we can choose our consistency model per-query. We can request a **strongly consistent read** for critical data, which checks a quorum of replicas at higher latency and cost. For non-critical reads, we can use a cheaper, faster **eventually consistent read**. For writes, we can use techniques like **optimistic concurrency control** with version numbers to prevent lost updates."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 4 ? 0 : 4)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>4. Operational Excellence</span><svg :class="{'rotate-180': open === 4}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 4"><div class="p-4 pt-0"><p class="text-slate-600">"Using a **managed service like DynamoDB** is a huge operational win. It handles sharding, replication, and backups for us. We just need to provision our read/write capacity units (RCUs/WCUs) and set up auto-scaling. We'd monitor for **throttled requests**, which indicates we need to provision more capacity. For Redis, we'd need to manage our own cluster or use a service like ElastiCache, and monitor memory usage and eviction rates closely."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-key-value" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., What is a 'hot key' problem?"><button onclick="handleAIQuery('key-value')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-key-value" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>Infrastructure: Distributed Cache:</strong> The <span class="font-semibold text-green-700">Primary</span> choice.</li>
+                        <li><strong>URL Shortener:</strong> The <span class="font-semibold text-green-700">Primary</span> choice.</li>
+                        <li><strong>Feed & Content Delivery:</strong> The <span class="font-semibold text-blue-700">Caching Layer</span> for pre-computed feeds.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- 3. Wide-Column Stores -->
+            <section id="wide-column" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">3. Wide-Column Stores</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">A "map of maps" (`RowKey -> (ColumnKey -> Value)`). Built for massive write throughput and high availability using a masterless, Log-Structured Merge-Tree (LSM) architecture.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">Apache Cassandra</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">Google Bigtable</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">Apache HBase</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">ScyllaDB</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><p class="mt-2 text-xs font-semibold">Massive Writes</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg><p class="mt-2 text-xs font-semibold">Time-Series Data</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg><p class="mt-2 text-xs font-semibold">High Availability</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Data Firehose</h4>
+                            <p class="text-sm text-slate-500 mt-2">Wide-column stores are built to handle a firehose of incoming data. Their LSM-tree architecture turns random writes into fast, sequential appends, making them ideal for high-velocity ingestion.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">A Purpose-Built Pipeline</h4>
+                             <p class="text-sm text-slate-500 mt-2">The data flows quickly, but only in one direction. You must design the pipeline (your schema) for your exact query. Changing the query means building a new pipeline. There are no side-roads or ad-hoc exploration.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                         <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. Advanced Data Modeling</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"This is a **query-first design**. For a chat app, our primary query is 'get recent messages for a chat'. So we model our Cassandra table with a **partition key** of `chat_id` and a **clustering key** of `message_timestamp` descending. This ensures all messages for a chat are stored together on one node, physically sorted by time. If we need another query, like 'get all messages by a user', we must create a second, **denormalized** table with `user_id` as the partition key."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. Scalability & Performance Patterns</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"The architecture is based on an **LSM-Tree**, which buffers writes in an in-memory `memtable` and then flushes them sequentially to disk as `SSTables`. This makes writes extremely fast. Over time, a background **compaction** process merges SSTables to reclaim space and improve read performance. We need to monitor compaction performance to ensure it doesn't lag. The system scales linearly by adding more nodes to the **masterless ring**."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Consistency & Concurrency</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"We have **tunable consistency** per query. With a replication factor of 3, a write with consistency `ONE` is fast but not durable. A write with `QUORUM` (needs 2/3 replicas) is a good balance of performance and durability. A write with `ALL` is too slow and brittle. Conflict resolution is typically **Last-Write-Wins (LWW)** based on timestamp, which is simple but can lead to lost data if clocks are skewed. For deletes, Cassandra writes a **tombstone**, which is a marker that can slow down reads if not properly managed by compaction."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 4 ? 0 : 4)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>4. Operational Excellence</span><svg :class="{'rotate-180': open === 4}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 4"><div class="p-4 pt-0"><p class="text-slate-600">"Running a Cassandra cluster is operationally intensive. We need to manage node repairs using a tool like **Reaper** to fix inconsistent data between replicas. We must carefully monitor disk usage, I/O, and compaction statistics. Adding new nodes is easy, but decommissioning nodes or changing the topology requires a careful, planned process. This is a system where a dedicated DevOps or SRE team is essential."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-wide-column" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., What is an LSM-Tree?"><button onclick="handleAIQuery('wide-column')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-wide-column" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                       <li><strong>Messaging Systems (WhatsApp):</strong> The <span class="font-semibold text-green-700">Primary</span> choice for message storage.</li>
+                       <li><strong>Feed & Content Delivery:</strong> <span class="font-semibold text-green-700">Primary</span> choice for storing posts or events.</li>
+                       <li><strong>Infrastructure: Ad Click Aggregator:</strong> <span class="font-semibold text-blue-700">Ingestion Tier</span> for raw clicks.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- 4. Document Databases -->
+            <section id="document" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">4. Document Databases</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">Stores data in flexible, JSON-like documents. Ideal for semi-structured data that evolves frequently, as it doesn't enforce a rigid schema. Maps naturally to objects in application code.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">MongoDB</span>
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Couchbase</span>
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Amazon DocumentDB</span>
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Firestore</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><p class="mt-2 text-xs font-semibold">JSON / Objects</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" /></svg><p class="mt-2 text-xs font-semibold">Rapid Development</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg><p class="mt-2 text-xs font-semibold">Varied Attributes</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Flexible Filing Cabinet</h4>
+                            <p class="text-sm text-slate-500 mt-2">A Document DB is like a filing cabinet where each folder (document) can hold whatever you want. One folder might have a photo and a note, the next might have three spreadsheets. This flexibility is great for evolving applications.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Cost of Redundancy</h4>
+                             <p class="text-sm text-slate-500 mt-2">The downside is redundancy. If you need to update a piece of information (like a name), you have to find and change it in every single folder it appears in. SQL's relational model avoids this problem entirely.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. Advanced Data Modeling</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"The key modeling decision is **embedding vs. referencing**. For a product catalog, we might embed the `seller_info` if it's small and read frequently with the product. This gives us single-query reads. However, for a user's `reviews`, we would use **referencing**. We'd store an array of `review_ids` in the product document and fetch them in a second query. Embedding all reviews would create bloated documents and violate MongoDB's 16MB document size limit. It's a trade-off between read performance and data duplication/document size."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. Scalability & Performance Patterns</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"We need to create **indexes** on fields we query often, just like in SQL. Without an index on `product_category`, a query would require a full collection scan, which is very slow. MongoDB scales writes via a **primary-secondary replica set**. For horizontal scaling, it uses **sharding**. We need to choose a good shard key to ensure even data distribution and avoid hot shards. For example, sharding by a sequential `order_id` is bad, but sharding by a hashed `customer_id` is good."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Consistency & Concurrency</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"MongoDB provides **ACID guarantees at the single-document level**, which covers many use cases. For multi-document transactions, it now supports them, but they are more complex and have performance overhead. For **read consistency**, we can specify a 'read concern' level (e.g., `majority` to read from a majority of replicas for durability). For **write consistency**, we can specify a 'write concern' (e.g., `w: majority`) to ensure a write is acknowledged by a majority of replicas before returning success. This is a crucial knob to tune the trade-off between performance and durability."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-document" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., Explain embedding vs referencing"><button onclick="handleAIQuery('document')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-document" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>Community & Social Platforms (Yelp):</strong> The <span class="font-semibold text-green-700">Primary</span> choice for reviews and listings.</li>
+                        <li><strong>E-commerce:</strong> <span class="font-semibold text-blue-700">Component</span> choice for the product catalog.</li>
+                        <li><strong>Content Management Systems:</strong> <span class="font-semibold text-green-700">Primary</span> choice.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 5. Search Indexes -->
+             <section id="search" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">5. Search Indexes</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">A specialized database optimized for full-text search. Uses an "inverted index" to map keywords to documents, enabling lightning-fast text queries and relevance ranking.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">Elasticsearch</span>
+                                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">OpenSearch</span>
+                                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">Apache Solr</span>
+                                <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">Algolia</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg><p class="mt-2 text-xs font-semibold">Search Bar</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V10zM15 10a1 1 0 011-1h2a1 1 0 011 1v10a1 1 0 01-1 1h-2a1 1 0 01-1-1V10z" /></svg><p class="mt-2 text-xs font-semibold">Filtering/Faceting</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg><p class="mt-2 text-xs font-semibold">Logging</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">A Book's Index</h4>
+                            <p class="text-sm text-slate-500 mt-2">A search index is like the index at the back of a textbook. Instead of reading the whole book to find a term (a full scan), you look up the term in the index and it gives you the exact pages (documents) to go to.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">Just a Copy</h4>
+                             <p class="text-sm text-slate-500 mt-2">But the index is not the book itself. It's a secondary copy of information, and it can become out of sync. If you rip a page out of the book, the index is now wrong until you update it. It is never the source of truth.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. The Inverted Index and Analyzers</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"The core of Elasticsearch is the **inverted index**. When we index a document, its text fields are passed through an **analyzer**. This analyzer **tokenizes** the text (splits it into words), converts it to lowercase, and performs **stemming** (e.g., 'running' becomes 'run'). These terms become keys in the index, pointing to the documents they appear in. This is what makes search so fast. We can customize analyzers for different languages or use cases."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. The Synchronization Problem</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"Elasticsearch is a **secondary data store**. Our source of truth is a SQL database. To keep them in sync, we can't use dual writes due to race conditions. Instead, we'll use a **Change Data Capture (CDC)** pattern. We can use a tool like Debezium to stream changes from the database's transaction log (the WAL) into a **Kafka topic**. An Elasticsearch consumer then reads from Kafka and updates the search index. This is an asynchronous but reliable pattern."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Relevance and Ranking</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"Getting relevant results is critical. By default, Elasticsearch uses a **BM25 scoring algorithm**, which is a variant of TF-IDF. It scores documents based on term frequency and how rare a term is across all documents. We can boost certain fields, like giving a higher weight to matches in the `title` versus the `description`. For an e-commerce site, we could also incorporate business signals like `sales_count` or `user_rating` into the final ranking function to further improve relevance."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-search" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., What is Change Data Capture?"><button onclick="handleAIQuery('search')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-search" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>Search & Ranking Systems:</strong> The <span class="font-semibold text-green-700">Primary</span> component.</li>
+                        <li><strong>E-commerce:</strong> <span class="font-semibold text-blue-700">Component</span> choice for product search.</li>
+                        <li><strong>Logging & Analytics:</strong> <span class="font-semibold text-green-700">Primary</span> choice for centralized logging platforms.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- 6. Graph Databases -->
+             <section id="graph" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">6. Graph Databases</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="mb-4 text-slate-600">Models data as nodes (entities) and edges (relationships). Optimized for traversing these relationships, making it incredibly fast for queries that are complex or impossible in SQL (`JOIN`-heavy queries).</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-slate-700 mb-2">Popular Examples:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-cyan-100 text-cyan-800 text-sm font-medium px-3 py-1 rounded-full">Neo4j</span>
+                                <span class="bg-cyan-100 text-cyan-800 text-sm font-medium px-3 py-1 rounded-full">Amazon Neptune</span>
+                                <span class="bg-cyan-100 text-cyan-800 text-sm font-medium px-3 py-1 rounded-full">ArangoDB</span>
+                                <span class="bg-cyan-100 text-cyan-800 text-sm font-medium px-3 py-1 rounded-full">JanusGraph</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <h4 class="font-semibold text-slate-700 mb-3 text-center">When You See This... (Key Signals)</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A6.002 6.002 0 003 21v-1a6 6 0 0112 0v1zm0 0h6" /></svg><p class="mt-2 text-xs font-semibold">"Friends of friends"</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg><p class="mt-2 text-xs font-semibold">Recommendations</p></div>
+                             <div class="signal-card"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6.364-6.364l-1.414 1.414M20.364 8.636l-1.414-1.414M12 3v2m-6.364 12.364l-1.414-1.414M20.364 15.364l-1.414 1.414M18 10a8 8 0 11-16 0 8 8 0 0116 0z" /></svg><p class="mt-2 text-xs font-semibold">Fraud Detection</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">Visualizing the Trade-off</h3>
+                    <div class="tradeoff-card grid md:grid-cols-2 gap-6 items-center">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Relationship Navigator</h4>
+                            <p class="text-sm text-slate-500 mt-2">A graph database is like a GPS for your data's relationships. It's purpose-built to find the shortest path between nodes, making complex "hop" queries effortless and incredibly fast, no matter how large the overall map gets.</p>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg text-slate-800">The Global View Problem</h4>
+                             <p class="text-sm text-slate-500 mt-2">However, it's not good at answering questions about the whole map, like "what is the average population of all cities?". For those kinds of global analytical queries that scan everything, you'd need a different tool entirely.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-10" x-data="{ open: 0 }">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">E5 Interview Deep Dive: What to Mention</h3>
+                    <div class="space-y-2">
+                         <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 1 ? 0 : 1)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>1. Advanced Data Modeling</span><svg :class="{'rotate-180': open === 1}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 1"><div class="p-4 pt-0"><p class="text-slate-600">"We will model our data using the **Property Graph Model**. Users, Posts, and Comments will be **nodes** with properties (e.g., `name`, `timestamp`). Relationships like `(User)-[:FOLLOWS]->(User)` or `(User)-[:POSTED]->(Post)` will be **edges**, which can also have properties (e.g., `timestamp`). The key is that relationships are first-class citizens, physically stored as adjacency lists. This avoids the expensive table joins you'd see in a SQL database for the same query."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 2 ? 0 : 2)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>2. Scalability & Performance Patterns</span><svg :class="{'rotate-180': open === 2}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 2"><div class="p-4 pt-0"><p class="text-slate-600">"Graph traversal performance is independent of the total number of nodes but depends on the number of connections traversed. This is called **index-free adjacency**. However, finding the starting node for a traversal requires an index on node properties, like `username`. Scaling a graph database is challenging. While read replicas are possible, sharding a graph is notoriously difficult because you might need to cut edges, leading to expensive cross-shard joins. We would rely on a managed service like Neptune or a Causal Cluster in Neo4j for scaling."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 3 ? 0 : 3)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>3. Consistency & Concurrency</span><svg :class="{'rotate-180': open === 3}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 3"><div class="p-4 pt-0"><p class="text-slate-600">"Most native graph databases are **ACID compliant** and are therefore **CP systems**. Neo4j, for example, uses a primary-secondary architecture to ensure strong consistency for writes. Reads can be served from eventually consistent read replicas to improve performance. For systems that require real-time collaboration on graph structures, we might even need to consider advanced conflict resolution strategies like **CRDTs (Conflict-free Replicated Data Types)**, though this adds significant complexity."</p></div></div></div>
+                        <div class="bg-slate-50 rounded-lg"><button @click="open = (open === 5 ? 0 : 5)" class="accordion-button w-full flex justify-between items-center p-4 font-semibold text-slate-700 hover:bg-slate-100"><span>✨ Ask a Follow-up Question</span><svg :class="{'rotate-180': open === 5}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div class="accordion-content" x-show.transition="open === 5"><div class="p-4 pt-0"><div class="flex space-x-2 mt-2"><input type="text" id="ai-input-graph" class="flex-grow border border-slate-300 rounded-md p-2" placeholder="e.g., What is index-free adjacency?"><button onclick="handleAIQuery('graph')" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Ask AI</button></div><div id="ai-answer-graph" class="mt-4"></div></div></div></div>
+                    </div>
+                </div>
+                 <div class="mt-10">
+                    <h3 class="font-bold text-xl mb-4 text-slate-800">System Design Mapping</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>Feed & Content Delivery (Social Graph):</strong> The <span class="font-semibold text-green-700">Primary</span> choice for modeling user relationships.</li>
+                        <li><strong>Community & Social Platforms (LinkedIn):</strong> The <span class="font-semibold text-green-700">Primary</span> choice for recommendations.</li>
+                        <li><strong>Fraud Detection:</strong> <span class="font-semibold text-blue-700">Component</span> choice for finding hidden patterns.</li>
+                    </ul>
+                </div>
+            </section>
+             
+            <!-- 7. Polyglot Persistence -->
+            <section id="polyglot" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Putting It All Together: Polyglot Persistence</h2>
+                <p class="text-slate-600 mb-6">A key senior-level concept. Modern systems rarely use a single database. They use the right tool for the right job, combining multiple database types. This is "Polyglot Persistence".</p>
+                <div class="bg-slate-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-slate-700 mb-4 text-center">Mind Map: An E-commerce System</h4>
+                    <div class="relative flex justify-center items-center py-10">
+                        <div class="absolute z-10 p-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg">E-commerce Platform</div>
+                        <!-- Lines to Connect -->
+                        <svg class="absolute w-full h-full" viewBox="0 0 400 200">
+                           <line x1="200" y1="100" x2="70" y2="40" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+                           <line x1="200" y1="100" x2="330" y2="40" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+                           <line x1="200" y1="100" x2="70" y2="160" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+                           <line x1="200" y1="100" x2="330" y2="160" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+                        </svg>
+                        <div class="grid grid-cols-2 gap-x-24 gap-y-12 w-full">
+                            <div class="tradeoff-card text-center p-4 transform hover:scale-105 transition-transform duration-200">
+                               <h5 class="font-bold text-blue-700">Orders & Payments</h5>
+                               <p class="text-xs mt-1 text-slate-500">Handled by <strong class="text-slate-700">Relational DB (PostgreSQL)</strong> for ACID transaction guarantees.</p>
+                            </div>
+                            <div class="tradeoff-card text-center p-4 transform hover:scale-105 transition-transform duration-200">
+                               <h5 class="font-bold text-green-700">Product Catalog</h5>
+                               <p class="text-xs mt-1 text-slate-500">Handled by <strong class="text-slate-700">Document DB (MongoDB)</strong> for flexible product attributes.</p>
+                            </div>
+                            <div class="tradeoff-card text-center p-4 transform hover:scale-105 transition-transform duration-200">
+                               <h5 class="font-bold text-red-700">Shopping Cart</h5>
+                               <p class="text-xs mt-1 text-slate-500">Handled by <strong class="text-slate-700">Key-Value Store (Redis)</strong> for fast, temporary session storage.</p>
+                            </div>
+                             <div class="tradeoff-card text-center p-4 transform hover:scale-105 transition-transform duration-200">
+                               <h5 class="font-bold text-purple-700">Product Search</h5>
+                               <p class="text-xs mt-1 text-slate-500">Handled by <strong class="text-slate-700">Search Index (Elasticsearch)</strong> for full-text search and filtering.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <p class="text-center mt-8 text-slate-600">Demonstrating this understanding—that one system uses many specialized databases—is a hallmark of a senior engineer.</p>
+                </div>
+            </section>
+
+            <!-- 8. AI Interview Simulator -->
+            <section id="ai-simulator" class="db-section mb-16 p-8 bg-white rounded-2xl shadow-lg">
+                 <h2 class="text-3xl font-bold text-slate-800 mb-2">✨ AI Interview Simulator</h2>
+                 <p class="text-slate-600 mb-6">Generate a unique system design problem tailored to a specific database category.</p>
+                 <div class="bg-slate-50 p-6 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <label for="db-type-selector" class="font-semibold text-slate-700">Select a Database Type:</label>
+                        <select id="db-type-selector" class="flex-grow border border-slate-300 rounded-md p-2">
+                            <option value="Relational (SQL)">Relational (SQL)</option>
+                            <option value="Key-Value Store">Key-Value Store</option>
+                            <option value="Wide-Column Store">Wide-Column Store</option>
+                            <option value="Document Database">Document Database</option>
+                            <option value="Search Index">Search Index</option>
+                            <option value="Graph Database">Graph Database</option>
+                        </select>
+                        <button onclick="generateScenario()" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 font-semibold">Generate Problem</button>
+                    </div>
+                    <div id="scenario-output" class="mt-6 p-4 bg-white rounded-md border border-slate-200 min-h-[150px]">
+                        <p class="text-slate-400">Your generated practice problem will appear here...</p>
+                    </div>
+                 </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.db-section');
+            const navLinks = document.querySelectorAll('.sticky-nav a');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px"});
+
+            sections.forEach(section => {
+                navObserver.observe(section);
+            });
+        });
+
+        // --- Gemini API Logic ---
+        function simpleMarkdown(text) {
+             text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+             text = text.replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
+             text = text.replace(/^\* (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
+             return text.replace(/\n/g, '<br>');
+        }
+
+        async function callGemini(prompt) {
+            const apiKey = ""; // Provided by environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) { throw new Error(`API error: ${response.statusText}`); }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    return "Sorry, I couldn't generate a response. The model's reply was empty.";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                return `An error occurred: ${error.message}. Please check the browser console.`;
+            }
+        }
+
+        async function generateScenario() {
+            const outputDiv = document.getElementById('scenario-output');
+            const dbType = document.getElementById('db-type-selector').value;
+            
+            outputDiv.innerHTML = `<p class="text-slate-500 animate-pulse">✨ Generating a scenario for you...</p>`;
+            
+            const prompt = `
+                You are a system design interviewer at a FAANG company.
+                Generate a concise, realistic system design interview problem for a senior engineer candidate (E5 level).
+                The problem's ideal solution should prominently feature the use of a "${dbType}" database.
+                The problem description should include:
+                1. A brief product overview.
+                2. Key functional requirements (3-4 bullet points).
+                3. Key non-functional requirements (e.g., scale, latency, consistency needs) that hint towards the chosen database type.
+                Do not give away the answer or mention the database type in the problem description.
+                Format the output clearly using markdown.
+            `;
+
+            const scenarioText = await callGemini(prompt);
+            outputDiv.innerHTML = simpleMarkdown(scenarioText);
+        }
+
+        async function handleAIQuery(dbCategory) {
+            const inputEl = document.getElementById(`ai-input-${dbCategory}`);
+            const answerEl = document.getElementById(`ai-answer-${dbCategory}`);
+            const userQuestion = inputEl.value.trim();
+
+            if (!userQuestion) return;
+            answerEl.innerHTML = `<p class="text-indigo-500 animate-pulse">✨ Thinking...</p>`;
+
+            const section = document.getElementById(dbCategory);
+            const contextText = section ? section.innerText : `Information about ${dbCategory} databases.`;
+
+            const prompt = `
+                You are an expert system design interviewer acting as a helpful tutor.
+                A student is studying the section on "${dbCategory}" databases and has the following question.
+                Context from the study guide:
+                ---
+                ${contextText.substring(0, 2000)} 
+                ---
+                User's Question: "${userQuestion}"
+                Provide a clear, concise, and expert answer suitable for an E5-level candidate. 
+                Focus on the core concepts and trade-offs. Start the answer directly without introductory phrases like "Certainly" or "Here is the answer". Use simple markdown like bolding for key terms.
+            `;
+            
+            const aiResponse = await callGemini(prompt);
+            answerEl.innerHTML = `<div class="ai-answer-box">${simpleMarkdown(aiResponse)}</div>`;
+            inputEl.value = '';
+        }
+    </script>
+</body>
+</html>
