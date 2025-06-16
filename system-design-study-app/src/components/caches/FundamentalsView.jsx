@@ -8,11 +8,11 @@ const FundamentalsView = ({ appData }) => {
   const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState(null);
 
-  if (!appData || !appData.metrics || !appData.terminology) {
+  // Initial check for appData
+  if (!appData) {
     return (
       <div className="p-4 text-center">
         <p className="text-lg text-neutral-600 dark:text-neutral-400">Loading fundamentals data...</p>
-        {/* Optionally, add a spinner or more elaborate loading state here */}
       </div>
     );
   }
@@ -35,9 +35,12 @@ const FundamentalsView = ({ appData }) => {
       </div>
 
       <div id="metrics-container" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {appData.metrics.map(metric => (
-          <Card
-            key={metric.id}
+        {!appData.metrics || appData.metrics.length === 0 ? (
+          <p className="text-neutral-500 dark:text-neutral-400 col-span-full text-center py-4">No metrics data available.</p>
+        ) : (
+          appData.metrics.map(metric => (
+            <Card
+              key={metric.id}
             className="hover:shadow-xl cursor-pointer transform hover:-translate-y-1 transition-all duration-200 ease-in-out flex flex-col"
             onClick={() => openMetricModal(metric)}
             padding="p-4"
@@ -58,12 +61,16 @@ const FundamentalsView = ({ appData }) => {
         <div>
           <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-6">Core Terminology</h2>
           <dl id="terminology-list" className="space-y-4">
-            {appData.terminology.map(item => (
-              <div key={item.term}>
-                <dt className="font-semibold text-xl text-neutral-700 dark:text-neutral-200">{item.term}</dt>
+            {!appData.terminology || appData.terminology.length === 0 ? (
+              <p className="text-neutral-500 dark:text-neutral-400">No terminology data available.</p>
+            ) : (
+              appData.terminology.map(item => (
+                <div key={item.term}>
+                  <dt className="font-semibold text-xl text-neutral-700 dark:text-neutral-200">{item.term}</dt>
                 <dd className="text-base text-neutral-600 dark:text-neutral-300 mt-1 ml-2" dangerouslySetInnerHTML={{ __html: item.definition }}></dd>
-              </div>
-            ))}
+                </div>
+              ))
+            )}
           </dl>
         </div>
       </Card>

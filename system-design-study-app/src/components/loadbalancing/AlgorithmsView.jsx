@@ -2,8 +2,12 @@ import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 function AlgorithmsView({ appData }) {
-  if (!appData || !appData.algorithms) {
+  if (!appData) {
     return <Typography>Loading algorithm data...</Typography>;
+  }
+
+  if (!appData.algorithms || appData.algorithms.length === 0) {
+    return <Typography className="p-4">No load balancing algorithm data available.</Typography>;
   }
 
   return (

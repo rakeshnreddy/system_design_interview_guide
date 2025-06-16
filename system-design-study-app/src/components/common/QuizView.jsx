@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * Renders an interactive quiz component.
+ * @param {object} props - The component props.
+ * @param {string} props.quizTitle - The title of the quiz.
+ * @param {Array<object>} props.questions - An array of question objects.
+ * @param {string} props.questions[].id - Unique ID for the question.
+ * @param {string} props.questions[].text - The question text.
+ * @param {Array<object>} props.questions[].options - Array of option objects for the question.
+ * @param {string} props.questions[].options[].id - Unique ID for the option.
+ * @param {string} props.questions[].options[].text - Text for the option.
+ * @param {string} props.questions[].correctOptionId - The ID of the correct option.
+ * @param {string} props.questions[].explanation - Explanation shown after answering.
+ */
 function QuizView({ quizTitle, questions }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({}); // { questionId: selectedOptionId }

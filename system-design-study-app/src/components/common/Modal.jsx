@@ -1,6 +1,16 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
+/**
+ * A reusable modal dialog component that renders its children into a portal.
+ * Handles Escape key press for closing and manages body overflow.
+ * @param {object} props - The component props.
+ * @param {boolean} props.isOpen - Whether the modal is currently open.
+ * @param {Function} props.onClose - Function to call when the modal should be closed.
+ * @param {string} [props.title="Modal Title"] - The title displayed in the modal header.
+ * @param {React.ReactNode} props.children - The content to display inside the modal body.
+ * @param {'sm' | 'md' | 'lg' | 'xl' | '2xl'} [props.size='md'] - The size of the modal.
+ */
 const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   useEffect(() => {
     const handleEscape = (event) => {

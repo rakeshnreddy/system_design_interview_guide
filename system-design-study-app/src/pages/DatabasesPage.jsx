@@ -1,134 +1,99 @@
 // src/pages/DatabasesPage.jsx
-import React, { useState, useEffect, useRef } from 'react';
-// Import section components once they are created
-// import StickySidebarDB from '../components/databases/StickySidebarDB';
-// import SectionIntroDB from '../components/databases/SectionIntroDB';
-// ... other section imports
-import Card from '../components/common/Card'; // Already exists
-import StickySidebarDB from '../components/databases/StickySidebarDB';
+import React, { Suspense, lazy } from 'react'; // Removed useState, useEffect, useRef
+import { Typography, CircularProgress } from '@mui/material'; // For fallback
+import TopicPageLayout from '../components/common/TopicPageLayout';
+import StickySidebarDB from '../components/databases/StickySidebarDB'; // Will be passed to layout
+import { databasesAppData } from '../data/databasesAppData'; // Assuming this will be the source of truth
 
-// IMPORTANT: User must provide their Gemini API key here for AI features in SectionAiSimulatorDB
-const GEMINI_API_KEY = "AIzaSyBFYfB6q6jTlXchN0t24-8THXXxXUn-ehU";
+// Import section components - these will become "views"
+// For a true view-switching model, each should be prepared to be the main content of the page.
+// The current structure of DatabasesPage renders all sections linearly and uses scroll-spy.
+// This will change to rendering ONE section component at a time based on currentView.
 
-// Placeholder components until actual ones are created and imported
-// const StickySidebarDBPlaceholder = ({ sections, activeSection, onNavClick }) => ( ... ); // Removed
+const SectionIntroDB = lazy(() => import('../components/databases/SectionIntroDB'));
+const SectionSqlDB = lazy(() => import('../components/databases/SectionSqlDB'));
+const SectionKeyValueDB = lazy(() => import('../components/databases/SectionKeyValueDB'));
+const SectionWideColumnDB = lazy(() => import('../components/databases/SectionWideColumnDB'));
+const SectionDocumentDB = lazy(() => import('../components/databases/SectionDocumentDB'));
+const SectionSearchDB = lazy(() => import('../components/databases/SectionSearchDB'));
+const SectionGraphDB = lazy(() => import('../components/databases/SectionGraphDB'));
+const SectionPolyglotDB = lazy(() => import('../components/databases/SectionPolyglotDB'));
+const SectionReplicationDB = lazy(() => import('../components/databases/SectionReplicationDB'));
+const SectionSummaryDB = lazy(() => import('../components/databases/SectionSummaryDB'));
+// SectionAiSimulatorDB is removed as AI modal is part of TopicPageLayout now.
+// If specific AI interactions are needed per section, that's a different pattern.
 
-const SectionPlaceholder = ({ title, id, children }) => (
-    <Card padding="p-6 md:p-8" shadow="shadow-lg" id={id} className="mb-12 md:mb-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-primary dark:text-primary-light mb-4">{title}</h2>
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
-            {children || <p>Content for this section will be populated by the actual component: <code className="text-sm bg-neutral-200 dark:bg-neutral-700 p-1 rounded">{`Section${id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, '')}DB.jsx`}</code></p>}
-        </div>
-    </Card>
-);
+// Mapping IDs to components for the render function
+// This is a conceptual shift from the original scroll-spy page.
+// Each 'section' is now a distinct 'view'.
+const viewComponentsMap = {
+  'intro': SectionIntroDB,
+  'sql': SectionSqlDB,
+  'key-value': SectionKeyValueDB,
+  'wide-column': SectionWideColumnDB,
+  'document': SectionDocumentDB,
+  'search': SectionSearchDB,
+  'graph': SectionGraphDB,
+  'polyglot': SectionPolyglotDB,
+  'replication': SectionReplicationDB,
+  'summary': SectionSummaryDB,
+  // 'ai-simulator' view is removed
+};
 
-// Temporary placeholders for actual section components
-import SectionIntroDB from '../components/databases/SectionIntroDB';
-import SectionSqlDB from '../components/databases/SectionSqlDB';
-import SectionKeyValueDB from '../components/databases/SectionKeyValueDB';
-import SectionWideColumnDB from '../components/databases/SectionWideColumnDB';
-import SectionDocumentDB from '../components/databases/SectionDocumentDB';
-import SectionSearchDB from '../components/databases/SectionSearchDB';
-import SectionGraphDB from '../components/databases/SectionGraphDB';
-import SectionPolyglotDB from '../components/databases/SectionPolyglotDB';
-import SectionReplicationDB from '../components/databases/SectionReplicationDB';
-// Removed duplicate SectionReplicationDB import
-import SectionSummaryDB from '../components/databases/SectionSummaryDB';
-import SectionAiSimulatorDB from '../components/databases/SectionAiSimulatorDB';
+// This function will be passed to TopicPageLayout
+const renderDatabasesView = (currentView, data) => {
+  // data prop is available if needed for any view, but views here import their own specifics or use appData
+  const ViewComponent = viewComponentsMap[currentView] || viewComponentsMap['intro']; // Fallback to intro
+
+  // The individual section components (SectionIntroDB etc.) are expected to use databasesAppData directly
+  // or be refactored to accept parts of it if this page were to manage all data loading.
+  // For now, assuming they access databasesAppData or are self-contained.
+  // We pass appData down in case any view is refactored to use it.
+  return <ViewComponent appData={data} />;
+};
+
+// Sidebar sections for StickySidebarDB. It now needs to map to view IDs.
+const sidebarSections = [
+    { id: 'intro', title: 'Introduction' }, // Adjusted title for consistency if needed
+    { id: 'sql', title: 'Relational (SQL)' },
+    { id: 'key-value', title: 'Key-Value Stores' },
+    { id: 'wide-column', title: 'Wide-Column Stores' },
+    { id: 'document', title: 'Document Databases' },
+    { id: 'search', title: 'Search Indexes' },
+    { id: 'graph', title: 'Graph Databases' },
+    { id: 'polyglot', title: 'Polyglot Persistence' }, // Adjusted title
+    { id: 'replication', title: 'Data Replication' },
+    { id: 'summary', title: 'DB Comparison Summary' },
+    // No 'ai-simulator' in sidebar as it's a global FAB now
+];
 
 
-const DatabasesPage = () => {
-  const [activeSection, setActiveSection] = useState('intro');
-  const sectionsRef = useRef({});
+function DatabasesPage() {
+  // The old scroll-spy logic and AI modal state/handlers are removed.
+  // TopicPageLayout handles view switching and the AI modal.
 
-  const [aiProblem, setAiProblem] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-
-  // Define sections with their respective (placeholder) components
-  const sectionComponents = [
-    { id: 'intro', title: 'The First Question', Component: SectionIntroDB },
-    { id: 'sql', title: 'Relational (SQL)', Component: SectionSqlDB },
-    { id: 'key-value', title: 'Key-Value Stores', Component: SectionKeyValueDB },
-    { id: 'wide-column', title: 'Wide-Column Stores', Component: SectionWideColumnDB },
-    { id: 'document', title: 'Document Databases', Component: SectionDocumentDB },
-    { id: 'search', title: 'Search Indexes', Component: SectionSearchDB },
-    { id: 'graph', title: 'Graph Databases', Component: SectionGraphDB },
-    { id: 'polyglot', title: 'Putting It All Together', Component: SectionPolyglotDB },
-    { id: 'replication', title: 'Data Replication', Component: SectionReplicationDB },
-    { id: 'summary', title: 'DB Comparison Summary', Component: SectionSummaryDB }, // Added new section
-    { id: 'ai-simulator', title: 'AI Interview Simulator', Component: SectionAiSimulatorDB, passProps: { geminiKey: GEMINI_API_KEY, isAiLoading, setIsAiLoading, aiProblem, setAiProblem } },
-  ];
-
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "-40% 0px -55% 0px", // Aim to activate when section is more in the upper-middle of viewport
-      threshold: 0,
-    };
-
-    const observerCallback = (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    const currentRefs = sectionsRef.current;
-    Object.values(currentRefs).forEach(sectionEl => {
-      if (sectionEl) observer.observe(sectionEl);
-    });
-
-    return () => {
-      Object.values(currentRefs).forEach(sectionEl => {
-        if (sectionEl) observer.unobserve(sectionEl);
-      });
-    };
-  }, []);
-
-  const handleNavClick = (sectionId) => {
-     const sectionElement = sectionsRef.current[sectionId];
-     if (sectionElement) {
-         const mainLayout = document.querySelector('main'); // Assuming Layout.jsx main content area
-         const topOffset = 80; // Approximate height of sticky header or desired offset
-
-         if (mainLayout) {
-            const elementPosition = sectionElement.offsetTop;
-            mainLayout.scrollTo({
-                top: elementPosition - topOffset,
-                behavior: 'smooth'
-            });
-         } else { // Fallback for non-main layout scroll or direct window scroll
-            const elementPosition = sectionElement.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo({
-                 top: elementPosition - topOffset,
-                 behavior: 'smooth'
-            });
-         }
-         setActiveSection(sectionId); // Update active section on click
-     }
-  };
+  // The SidebarComponent prop expects a component type.
+  // We need to pass the sections data to StickySidebarDB.
+  // TopicPageLayout's SidebarComponent prop will receive currentView and setCurrentView.
+  // StickySidebarDB needs to be adapted to use these.
+  const SidebarComponentWithProps = (props) => (
+    <StickySidebarDB
+      sections={sidebarSections}
+      currentView={props.currentView} // currentView from TopicPageLayout
+      setCurrentView={props.setCurrentView} // setCurrentView from TopicPageLayout
+    />
+  );
 
   return (
-    <div className="flex flex-1 bg-neutral-50 dark:bg-neutral-900"> {/* Base page background */}
-      <StickySidebarDB
-         sections={sectionComponents.map(s => ({id: s.id, title: s.title}))}
-         activeSection={activeSection}
-         onNavClick={handleNavClick}
-     />
-      <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}> {/* Main content area should scroll */}
-        <div className="max-w-4xl mx-auto"> {/* Content column */}
-          {sectionComponents.map(({ id, Component, passProps = {} }) => (
-            // Each section wrapper needs the ref for IntersectionObserver
-            // The `scroll-mt` class provides top margin when scrolled to, to not be hidden by a fixed header. Adjust value as needed.
-            <section key={id} id={id} ref={el => sectionsRef.current[id] = el} className="db-section scroll-mt-20 md:scroll-mt-24 py-8 first:pt-0 last:pb-0">
-              <Component {...passProps} />
-            </section>
-          ))}
-        </div>
-      </main>
-    </div>
+    <TopicPageLayout
+      pageTitle="Databases Deep Dive" // Updated title
+      SidebarComponent={SidebarComponentWithProps}
+      renderViewFunction={renderDatabasesView}
+      initialView="intro" // Default view for Databases
+      appData={databasesAppData} // Pass the specific appData
+      topicId="databases"
+    />
   );
-};
+}
+
 export default DatabasesPage;

@@ -1,7 +1,8 @@
 // src/components/caches/CachepediaView.jsx
 import React, { useState, useEffect } from 'react';
 import Card from '../common/Card';
-import Button from '../common/Button'; // For potential future actions
+// For potential future actions (Button is currently unused)
+// import Button from '../common/Button';
 // Radar Chart related imports - these will cause errors if chart.js and react-chartjs-2 are not installed
 import { Radar } from 'react-chartjs-2';
 import {
@@ -78,8 +79,12 @@ const CachepediaView = ({ appData }) => {
     setSelectedCache(appData.cachepedia[cacheKey]);
   };
 
-  if (!appData || !appData.cachepedia) {
+  if (!appData) {
     return <p className="p-4 text-neutral-600 dark:text-neutral-400">Loading Cachepedia data...</p>;
+  }
+
+  if (!appData.cachepedia || Object.keys(appData.cachepedia).length === 0) {
+    return <p className="p-4 text-neutral-500 dark:text-neutral-400">No Cachepedia entries available.</p>;
   }
 
   const chartOptions = {
