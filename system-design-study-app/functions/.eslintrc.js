@@ -1,5 +1,9 @@
 module.exports = {
   root: true,
+  globals: {
+    module: 'readonly',
+    exports: 'readonly',
+  },
   env: {
     es6: true,
     node: true,
@@ -20,7 +24,6 @@ module.exports = {
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
     "/generated/**/*", // Ignore generated files.
-    ".eslintrc.js", // Ignore this configuration file
   ],
   plugins: [
     "@typescript-eslint",
@@ -30,5 +33,6 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
+    'no-unused-vars': 'warn', // example of other rules you might have
   },
 };
