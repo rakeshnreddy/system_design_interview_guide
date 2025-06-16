@@ -2,64 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
-
-// --- Decision Tree Component (Simplified) ---
-const DecisionNode = ({ node, onSelect }) => {
-  if (!node) return null;
-
-  if (node.recommendation) {
-    return (
-      <Card className="bg-success/10 dark:bg-success/20 border-2 border-success dark:border-green-600" padding="p-6">
-        <h3 className="text-2xl font-semibold text-success dark:text-green-300 mb-2">Recommendation:</h3>
-        <p className="text-lg text-neutral-800 dark:text-neutral-100 leading-relaxed">{node.recommendation}</p>
-      </Card>
-    );
-  }
-
-  return (
-    <Card padding="p-6">
-      <h3 className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100 mb-4">{node.question}</h3>
-      <div className="space-y-3">
-        {node.options.map((option, index) => (
-          <Button key={index} onClick={() => onSelect(option.next)} variant="outline" size="lg" className="w-full text-left justify-start">
-            {option.answer}
-          </Button>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-const DecisionTree = ({ treeData }) => {
-  const [currentNode, setCurrentNode] = useState(null);
-
-  useEffect(() => {
-    if (treeData) {
-      setCurrentNode(treeData);
-    }
-  }, [treeData]);
-
-  const handleReset = () => {
-      setCurrentNode(treeData);
-  }
-
-  if (!treeData || Object.keys(treeData).length === 0) {
-    return <p className="text-sm text-neutral-500 dark:text-neutral-400">Decision tree data not available or empty.</p>;
-  }
-  if (!currentNode) {
-      return <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading decision tree...</p>;
-  }
-
-  return (
-    <div>
-      <DecisionNode node={currentNode} onSelect={setCurrentNode} />
-      {currentNode && currentNode.recommendation && (
-          <Button onClick={handleReset} variant="secondary" className="mt-4">Start Over</Button>
-      )}
-    </div>
-  );
-};
-
+import InteractiveDecisionTree from '../common/InteractiveDecisionTree';
+import QuizView from '../common/QuizView';
+import ComparisonView from '../common/ComparisonView'; // Import the new ComparisonView component
 
 // --- Flashcard Component (Simplified) ---
 const Flashcard = ({ card, isFlipped, onFlip }) => {
@@ -137,7 +82,11 @@ const PracticeView = ({ appData }) => {
         <p className="text-base text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
           Not sure which caching strategy fits your needs? Answer a series of questions to navigate through common decision points and arrive at a potential recommendation.
         </p>
-        <DecisionTree treeData={appData.decisionTree} />
+        {appData.decisionTree ? (
+          <InteractiveDecisionTree treeData={appData.decisionTree} />
+        ) : (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Decision tree data not available for this topic.</p>
+        )}
       </Card>
 
       <Card padding="p-6">
@@ -147,6 +96,37 @@ const PracticeView = ({ appData }) => {
         </p>
         <Flashcards flashcardsData={appData.flashcards} />
       </Card>
+
+      <Card padding="p-6">
+        <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Knowledge Quiz</h2>
+        <p className="text-base text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+          Test your understanding of key caching concepts with this short quiz.
+        </p>
+        {appData.quizData && appData.quizData.questions && appData.quizData.questions.length > 0 ? (
+          <QuizView quizTitle={appData.quizData.title} questions={appData.quizData.questions} />
+        ) : (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Quiz data not available for this topic.</p>
+        )}
+      </Card>
+
+      <Card padding="p-6">
+        <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Technology Comparisons</h2>
+        <p className="text-base text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+          Understand the trade-offs between popular caching technologies.
+        </p>
+        {appData.comparisonData && appData.comparisonData['redis-vs-memcached'] ? (
+          <ComparisonView
+            comparisonTitle={appData.comparisonData['redis-vs-memcached'].title}
+            item1Name={appData.comparisonData['redis-vs-memcached'].item1Name}
+            item2Name={appData.comparisonData['redis-vs-memcached'].item2Name}
+            featuresData={appData.comparisonData['redis-vs-memcached'].features}
+            summaryText={appData.comparisonData['redis-vs-memcached'].summary}
+          />
+        ) : (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Comparison data not available for this topic.</p>
+        )}
+      </Card>
+
        {/* Reminder about typography plugin */}
       {/* <Card><p className="text-xs text-warning">Note: For optimal text rendering, the @tailwindcss/typography plugin should be installed and configured.</p></Card> */}
     </div>

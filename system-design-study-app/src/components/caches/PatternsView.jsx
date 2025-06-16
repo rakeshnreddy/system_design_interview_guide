@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button'; // For tab controls
+import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
 
 const PatternsView = ({ appData }) => {
   const [activeTab, setActiveTab] = useState('writePatterns'); // 'writePatterns' or 'evictionPolicies'
@@ -37,10 +38,12 @@ const PatternsView = ({ appData }) => {
                   </ul>
                 </div>
               )}
-              {/* Basic flowchart placeholder - real flowcharts are complex */}
-              {pattern.name === "Write-Through" && <div className="mt-4 p-3 border border-dashed border-neutral-300 dark:border-neutral-600 rounded prose prose-sm max-w-none dark:prose-invert bg-neutral-50 dark:bg-neutral-800/50"><p className="font-mono text-center">Client → Cache → Origin DB (Simultaneous)</p></div>}
-              {pattern.name === "Write-Around" && <div className="mt-4 p-3 border border-dashed border-neutral-300 dark:border-neutral-600 rounded prose prose-sm max-w-none dark:prose-invert bg-neutral-50 dark:bg-neutral-800/50"><p className="font-mono text-center">Client → Origin DB (Cache bypassed for write)</p></div>}
-              {pattern.name === "Write-Back (Write-Behind)" && <div className="mt-4 p-3 border border-dashed border-neutral-300 dark:border-neutral-600 rounded prose prose-sm max-w-none dark:prose-invert bg-neutral-50 dark:bg-neutral-800/50"><p className="font-mono text-center">Client → Cache (Origin DB updated asynchronously)</p></div>}
+              {pattern.diagram && (
+                <MermaidDiagram
+                  diagramDefinition={pattern.diagram}
+                  diagramId={`${pattern.name.toLowerCase().replace(/\s+/g, '-')}-diagram`}
+                />
+              )}
             </Card>
           ))}
         </div>
