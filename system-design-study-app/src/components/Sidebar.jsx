@@ -3,9 +3,13 @@ import { NavLink } from 'react-router-dom';
 
 const navItems = [
   { path: '/', label: 'Home', exact: true },
+  { path: '/interview-approach', label: 'Interview Approach' }, // Added new item
   { path: '/caches', label: 'Caching Strategies' },
   { path: '/databases', label: 'Database Selection' },
   { path: '/messaging-queues', label: 'Messaging Queues' },
+  { path: '/load-balancing', label: 'Load Balancing' }, // Added new item
+  { path: '/api-design', label: 'API Design' }, // Added new item
+  { path: '/scalability-concepts', label: 'Scalability Concepts' }, // Added new item
 ];
 
 const Sidebar = () => {
