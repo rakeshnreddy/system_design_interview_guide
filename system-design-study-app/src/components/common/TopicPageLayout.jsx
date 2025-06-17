@@ -86,12 +86,12 @@ Consider performance, scalability, and cost implications of your choices.`;
       <CssBaseline /> {/* Ensures consistent baseline styling from MUI */}
       <AppBar
         position="fixed"
-        sx={(theme) => ({ // Convert to function to access theme
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          backgroundColor: alpha(theme.palette.background.default, 0.85), // Use theme background with alpha
+        sx={(theme) => ({
+          width: '100%', // Changed: AppBar takes full width of its container from Layout.jsx
+          // ml: { sm: `${drawerWidth}px` }, // REMOVED: No longer offset by topic sidebar
+          backgroundColor: alpha(theme.palette.background.default, 0.85),
           backdropFilter: 'blur(8px)',
-          boxShadow: theme.shadows[1], // Use theme shadows
+          boxShadow: theme.shadows[1],
           color: 'text.primary',
         })}
       >
@@ -145,12 +145,13 @@ Consider performance, scalability, and cost implications of your choices.`;
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          minHeight: '100vh', // Ensure it takes full viewport height
-          bgcolor: 'grey.50', // Light grey background for content area
+          minHeight: '100vh',
+          bgcolor: 'grey.50',
           '@media (prefers-color-scheme: dark)': {
-            bgcolor: 'grey.900', // Darker grey for content area in dark mode
+            bgcolor: 'grey.900',
           },
+          // Removed width calculation here; it should fill the space left by the Drawer (nav) and its parent's padding.
+          // width: { sm: `calc(100% - ${drawerWidth}px)` }, // REMOVED
         }}
       >
         <Toolbar /> {/* For spacing below the AppBar */}

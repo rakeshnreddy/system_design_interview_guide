@@ -1,11 +1,5 @@
 {
   "projects": {
     "default": "system-design-prep-guide"
-  },
-  "targets": {},
-  "etags": {
-    "system-design-prep-guide": {
-      "extensionInstances": {}
-    }
   }
 }
