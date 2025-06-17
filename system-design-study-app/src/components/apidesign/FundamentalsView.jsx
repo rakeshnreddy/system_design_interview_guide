@@ -20,17 +20,20 @@ function FundamentalsView({ appData }) {
           {!appData.metrics || appData.metrics.length === 0 ? (
             <ListItem><ListItemText primary="No metrics data available." /></ListItem>
           ) : (
-            appData.metrics.map((metric) => (
-              <React.Fragment key={metric.id}>
-                <ListItem>
-                <ListItemText
+            appData.metrics.map((metric) => { // Changed to curly brace
+              return ( // Added explicit return
+                <React.Fragment key={metric.id}>
+                  <ListItem>
+                  <ListItemText
                   primary={metric.name}
                   secondary={metric.description}
                 />
-              </ListItem>
-              <Divider component="li" />
-            </React.Fragment>
-          ))}
+                </ListItem>
+                <Divider component="li" />
+              </React.Fragment>
+              ); // Added semicolon
+            }) // Closing parenthesis for map
+          )}
         </List>
       </Paper>
 
@@ -42,17 +45,20 @@ function FundamentalsView({ appData }) {
           {!appData.terminology || appData.terminology.length === 0 ? (
             <ListItem><ListItemText primary="No terminology data available." /></ListItem>
           ) : (
-            appData.terminology.map((term) => (
-              <React.Fragment key={term.term}> {/* Assuming term.term is unique for now */}
-                <ListItem>
-                <ListItemText
+            appData.terminology.map((term) => { // Changed to curly brace
+              return ( // Added explicit return
+                <React.Fragment key={term.term}> {/* Assuming term.term is unique for now */}
+                  <ListItem>
+                  <ListItemText
                   primary={term.term}
                   secondary={term.definition}
                 />
-              </ListItem>
-              <Divider component="li" />
-            </React.Fragment>
-          ))}
+                </ListItem>
+                <Divider component="li" />
+              </React.Fragment>
+              ); // Added semicolon
+            }) // Closing parenthesis for map
+          )}
         </List>
       </Paper>
        <Typography sx={{mt: 2}} variant="body1">

@@ -38,10 +38,11 @@ const FundamentalsView = ({ appData }) => {
         {!appData.metrics || appData.metrics.length === 0 ? (
           <p className="text-neutral-500 dark:text-neutral-400 col-span-full text-center py-4">No metrics data available.</p>
         ) : (
-          appData.metrics.map(metric => (
-            <Card
-              key={metric.id}
-            className="hover:shadow-xl cursor-pointer transform hover:-translate-y-1 transition-all duration-200 ease-in-out flex flex-col"
+          appData.metrics.map(metric => { // Changed to curly brace
+            return ( // Added explicit return
+              <Card
+                key={metric.id}
+              className="hover:shadow-xl cursor-pointer transform hover:-translate-y-1 transition-all duration-200 ease-in-out flex flex-col"
             onClick={() => openMetricModal(metric)}
             padding="p-4"
           >
@@ -52,8 +53,10 @@ const FundamentalsView = ({ appData }) => {
                 "{metric.talk}"
               </p>
             )}
-          </Card>
-        ))}
+              </Card>
+            ); // Added semicolon
+          }) // Closing parenthesis for map
+        )}
       </div>
 
       <Card>
@@ -64,12 +67,14 @@ const FundamentalsView = ({ appData }) => {
             {!appData.terminology || appData.terminology.length === 0 ? (
               <p className="text-neutral-500 dark:text-neutral-400">No terminology data available.</p>
             ) : (
-              appData.terminology.map(item => (
-                <div key={item.term}>
-                  <dt className="font-semibold text-xl text-neutral-700 dark:text-neutral-200">{item.term}</dt>
-                <dd className="text-base text-neutral-600 dark:text-neutral-300 mt-1 ml-2" dangerouslySetInnerHTML={{ __html: item.definition }}></dd>
-                </div>
-              ))
+              appData.terminology.map(item => { // Changed to curly brace
+                return ( // Added explicit return
+                  <div key={item.term}>
+                    <dt className="font-semibold text-xl text-neutral-700 dark:text-neutral-200">{item.term}</dt>
+                  <dd className="text-base text-neutral-600 dark:text-neutral-300 mt-1 ml-2" dangerouslySetInnerHTML={{ __html: item.definition }}></dd>
+                  </div>
+                ); // Added semicolon
+              }) // Closing parenthesis for map
             )}
           </dl>
         </div>
