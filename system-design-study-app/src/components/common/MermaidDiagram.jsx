@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import mermaid from 'mermaid';
+// import mermaid from 'mermaid'; // Ensure this line is commented out or removed as Mermaid is loaded via CDN
 
 // Basic configuration
 // In a real app, you might want to sync this with your app's theme (light/dark)
@@ -7,17 +7,20 @@ import mermaid from 'mermaid';
 // Ensure theme is one of the valid ones: 'default', 'neutral', 'dark', 'forest', 'base' (with customThemeVariables)
 // Note: 'base' theme requires customThemeVariables to be set.
 // We'll use 'default' and let users with dark mode rely on Mermaid's own detection or future theme switching.
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'default', // or 'neutral'
-  // Example of further theme customization if needed:
-  // themeVariables: {
-  //   primaryColor: '#2563eb', // Example: blue-600
-  //   mainBkg: '#ffffff',      // Example: white
-  //   textColor: '#1f2937',    // Example: gray-800
-  //   // ... other variables
-  // }
-});
+
+// Initialize mermaid globally once, if available and not already initialized.
+if (window.mermaid && typeof window.mermaid.initialize === 'function' && !window.mermaid.isInitialized) {
+  try {
+    window.mermaid.initialize({
+      startOnLoad: false, // We will render manually
+      theme: 'default',   // or 'neutral'
+      // securityLevel: 'loose', // Consider if complex diagrams fail due to DOMPurify/XSS protection
+    });
+    window.mermaid.isInitialized = true; // Flag to prevent re-initialization
+  } catch (e) {
+    console.error("Error initializing Mermaid from global:", e);
+  }
+}
 
 /**
  * Renders a Mermaid diagram from a string definition.
@@ -31,7 +34,20 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
 
   useEffect(() => {
-    if (containerRef.current && diagramDefinition) {
+    const mermaidInstance = window.mermaid; // Use the global mermaid
+
+    if (mermaidInstance && containerRef.current && diagramDefinition) {
+      // Fallback initialization if it wasn't done during initial script load/module evaluation
+      if (typeof mermaidInstance.initialize === 'function' && !mermaidInstance.isInitialized) {
+        try {
+          mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
+          mermaidInstance.isInitialized = true;
+        } catch (e) {
+          console.error("Error re-initializing Mermaid in useEffect:", e);
+          // Potentially render an error message if initialization fails critically
+        }
+      }
+
       // Clear previous diagram before rendering a new one
       containerRef.current.innerHTML = '';
       try {
@@ -39,8 +55,7 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         // It doesn't actually render *into* this ID if a callback is used.
         // So, we create a temporary dummy element ID for this internal process.
         const tempRenderId = `render-${validDiagramId}`;
-
-        mermaid.render(tempRenderId, diagramDefinition, (svgCode) => {
+        mermaidInstance.render(tempRenderId, diagramDefinition, (svgCode) => {
           if (containerRef.current) {
             containerRef.current.innerHTML = svgCode;
             // Optional: Adjust SVG styling if needed, e.g., for responsiveness

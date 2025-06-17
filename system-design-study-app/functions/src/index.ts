@@ -33,64 +33,46 @@ interface AiFeedbackResponseData {
  * Firebase HTTPS Callable Function to get AI feedback on a system design problem solution.
  */
 export const getAiFeedback = onCall<AiFeedbackRequestData, Promise<AiFeedbackResponseData>>(
-  async (request) => {
-    logger.info("Received request for AI feedback:", {
-      data: request.data,
-      auth: request.auth ? { uid: request.auth.uid, token: "一部省略" } : "No auth"
-    });
+    async (request) => {
+      logger.info("Received request for AI feedback:", {
+        data: request.data,
+        auth: request.auth ? { uid: request.auth.uid, token: "一部省略" } : "No auth",
+      });
 
-    // Check if user is authenticated. (Optional, but good practice)
-    // if (!request.auth) {
-    //   logger.error("Authentication Error: User is not authenticated.");
-    //   throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-    // }
+      // Check if user is authenticated. (Optional, but good practice)
+      // if (!request.auth) {
+      //   logger.error("Authentication Error: User is not authenticated.");
+      //   throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
+      // }
 
-    const { topicTitle, problem, userSolution } = request.data;
+      const { topicTitle, problem, userSolution } = request.data;
 
-    // 1. Basic Validation
-    if (!topicTitle || typeof topicTitle !== "string" || topicTitle.trim() === "") {
-      logger.error("Validation Error: topicTitle is missing or invalid.", { topicTitle });
-      throw new HttpsError("invalid-argument", "The function must be called with a valid 'topicTitle' (string) argument.");
-    }
-    if (!problem || typeof problem !== "string" || problem.trim() === "") {
-      logger.error("Validation Error: problem is missing or invalid.", { problem });
-      throw new HttpsError("invalid-argument", "The function must be called with a valid 'problem' (string) argument.");
-    }
-    if (!userSolution || typeof userSolution !== "string" || userSolution.trim() === "") {
-      logger.error("Validation Error: userSolution is missing or invalid.", { userSolution });
-      throw new HttpsError("invalid-argument", "The function must be called with a valid 'userSolution' (string) argument.");
-    }
+      // 1. Basic Validation
+      if (!topicTitle || typeof topicTitle !== "string" || topicTitle.trim() === "") {
+        logger.error("Validation Error: topicTitle is missing or invalid.", { topicTitle });
+        throw new HttpsError("invalid-argument", "The function must be called with a valid 'topicTitle' (string) argument.");
+      }
+      if (!problem || typeof problem !== "string" || problem.trim() === "") {
+        logger.error("Validation Error: problem is missing or invalid.", { problem });
+        throw new HttpsError("invalid-argument", "The function must be called with a valid 'problem' (string) argument.");
+      }
+      if (!userSolution || typeof userSolution !== "string" || userSolution.trim() === "") {
+        logger.error("Validation Error: userSolution is missing or invalid.", { userSolution });
+        throw new HttpsError("invalid-argument", "The function must be called with a valid 'userSolution' (string) argument.");
+      }
 
-    // 2. Prepare Prompt for LLM (Conceptual)
-    // In a real scenario, you would construct a more sophisticated prompt.
-    const prompt = `
-      System Design Interview Practice Feedback Request:
-      Topic: ${topicTitle}
-      Problem Statement: """${problem}"""
-      User's Proposed Solution: """${userSolution}"""
+      // 2. Prepare Prompt for LLM (Conceptual)
+      // In a real scenario, you would construct a more sophisticated prompt.
 
-      As an expert system design interviewer, provide constructive feedback on the user's solution.
-      Consider the following aspects:
-      - Clarity and completeness: Does the solution address the core requirements of the problem? Is it well-explained?
-      - Technical soundness: Are the technology choices appropriate? Are there any obvious flaws, bottlenecks, or overlooked constraints?
-      - Trade-offs: Does the solution acknowledge and discuss important trade-offs (e.g., cost vs. performance, consistency vs. availability)?
-      - Scalability, Reliability, Availability: How well does the solution address these non-functional requirements?
-      - Areas for improvement: What could be done better? What alternative approaches could be considered?
-      - Strengths: What aspects of the solution are good?
-
-      Structure your feedback clearly. Be concise and actionable.
-      Limit feedback to 3-5 key points.
-    `;
-
-    // Sensitive data like the full prompt or user solution should ideally not be logged in production,
-    // or logged with appropriate PII handling if necessary for debugging during development.
-    logger.info("Constructed prompt for LLM. Length: ${prompt.length}");
+      // Sensitive data like the full prompt or user solution should ideally not be logged in production,
+      // or logged with appropriate PII handling if necessary for debugging during development.
+      logger.info("Constructed prompt for LLM. Length: ${prompt.length}");
 
 
-    // 3. Call LLM API (Mocked for now)
-    // Replace this section with actual LLM API call using its SDK.
-    // Example (conceptual using a placeholder function for Vertex AI Gemini):
-    /*
+      // 3. Call LLM API (Mocked for now)
+      // Replace this section with actual LLM API call using its SDK.
+      // Example (conceptual using a placeholder function for Vertex AI Gemini):
+      /*
     try {
       // const {VertexAI} = require('@google-cloud/vertexai');
       // const vertex_ai = new VertexAI({project: process.env.GCLOUD_PROJECT, location: 'us-central1'});
@@ -111,9 +93,9 @@ export const getAiFeedback = onCall<AiFeedbackRequestData, Promise<AiFeedbackRes
     }
     */
 
-    // Mocked Logic:
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-    const mockFeedback = `Mock AI feedback for topic '${topicTitle}':
+      // Mocked Logic:
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
+      const mockFeedback = `Mock AI feedback for topic '${topicTitle}':
 Problem was: "${problem.substring(0, 100)}..."
 Solution was: "${userSolution.substring(0, 100)}..."
 This is placeholder feedback. Real LLM integration is pending.
@@ -122,7 +104,7 @@ Key points to consider:
 2. Have you considered non-functional requirements like scalability and availability?
 3. Are your technology choices justified with clear trade-offs?`;
 
-    logger.info("Returning mock feedback.");
-    return { feedback: mockFeedback };
-  }
+      logger.info("Returning mock feedback.");
+      return { feedback: mockFeedback };
+    },
 );
