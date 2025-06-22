@@ -85,11 +85,9 @@ Consider performance, scalability, and cost implications of your choices.`;
     <Box sx={{ display: 'flex' }}>
       <CssBaseline /> {/* Ensures consistent baseline styling from MUI */}
       <AppBar
-        position="sticky"
+        position="fixed"
         sx={(theme) => ({
           width: '100%', // Changed: AppBar takes full width of its container from Layout.jsx
-          top: 0,
-          zIndex: theme.zIndex.appBar,
           // ml: { sm: `${drawerWidth}px` }, // REMOVED: No longer offset by topic sidebar
           backgroundColor: alpha(theme.palette.background.default, 0.85),
           backdropFilter: 'blur(8px)',
