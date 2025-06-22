@@ -29,6 +29,7 @@ function AlgorithmsView({ appData }) {
                 />
                 <ListItemText
                   primary={<strong>Pros:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {algo.pros.map((pro, index) => (
@@ -42,6 +43,7 @@ function AlgorithmsView({ appData }) {
                 />
                 <ListItemText
                   primary={<strong>Cons:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {algo.cons.map((con, index) => (
