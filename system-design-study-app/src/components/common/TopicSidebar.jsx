@@ -1,34 +1,31 @@
-// src/components/databases/StickySidebarDB.jsx
+// src/components/common/TopicSidebar.jsx
 import React from 'react';
-import { List, ListItem, ListItemButton, ListItemText, Typography, Toolbar } from '@mui/material'; // Import MUI components
+import { List, ListItem, ListItemButton, ListItemText, Typography, Toolbar } from '@mui/material';
 
-// Updated to accept currentView and setCurrentView
-const StickySidebarDB = ({ sections, currentView, setCurrentView }) => {
+const TopicSidebar = ({ topicTitle, sections, currentView, setCurrentView }) => {
   return (
-    // Using a div container that will be placed inside MUI Drawer
-    // Styling will be a mix of Tailwind for now, but could be fully MUI
     <div className="h-full flex flex-col">
-      <Toolbar> {/* MUI Toolbar for consistent spacing like other sidebars */}
+      <Toolbar>
         <Typography variant="h6" noWrap component="div" className="text-primary dark:text-primary-light font-semibold">
-          Database Topics
+          {topicTitle}
         </Typography>
       </Toolbar>
-      <List component="nav" className="flex-grow p-0"> {/* Use MUI List for navigation items */}
+      <List component="nav" className="flex-grow p-0">
         {sections.map(section => (
           <ListItem key={section.id} disablePadding>
             <ListItemButton
               selected={currentView === section.id}
               onClick={() => setCurrentView(section.id)}
-              sx={{ // MUI sx prop for styling
-                paddingLeft: '24px', // Indent items
+              sx={{
+                paddingLeft: '24px',
                 '&.Mui-selected': {
-                  backgroundColor: 'action.selected', // Theme-aware selected color
+                  backgroundColor: 'action.selected',
                   borderLeft: `4px solid`,
                   borderColor: 'primary.main',
                   fontWeight: 'bold',
                 },
                 '&:hover': {
-                  backgroundColor: 'action.hover', // Theme-aware hover color
+                  backgroundColor: 'action.hover',
                 }
               }}
             >
@@ -45,4 +42,4 @@ const StickySidebarDB = ({ sections, currentView, setCurrentView }) => {
     </div>
   );
 };
-export default StickySidebarDB;
+export default TopicSidebar;

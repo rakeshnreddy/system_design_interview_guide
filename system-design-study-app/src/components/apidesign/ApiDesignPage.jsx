@@ -1,10 +1,10 @@
 import React, { Suspense, lazy } from 'react';
-import { Typography, CircularProgress } from '@mui/material'; // Keep Typography for default case in renderView
-import TopicPageLayout from '../common/TopicPageLayout'; // Import the new layout
-import SidebarApiDesign from './SidebarApiDesign';
+import { CircularProgress } from '@mui/material';
+import TopicPageLayout from '../common/TopicPageLayout';
+import TopicSidebar from '../common/TopicSidebar'; // Import the new TopicSidebar
 import { apiDesignAppData } from '../../data/apiDesignAppData';
 
-// Lazy load views - these remain the same
+// Lazy load views
 const FundamentalsView = lazy(() => import('./FundamentalsView'));
 const ProtocolsView = lazy(() => import('./ProtocolsView'));
 const PatternsView = lazy(() => import('./PatternsView'));
@@ -13,9 +13,8 @@ const ScenariosView = lazy(() => import('./ScenariosView'));
 const PracticeView = lazy(() => import('./PracticeView'));
 
 // This function will be passed to TopicPageLayout
-// It now takes 'currentView' and 'data' (which will be apiDesignAppData) as arguments
 const renderApiDesignView = (currentView, data) => {
-  const commonProps = { appData: data }; // Use the passed 'data'
+  const commonProps = { appData: data };
   switch (currentView) {
     case 'fundamentals':
       return <FundamentalsView {...commonProps} />;
@@ -30,7 +29,6 @@ const renderApiDesignView = (currentView, data) => {
     case 'practice':
       return <PracticeView {...commonProps} />;
     default:
-      // This fallback can be simpler or handled by TopicPageLayout if it has a default
       return (
         <Suspense fallback={<CircularProgress />}>
           <FundamentalsView {...commonProps} />
@@ -39,15 +37,34 @@ const renderApiDesignView = (currentView, data) => {
   }
 };
 
+// Define the sections for the sidebar
+const apiDesignSidebarSections = [
+  { id: 'fundamentals', title: 'Fundamentals' },
+  { id: 'protocols', title: 'Protocols (REST, gRPC, GraphQL)' },
+  { id: 'patterns', title: 'Design Patterns' },
+  { id: 'security', title: 'Security Best Practices' },
+  { id: 'scenarios', title: 'Scenarios & Trade-offs' },
+  { id: 'practice', title: 'Practice Questions' },
+];
+
 function ApiDesignPage() {
+  const SidebarComponentWithProps = (props) => (
+    <TopicSidebar
+      topicTitle="API Design Topics" // Pass the topic title
+      sections={apiDesignSidebarSections} // Pass the sections data
+      currentView={props.currentView}
+      setCurrentView={props.setCurrentView}
+    />
+  );
+
   return (
     <TopicPageLayout
       pageTitle="API Design"
-      SidebarComponent={SidebarApiDesign}
-      renderViewFunction={renderApiDesignView} // Pass the render function
-      initialView="fundamentals" // Default view for this page
-      appData={apiDesignAppData} // Pass the specific appData
-      topicId="api-design" // Unique identifier for this topic page
+      SidebarComponent={SidebarComponentWithProps}
+      renderViewFunction={renderApiDesignView}
+      initialView="fundamentals"
+      appData={apiDesignAppData}
+      topicId="api-design"
     />
   );
 }
