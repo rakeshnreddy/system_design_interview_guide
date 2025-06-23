@@ -1,15 +1,15 @@
 import { createTheme } from '@mui/material/styles';
-import resolveConfig from 'tailwindcss/resolveConfig';
+// Removed: import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfigRaw from '../../tailwind.config.js'; // Adjusted path
 
-// Resolve the full Tailwind CSS configuration to access theme values
-const fullConfig = resolveConfig(tailwindConfigRaw);
-const twTheme = fullConfig.theme;
+// Use the 'extend' part of the Tailwind config directly
+// const fullConfig = resolveConfig(tailwindConfigRaw); // Removed
+const twTheme = tailwindConfigRaw.theme.extend; // Changed to access extend directly
 
 // Common typography and component overrides can be defined here
 const commonThemeOptions = {
   typography: {
-    fontFamily: twTheme.fontFamily.sans.join(','), // Use sans-serif stack from Tailwind
+    fontFamily: twTheme.fontFamily.sans.join(','), // Use sans-serif stack from Tailwind extend
     // Example: Define h1-h6 styles if needed, or keep MUI defaults
     // h1: { fontSize: '2.5rem', fontWeight: 700 },
   },
@@ -44,21 +44,21 @@ export const lightTheme = createTheme({
       dark: twTheme.colors.secondary.dark,
     },
     error: {
-      main: twTheme.colors.error, // Use error token from Tailwind
+      main: twTheme.colors.error.DEFAULT, // Adjusted path for error color
     },
     warning: {
-      main: twTheme.colors.warning, // Use warning token
+      main: twTheme.colors.warning, // Assuming warning is still a direct value
     },
     success: {
-      main: twTheme.colors.success, // Use success token
+      main: twTheme.colors.success, // Assuming success is still a direct value
     },
     background: {
-      default: twTheme.colors.neutral[100], // e.g., neutral-100
-      paper: twTheme.colors.neutral[50],   // e.g., neutral-50 (instead of direct white)
+      default: twTheme.colors.neutral[100],
+      paper: twTheme.colors.neutral[50],
     },
     text: {
-      primary: twTheme.colors.neutral[800],   // e.g., neutral-800
-      secondary: twTheme.colors.neutral[600], // e.g., neutral-600
+      primary: twTheme.colors.neutral[800],
+      secondary: twTheme.colors.neutral[600],
     },
   },
 });
@@ -69,27 +69,23 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      // Using lighter primary shades for dark mode main for better contrast
       main: twTheme.colors.primary.light,
-      // Using accent.light as a placeholder for an even lighter primary variant
-      // This should be refined with a dedicated 'primary.lighter' token if the color isn't suitable
       light: twTheme.colors.accent.light,
       dark: twTheme.colors.primary.DEFAULT,
     },
     secondary: {
-      // Using lighter secondary shades for dark mode main
       main: twTheme.colors.secondary.light,
-      light: twTheme.colors.secondary.DEFAULT, // This makes it lighter than 'main' here
+      light: twTheme.colors.secondary.DEFAULT,
       dark: twTheme.colors.secondary.DEFAULT,
     },
     error: {
-      main: twTheme.colors.error,
+      main: twTheme.colors.error.DEFAULT, // Adjusted path for error color
     },
     warning: {
-      main: twTheme.colors.warning,
+      main: twTheme.colors.warning, // Assuming warning is still a direct value
     },
     success: {
-      main: twTheme.colors.success,
+      main: twTheme.colors.success, // Assuming success is still a direct value
     },
     background: {
       default: twTheme.colors.neutral[900],
