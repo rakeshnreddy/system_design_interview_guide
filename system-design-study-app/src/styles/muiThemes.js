@@ -21,7 +21,7 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: (colors && colors.primary && colors.primary.DEFAULT ? colors.primary.DEFAULT : '#1976D2'),
+      main: colors.primary.DEFAULT, // Direct assignment for testing
       light: (colors && colors.primary && colors.primary.light ? colors.primary.light : '#4791db'),
       dark: (colors && colors.primary && colors.primary.dark ? colors.primary.dark : '#135ea7'),
     },
