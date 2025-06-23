@@ -31,7 +31,7 @@ const HomePage = () => {
         ))}
       </div>
 
-      <div className="mt-16 p-8 bg-white dark:bg-neutral-800 rounded-xl shadow-xl">
+      <Card padding="p-8" shadow="xl" rounded="xl" className="mt-16">
          <h3 className="text-3xl font-bold text-neutral-800 dark:text-white mb-4">Why These Guides?</h3>
          <ul className="list-disc list-inside text-left max-w-xl mx-auto text-neutral-600 dark:text-neutral-300 space-y-2">
             <li>Curated content focusing on E5/Senior Engineer level concepts.</li>

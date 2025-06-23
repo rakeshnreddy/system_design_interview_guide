@@ -18,7 +18,7 @@ function ComparisonView({ comparisonTitle, item1Name, item2Name, featuresData, s
   }
 
   return (
-    <div className="p-4 md:p-6 bg-white dark:bg-neutral-800 shadow-xl rounded-lg">
+    <Card padding="p-4 md:p-6" shadow="xl" rounded="lg">
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-primary dark:text-primary-light text-center">
         {comparisonTitle || "Technology Comparison"}
       </h2>

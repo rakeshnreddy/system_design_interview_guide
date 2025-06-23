@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
+  // Button, // MUI Button will be replaced
   TextField,
   Typography,
   Box,
@@ -12,6 +12,7 @@ import {
   IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Button from './Button'; // Import common Button
 
 /**
  * A modal dialog for AI-powered scenario practice.
@@ -93,13 +94,13 @@ function AiScenarioModal({
       </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ mb: 2 }}>
-          <Button
-            variant="outlined"
+          <Button // Common Button
+            variant="outline"
             onClick={handleGenerateProblem}
             disabled={isLoadingProblem || isLoadingFeedback}
-            fullWidth
+            className="w-full" // fullWidth equivalent
+            leftIcon={isLoadingProblem ? <CircularProgress size={20} /> : null} // Adjusted size for icon
           >
-            {isLoadingProblem ? <CircularProgress size={24} sx={{mr:1}} /> : null}
             Generate New Problem
           </Button>
         </Box>
@@ -144,15 +145,24 @@ function AiScenarioModal({
         )}
       </DialogContent>
       <DialogActions sx={{ p: '16px 24px' }}>
-        <Button onClick={onClose} color="inherit">
+        {/* Using common Button. MUI's "inherit" color for Button often means it takes on the text color of its parent.
+            Our 'outline' variant with some custom styling might achieve a similar neutral look,
+            or a new 'text' or 'ghost' variant could be added to common/Button.jsx if needed.
+            For now, using 'outline' and potentially adding classes for a more subtle look.
+        */}
+        <Button
+          onClick={onClose}
+          variant="outline" // Closest to a neutral/text button
+          className="text-neutral-700 dark:text-neutral-200 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600" // Attempt to mimic "color='inherit'"
+        >
           Cancel
         </Button>
-        <Button
+        <Button // Common Button
           onClick={handleGetFeedback}
-          variant="contained"
+          variant="primary" // 'primary' is similar to MUI's 'contained'
           disabled={isLoadingProblem || isLoadingFeedback || !userSolution.trim() || !generatedProblem}
+          leftIcon={isLoadingFeedback ? <CircularProgress size={20} color="inherit"/> : null}  // color="inherit" might not work directly, Button handles icon color via text color
         >
-          {isLoadingFeedback ? <CircularProgress size={24} sx={{mr:1}} color="inherit" /> : null}
           Get Feedback
         </Button>
       </DialogActions>
