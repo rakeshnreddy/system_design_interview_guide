@@ -173,7 +173,7 @@ const CachepediaView = ({ appData }) => {
                   Select a cache type to view characteristics chart. (Requires Chart.js to be installed)
                 </p>
               )}
-            </div>
+            </Card>
           </div>
         )}
       </Card>
