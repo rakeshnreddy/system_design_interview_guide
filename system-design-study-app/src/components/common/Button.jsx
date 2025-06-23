@@ -29,7 +29,7 @@ const Button = ({
   const variantStyles = {
     primary: 'bg-primary hover:bg-primary-dark text-white focus:ring-primary',
     secondary: 'bg-secondary hover:bg-secondary-dark text-white focus:ring-secondary',
-    danger: 'bg-error hover:bg-red-700 text-white focus:ring-error',
+    danger: 'bg-error hover:bg-error-dark text-white focus:ring-error',
     outline: 'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 text-primary dark:text-primary-light border border-primary focus:ring-primary',
     ghost: 'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 focus:ring-primary',
   };

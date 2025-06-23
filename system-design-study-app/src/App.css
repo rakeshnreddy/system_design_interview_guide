@@ -1,13 +1,10 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  @apply max-w-screen-xl mx-auto p-8 text-center;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 6em; /* Keep height as is, only padding was specified for change */
+  @apply p-6; /* 1.5em = 24px = spacing-6 */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -34,9 +31,9 @@
 }
 
 .card {
-  padding: 2em;
+  @apply p-8; /* 2em = 32px = spacing-8 */
 }
 
 .read-the-docs {
-  color: #888;
+  @apply text-neutral-400; /* #888 mapped to neutral-400 */
 }
