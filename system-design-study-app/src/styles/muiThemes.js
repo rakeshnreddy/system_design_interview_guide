@@ -1,10 +1,50 @@
 import { createTheme } from '@mui/material/styles';
-import themeTokens from './themeTokens.js'; // Changed to default import
+// import themeTokens from './themeTokens.js'; // Commented out for local definitions
+
+const colors = {
+  primary: {
+    light: '#4791db',
+    DEFAULT: '#1976D2',
+    dark: '#135ea7',
+  },
+  secondary: {
+    light: '#fbbf24',
+    DEFAULT: '#f59e0b',
+    dark: '#d97706',
+  },
+  accent: {
+    light: '#67e8f9',
+    DEFAULT: '#06b6d4',
+    dark: '#0e7490',
+  },
+  neutral: {
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#475569',
+    700: '#334155',
+    800: '#1e293b',
+    900: '#0f172a',
+  },
+  success: '#22c55e',
+  error: {
+    DEFAULT: '#ef4444',
+    dark: '#d92626',
+  },
+  warning: '#f97316',
+};
+
+const fontFamily = {
+  sans: ['Inter', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+};
 
 // Common typography and component overrides
 const commonThemeOptions = {
   typography: {
-    fontFamily: themeTokens?.fontFamily?.sans?.join(',') || '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: fontFamily?.sans?.join(',') || '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   shape: {
     borderRadius: 8,
@@ -17,31 +57,31 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: themeTokens?.colors?.primary?.DEFAULT || '#1976D2',
-      light: themeTokens?.colors?.primary?.light || '#4791db',
-      dark: themeTokens?.colors?.primary?.dark || '#135ea7',
+      main: colors?.primary?.DEFAULT || '#1976D2',
+      light: colors?.primary?.light || '#4791db',
+      dark: colors?.primary?.dark || '#135ea7',
     },
     secondary: {
-      main: themeTokens?.colors?.secondary?.DEFAULT || '#f59e0b',
-      light: themeTokens?.colors?.secondary?.light || '#fbbf24',
-      dark: themeTokens?.colors?.secondary?.dark || '#d97706',
+      main: colors?.secondary?.DEFAULT || '#f59e0b',
+      light: colors?.secondary?.light || '#fbbf24',
+      dark: colors?.secondary?.dark || '#d97706',
     },
     error: {
-      main: themeTokens?.colors?.error?.DEFAULT || '#ef4444',
+      main: colors?.error?.DEFAULT || '#ef4444',
     },
     warning: {
-      main: themeTokens?.colors?.warning || '#f97316',
+      main: colors?.warning || '#f97316',
     },
     success: {
-      main: themeTokens?.colors?.success || '#22c55e',
+      main: colors?.success || '#22c55e',
     },
     background: {
-      default: themeTokens?.colors?.neutral?.[100] || '#f3f4f6',
-      paper: themeTokens?.colors?.neutral?.[50] || '#ffffff',
+      default: colors?.neutral?.[100] || '#f3f4f6',
+      paper: colors?.neutral?.[50] || '#ffffff',
     },
     text: {
-      primary: themeTokens?.colors?.neutral?.[800] || '#1f2937',
-      secondary: themeTokens?.colors?.neutral?.[600] || '#4b5563',
+      primary: colors?.neutral?.[800] || '#1f2937',
+      secondary: colors?.neutral?.[600] || '#4b5563',
     },
   },
 });
@@ -52,31 +92,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: themeTokens?.colors?.primary?.light || '#4791db',
-      light: themeTokens?.colors?.accent?.light || '#73abdf',
-      dark: themeTokens?.colors?.primary?.DEFAULT || '#1976D2',
+      main: colors?.primary?.light || '#4791db',
+      light: colors?.accent?.light || '#73abdf',
+      dark: colors?.primary?.DEFAULT || '#1976D2',
     },
     secondary: {
-      main: themeTokens?.colors?.secondary?.light || '#fbbf24',
-      light: themeTokens?.colors?.secondary?.DEFAULT || '#fcd34d',
-      dark: themeTokens?.colors?.secondary?.DEFAULT || '#f59e0b',
+      main: colors?.secondary?.light || '#fbbf24',
+      light: colors?.secondary?.DEFAULT || '#fcd34d',
+      dark: colors?.secondary?.DEFAULT || '#f59e0b',
     },
     error: {
-      main: themeTokens?.colors?.error?.DEFAULT || '#ef4444',
+      main: colors?.error?.DEFAULT || '#ef4444',
     },
     warning: {
-      main: themeTokens?.colors?.warning || '#f97316',
+      main: colors?.warning || '#f97316',
     },
     success: {
-      main: themeTokens?.colors?.success || '#22c55e',
+      main: colors?.success || '#22c55e',
     },
     background: {
-      default: themeTokens?.colors?.neutral?.[900] || '#111827',
-      paper: themeTokens?.colors?.neutral?.[800] || '#1f2937',
+      default: colors?.neutral?.[900] || '#111827',
+      paper: colors?.neutral?.[800] || '#1f2937',
     },
     text: {
-      primary: themeTokens?.colors?.neutral?.[100] || '#f3f4f6',
-      secondary: themeTokens?.colors?.neutral?.[300] || '#d1d5db',
+      primary: colors?.neutral?.[100] || '#f3f4f6',
+      secondary: colors?.neutral?.[300] || '#d1d5db',
     },
   },
 });
