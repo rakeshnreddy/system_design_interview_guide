@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import Card from './Card'; // Import the Card component
 // import mermaid from 'mermaid'; // Ensure this line is commented out or removed as Mermaid is loaded via CDN
 
 // Basic configuration
