@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material/styles';
 
 // Remove all local 'colors', 'fontFamily' consts and imports from 'themeTokens.js'
 
-export const lightTheme = createTheme({
+const lightThemeObj = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -28,8 +28,10 @@ export const lightTheme = createTheme({
     borderRadius: 8,
   }
 });
+console.log('muiThemes.js: lightTheme object:', lightThemeObj);
+export const lightTheme = lightThemeObj;
 
-export const darkTheme = createTheme({
+const darkThemeObj = createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -54,3 +56,5 @@ export const darkTheme = createTheme({
     borderRadius: 8,
   }
 });
+console.log('muiThemes.js: darkTheme object:', darkThemeObj);
+export const darkTheme = darkThemeObj;
