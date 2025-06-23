@@ -1,13 +1,13 @@
 import { createTheme } from '@mui/material/styles';
-import tailwindConfigRaw from '../../tailwind.config.js'; // Uncommented
+import tailwindConfigRaw from '../../tailwind.config.js';
 
 // Defensively define twTheme
-const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {}; // Uncommented
+const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {};
 
 // Common typography and component overrides
 const commonThemeOptions = {
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif', // Kept Hardcoded
+    fontFamily: (twTheme.fontFamily && twTheme.fontFamily.sans ? twTheme.fontFamily.sans.join(',') : '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'),
   },
   shape: {
     borderRadius: 8,
@@ -20,31 +20,31 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976D2',       // Kept Hardcoded
-      light: '#4791db',      // Kept Hardcoded
-      dark: '#135ea7',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.DEFAULT ? twTheme.colors.primary.DEFAULT : '#1976D2'),
+      light: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.light ? twTheme.colors.primary.light : '#4791db'),
+      dark: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.dark ? twTheme.colors.primary.dark : '#135ea7'),
     },
     secondary: {
-      main: '#f59e0b',       // Kept Hardcoded
-      light: '#fbbf24',      // Kept Hardcoded
-      dark: '#d97706',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#f59e0b'),
+      light: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.light ? twTheme.colors.secondary.light : '#fbbf24'),
+      dark: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.dark ? twTheme.colors.secondary.dark : '#d97706'),
     },
     error: {
-      main: '#ef4444',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.error && twTheme.colors.error.DEFAULT ? twTheme.colors.error.DEFAULT : '#ef4444'),
     },
     warning: {
-      main: '#f97316',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.warning ? twTheme.colors.warning : '#f97316'),
     },
     success: {
-      main: '#22c55e',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.success ? twTheme.colors.success : '#22c55e'),
     },
     background: {
-      default: '#f3f4f6',    // Kept Hardcoded
-      paper: '#ffffff',       // Kept Hardcoded
+      default: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[100] ? twTheme.colors.neutral[100] : '#f3f4f6'),
+      paper: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[50] ? twTheme.colors.neutral[50] : '#ffffff'),
     },
     text: {
-      primary: '#1f2937',   // Kept Hardcoded
-      secondary: '#4b5563',  // Kept Hardcoded
+      primary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[800] ? twTheme.colors.neutral[800] : '#1f2937'),
+      secondary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[600] ? twTheme.colors.neutral[600] : '#4b5563'),
     },
   },
 });
@@ -55,31 +55,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4791db',       // Kept Hardcoded
-      light: '#73abdf',      // Kept Hardcoded
-      dark: '#1976D2',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.light ? twTheme.colors.primary.light : '#4791db'),
+      light: (twTheme.colors && twTheme.colors.accent && twTheme.colors.accent.light ? twTheme.colors.accent.light : '#73abdf'),
+      dark: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.DEFAULT ? twTheme.colors.primary.DEFAULT : '#1976D2'),
     },
     secondary: {
-      main: '#fbbf24',       // Kept Hardcoded
-      light: '#fcd34d',      // Kept Hardcoded
-      dark: '#f59e0b',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.light ? twTheme.colors.secondary.light : '#fbbf24'),
+      light: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#fcd34d'),
+      dark: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#f59e0b'),
     },
     error: {
-      main: '#ef4444',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.error && twTheme.colors.error.DEFAULT ? twTheme.colors.error.DEFAULT : '#ef4444'),
     },
     warning: {
-      main: '#f97316',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.warning ? twTheme.colors.warning : '#f97316'),
     },
     success: {
-      main: '#22c55e',       // Kept Hardcoded
+      main: (twTheme.colors && twTheme.colors.success ? twTheme.colors.success : '#22c55e'),
     },
     background: {
-      default: '#111827',    // Kept Hardcoded
-      paper: '#1f2937',       // Kept Hardcoded
+      default: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[900] ? twTheme.colors.neutral[900] : '#111827'),
+      paper: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[800] ? twTheme.colors.neutral[800] : '#1f2937'),
     },
     text: {
-      primary: '#f3f4f6',   // Kept Hardcoded
-      secondary: '#d1d5db',  // Kept Hardcoded
+      primary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[100] ? twTheme.colors.neutral[100] : '#f3f4f6'),
+      secondary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[300] ? twTheme.colors.neutral[300] : '#d1d5db'),
     },
   },
 });
