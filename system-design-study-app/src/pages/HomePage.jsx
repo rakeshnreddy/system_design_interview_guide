@@ -39,7 +39,7 @@ const HomePage = () => {
             <li>Clear explanations of complex trade-offs and architectural patterns.</li>
             <li>Designed to build confidence for real interview scenarios.</li>
          </ul>
-      </div>
+      </Card>
     </div>
   );
 };
