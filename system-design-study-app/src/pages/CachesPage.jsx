@@ -1,8 +1,8 @@
 // src/pages/CachesPage.jsx
-import React, { Suspense, lazy } from 'react'; // Removed useState, useEffect for now
-import { Typography, CircularProgress } from '@mui/material'; // For fallback
+import React, { Suspense, lazy } from 'react';
+import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
-import SidebarCaches from '../components/caches/SidebarCaches'; // Will be passed to layout
+import TopicSidebar from '../components/common/TopicSidebar'; // Import the new TopicSidebar
 import { cachesAppData } from '../data/cachesAppData';
 
 // Lazy load views
@@ -16,8 +16,6 @@ const CodeLibraryView = lazy(() => import('../components/caches/CodeLibraryView'
 // This function will be passed to TopicPageLayout
 const renderCachesView = (currentView, data) => {
   const commonProps = { appData: data };
-  // The onGenerateAIScenario prop for ScenariosView is removed as AI modal is in TopicPageLayout
-  // If ScenariosView *itself* needs to trigger the modal, that's a different pattern (e.g., context or callback prop)
   switch (currentView) {
     case 'fundamentals':
       return <FundamentalsView {...commonProps} />;
@@ -26,13 +24,12 @@ const renderCachesView = (currentView, data) => {
     case 'patterns':
       return <PatternsView {...commonProps} />;
     case 'scenarios':
-      return <ScenariosView {...commonProps} />; // Removed onGenerateAIScenario
+      return <ScenariosView {...commonProps} />;
     case 'practice':
       return <PracticeView {...commonProps} />;
     case 'code':
       return <CodeLibraryView {...commonProps} />;
     default:
-      // Fallback to fundamentals view or a placeholder
       return (
         <Suspense fallback={<CircularProgress />}>
           <FundamentalsView {...commonProps} />
@@ -41,17 +38,32 @@ const renderCachesView = (currentView, data) => {
   }
 };
 
+// Define the sections for the sidebar
+const cacheSidebarSections = [
+  { id: 'fundamentals', title: 'Fundamentals' },
+  { id: 'cachepedia', title: 'Cachepedia' },
+  { id: 'patterns', title: 'Caching Patterns' },
+  { id: 'scenarios', title: 'Scenarios & Trade-offs' },
+  { id: 'practice', title: 'Practice Questions' },
+  { id: 'code', title: 'Code Library' },
+];
+
 function CachesPage() {
-  // The useEffect for hash-based navigation is removed for now.
-  // TopicPageLayout sets initialView. If hash sync is needed, it's a more complex feature
-  // to integrate with the reusable layout (e.g. passing window.location.hash to initialView or custom effect in TPL)
+  const SidebarComponentWithProps = (props) => (
+    <TopicSidebar
+      topicTitle="Caching Topics" // Pass the topic title
+      sections={cacheSidebarSections} // Pass the sections data
+      currentView={props.currentView}
+      setCurrentView={props.setCurrentView}
+    />
+  );
 
   return (
     <TopicPageLayout
       pageTitle="Caching Strategies"
-      SidebarComponent={SidebarCaches} // Pass the SidebarCaches component itself
+      SidebarComponent={SidebarComponentWithProps}
       renderViewFunction={renderCachesView}
-      initialView="fundamentals" // Default view for Caches
+      initialView="fundamentals"
       appData={cachesAppData}
       topicId="caches"
     />
