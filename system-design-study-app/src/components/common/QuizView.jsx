@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Button from './Button'; // Import the common Button component
 
 /**
  * Renders an interactive quiz component.
@@ -21,7 +22,6 @@ function QuizView({ quizTitle, questions }) {
   const [showExplanationFor, setShowExplanationFor] = useState(null); // Stores questionId
   const [selectedOption, setSelectedOption] = useState(null); // Stores selected option id for current question
 
-  // Reset state if questions prop changes
   useEffect(() => {
     setCurrentQuestionIndex(0);
     setUserAnswers({});
@@ -38,12 +38,12 @@ function QuizView({ quizTitle, questions }) {
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleOptionSelect = (optionId) => {
-    if (showExplanationFor === currentQuestion.id) return; // Don't allow change after answer submitted for current q
+    if (showExplanationFor === currentQuestion.id) return;
     setSelectedOption(optionId);
   };
 
   const handleSubmitAnswer = () => {
-    if (!selectedOption) return; // Require an option to be selected
+    if (!selectedOption) return;
 
     const isCorrect = selectedOption === currentQuestion.correctOptionId;
     if (isCorrect) {
@@ -101,12 +101,13 @@ function QuizView({ quizTitle, questions }) {
             );
           })}
         </ul>
-        <button
+        <Button
           onClick={handleRetakeQuiz}
-          className="mt-6 px-6 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg shadow-md transition-colors duration-150"
+          variant="primary"
+          className="mt-6"
         >
           Retake Quiz
-        </button>
+        </Button>
       </div>
     );
   }
@@ -121,30 +122,35 @@ function QuizView({ quizTitle, questions }) {
         <div className="space-y-2">
           {currentQuestion.options.map((option) => {
             const isSelected = selectedOption === option.id;
-            let buttonClass = "w-full text-left px-4 py-3 rounded-lg shadow transition-colors duration-150 focus:outline-none ";
+            let optionButtonVariant = "outline"; // Default variant
+            let optionButtonClassName = "w-full text-left justify-start ";
+
             if (showExplanationFor === currentQuestion.id) { // Answer submitted
               if (option.id === currentQuestion.correctOptionId) {
-                buttonClass += "bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-100 ring-2 ring-green-500";
+                optionButtonClassName += "bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-100 ring-2 ring-green-500 hover:bg-green-300 dark:hover:bg-green-600";
               } else if (isSelected) {
-                buttonClass += "bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-100 ring-2 ring-red-500";
+                optionButtonClassName += "bg-red-200 dark:bg-red-700 text-red-800 dark:text-red-100 ring-2 ring-red-500 hover:bg-red-300 dark:hover:bg-red-600";
               } else {
-                buttonClass += "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 cursor-not-allowed";
+                optionButtonClassName += "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 cursor-not-allowed";
               }
             } else { // Answer not yet submitted
-              buttonClass += isSelected
-                ? "bg-primary-light/30 dark:bg-primary/40 ring-2 ring-primary text-neutral-800 dark:text-neutral-100"
-                : "bg-neutral-100 dark:bg-neutral-700 hover:bg-primary-light/20 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200";
+              optionButtonClassName += isSelected
+                ? "bg-primary-light/30 dark:bg-primary/40 ring-2 ring-primary text-neutral-800 dark:text-neutral-100" // Custom style for selected, non-submitted
+                : "hover:bg-primary-light/20 dark:hover:bg-neutral-600"; // Standard hover for non-selected
             }
+            // Note: The common Button's own variant styles (bg, text color) will apply.
+            // The className here is for overriding or adding specific states not covered by variants.
 
             return (
-              <button
+              <Button
                 key={option.id}
                 onClick={() => handleOptionSelect(option.id)}
-                disabled={showExplanationFor === currentQuestion.id}
-                className={buttonClass}
+                disabled={showExplanationFor === currentQuestion.id && option.id !== currentQuestion.correctOptionId && !isSelected}
+                variant={optionButtonVariant}
+                className={optionButtonClassName}
               >
                 {option.text}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -159,20 +165,20 @@ function QuizView({ quizTitle, questions }) {
 
       <div className="mt-6">
         {showExplanationFor !== currentQuestion.id ? (
-          <button
+          <Button
             onClick={handleSubmitAnswer}
             disabled={!selectedOption}
-            className="px-6 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg shadow-md transition-colors duration-150 disabled:opacity-50"
+            variant="primary"
           >
             Submit Answer
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             onClick={handleNextQuestion}
-            className="px-6 py-2 bg-secondary hover:bg-secondary-dark text-white font-semibold rounded-lg shadow-md transition-colors duration-150"
+            variant="secondary"
           >
             {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Show Results'}
-          </button>
+          </Button>
         )}
       </div>
     </div>

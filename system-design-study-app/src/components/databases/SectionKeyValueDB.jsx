@@ -1,6 +1,8 @@
 // src/components/databases/SectionKeyValueDB.jsx
 import React, { useState } from 'react';
 import Card from '../common/Card';
+import Button from '../common/Button'; // Import Button
+import Icon from '../common/Icon';   // Import Icon
 
 // AccordionItem (Assuming it might be slightly different or want to keep it co-located for now)
 // If identical to SectionSqlDB's, this could be moved to a common component.
@@ -8,23 +10,21 @@ const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) 
     const isOpen = idx === openIdx;
     return (
         <div className={`bg-neutral-50 dark:bg-neutral-700/50 ${lastItem ? 'rounded-b-lg' : ''} ${idx === 0 && !isOpen ? 'rounded-t-lg' : ''} ${isOpen && idx === 0 ? 'rounded-t-lg' : ''}`}>
-            <button
+            <Button
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
-                className={`w-full flex justify-between items-center p-4 font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-600/50 transition-colors
-                    ${isOpen ? 'bg-neutral-100 dark:bg-neutral-600/60' : ''}
+                variant="outline"
+                className={`w-full flex justify-between items-center p-4 font-semibold transition-colors
+                    ${isOpen ? 'bg-neutral-100 dark:bg-neutral-600/60' : 'hover:bg-neutral-100 dark:hover:bg-neutral-600/50'}
                     ${idx === 0 ? 'rounded-t-lg' : ''}
                     ${isOpen && !lastItem ? '' : (lastItem && isOpen ? 'rounded-b-lg' : '')}
                     ${!isOpen && !lastItem ? 'border-b border-neutral-200 dark:border-neutral-600/70' : ''}
                     ${lastItem && !isOpen ? 'rounded-b-lg' : ''}
-                `}
+                    border-transparent text-neutral-700 dark:text-neutral-200`}
+                aria-expanded={isOpen}
             >
                 <span>{title}</span>
-                <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                </span>
-            </button>
+                <Icon name={isOpen ? "chevron-up" : "chevron-down"} className="h-5 w-5" />
+            </Button>
             {isOpen && (
                 <div className={`p-4 pt-2 text-sm text-neutral-600 dark:text-neutral-300 bg-white dark:bg-neutral-700/30 ${lastItem ? 'rounded-b-lg' : 'border-b border-neutral-200 dark:border-neutral-600/70'}`}>
                     {children}

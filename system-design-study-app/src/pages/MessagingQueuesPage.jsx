@@ -1,8 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
-import SidebarMQ from '../components/messaging_queues/SidebarMQ';
-import { messagingQueuesAppData } from '../data/messagingQueuesAppData'; // Assuming this file exists
+import TopicSidebar from '../components/common/TopicSidebar'; // Corrected import
+import { messagingQueuesAppData } from '../data/messagingQueuesAppData';
 
 // Lazy load views
 const IntroModuleMQ = lazy(() => import('../components/messaging_queues/IntroModuleMQ'));
@@ -16,7 +16,6 @@ const PracticeModuleMQ = lazy(() => import('../components/messaging_queues/Pract
 
 // This function will be passed to TopicPageLayout
 const renderMessagingQueuesView = (currentView, data) => {
-  // Pass user and auth-related functions if necessary, or manage them within TopicPageLayout/context
   const commonProps = { appData: data };
 
   switch (currentView) {
@@ -31,11 +30,11 @@ const renderMessagingQueuesView = (currentView, data) => {
     case 'frameworks':
       return <FrameworksModuleMQ {...commonProps} />;
     case 'scenarios':
-      return <ScenariosModuleMQ {...commonProps} />; // Consider how user prop is handled
+      return <ScenariosModuleMQ {...commonProps} />;
     case 'cheatsheet':
       return <CheatSheetModuleMQ {...commonProps} />;
     case 'practice':
-      return <PracticeModuleMQ {...commonProps} />; // Consider how user prop is handled
+      return <PracticeModuleMQ {...commonProps} />;
     default:
       return (
         <Suspense fallback={<CircularProgress />}>
@@ -45,17 +44,36 @@ const renderMessagingQueuesView = (currentView, data) => {
   }
 };
 
+// Define the sections for the sidebar
+const mqSidebarSections = [
+  { id: 'intro', title: 'Introduction' },
+  { id: 'deepdive', title: 'Deep Dive' },
+  { id: 'guarantees', title: 'Delivery Guarantees' },
+  { id: 'scalability', title: 'Scalability & Ordering' },
+  { id: 'frameworks', title: 'Frameworks (Kafka, RabbitMQ)' },
+  { id: 'scenarios', title: 'Scenarios & Use Cases' },
+  { id: 'cheatsheet', title: 'Cheat Sheet' },
+  { id: 'practice', title: 'Practice Questions' },
+];
+
 function MessagingQueuesPage() {
-  // Auth state (user, login/logout) might need to be lifted to a context or handled by TopicPageLayout
-  // For now, focusing on layout structure
+  const SidebarComponentWithProps = (props) => (
+    <TopicSidebar
+      topicTitle="Messaging Queues"
+      sections={mqSidebarSections}
+      currentView={props.currentView}
+      setCurrentView={props.setCurrentView}
+    />
+  );
+
   return (
     <TopicPageLayout
       pageTitle="Messaging Queues"
-      SidebarComponent={SidebarMQ} // Pass the SidebarMQ component
+      SidebarComponent={SidebarComponentWithProps} // Correctly pass TopicSidebar with props
       renderViewFunction={renderMessagingQueuesView}
-      initialView="intro" // Default view for Messaging Queues
+      initialView="intro"
       appData={messagingQueuesAppData}
-      topicId="messaging-queues" // Unique ID for this topic
+      topicId="messaging-queues"
     />
   );
 }
