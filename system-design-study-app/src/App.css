@@ -1,10 +1,14 @@
 #root {
-  @apply max-w-screen-xl mx-auto p-8 text-center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  /* @apply max-w-screen-xl mx-auto p-8 text-center; */
 }
 
 .logo {
-  height: 6em; /* Keep height as is, only padding was specified for change */
-  @apply p-6; /* 1.5em = 24px = spacing-6 */
+  height: 6em;
+  padding: 1.5em; /* Restored from @apply p-6; */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -31,9 +35,9 @@
 }
 
 .card {
-  @apply p-8; /* 2em = 32px = spacing-8 */
+  padding: 2em; /* Restored from @apply p-8; */
 }
 
 .read-the-docs {
-  @apply text-neutral-400; /* #888 mapped to neutral-400 */
+  color: #888; /* Restored from @apply text-neutral-400; */
 }
