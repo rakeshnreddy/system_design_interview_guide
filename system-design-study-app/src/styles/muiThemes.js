@@ -1,13 +1,13 @@
 import { createTheme } from '@mui/material/styles';
-import tailwindConfigRaw from '../../tailwind.config.js';
+// import tailwindConfigRaw from '../../tailwind.config.js';
 
 // Defensively define twTheme
-const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {};
+// const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {};
 
 // Common typography and component overrides
 const commonThemeOptions = {
   typography: {
-    fontFamily: (twTheme.fontFamily && twTheme.fontFamily.sans ? twTheme.fontFamily.sans.join(',') : 'Arial, sans-serif'),
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif', // Hardcoded Inter stack
   },
   shape: {
     borderRadius: 8,
@@ -20,31 +20,31 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.DEFAULT ? twTheme.colors.primary.DEFAULT : '#1976D2'),
-      light: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.light ? twTheme.colors.primary.light : '#4791db'),
-      dark: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.dark ? twTheme.colors.primary.dark : '#135ea7'),
+      main: '#1976D2',
+      light: '#4791db',
+      dark: '#135ea7',
     },
     secondary: {
-      main: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#f59e0b'),
-      light: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.light ? twTheme.colors.secondary.light : '#fbbf24'),
-      dark: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.dark ? twTheme.colors.secondary.dark : '#d97706'),
+      main: '#f59e0b',
+      light: '#fbbf24',
+      dark: '#d97706',
     },
     error: {
-      main: (twTheme.colors && twTheme.colors.error && twTheme.colors.error.DEFAULT ? twTheme.colors.error.DEFAULT : '#ef4444'),
+      main: '#ef4444',
     },
-    warning: { // Assuming warning is a direct value, not an object with DEFAULT
-      main: (twTheme.colors && twTheme.colors.warning ? twTheme.colors.warning : '#f97316'),
+    warning: {
+      main: '#f97316',
     },
-    success: { // Assuming success is a direct value
-      main: (twTheme.colors && twTheme.colors.success ? twTheme.colors.success : '#22c55e'),
+    success: {
+      main: '#22c55e',
     },
     background: {
-      default: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[100] ? twTheme.colors.neutral[100] : '#f3f4f6'),
-      paper: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[50] ? twTheme.colors.neutral[50] : '#ffffff'),
+      default: '#f3f4f6',
+      paper: '#ffffff',
     },
     text: {
-      primary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[800] ? twTheme.colors.neutral[800] : '#1f2937'),
-      secondary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[600] ? twTheme.colors.neutral[600] : '#4b5563'),
+      primary: '#1f2937',
+      secondary: '#4b5563',
     },
   },
 });
@@ -55,31 +55,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.light ? twTheme.colors.primary.light : '#4791db'),
-      light: (twTheme.colors && twTheme.colors.accent && twTheme.colors.accent.light ? twTheme.colors.accent.light : '#73abdf'), // Fallback if accent isn't there either
-      dark: (twTheme.colors && twTheme.colors.primary && twTheme.colors.primary.DEFAULT ? twTheme.colors.primary.DEFAULT : '#1976D2'),
+      main: '#4791db',    // Lighter blue for dark mode
+      light: '#73abdf',
+      dark: '#1976D2',
     },
     secondary: {
-      main: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.light ? twTheme.colors.secondary.light : '#fbbf24'),
-      light: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#fcd34d'), // original fallback for dark.secondary.light was amber-300
-      dark: (twTheme.colors && twTheme.colors.secondary && twTheme.colors.secondary.DEFAULT ? twTheme.colors.secondary.DEFAULT : '#f59e0b'), // original fallback for dark.secondary.dark was amber-500
+      main: '#fbbf24',    // Lighter amber for dark mode
+      light: '#fcd34d',
+      dark: '#f59e0b',
     },
     error: {
-      main: (twTheme.colors && twTheme.colors.error && twTheme.colors.error.DEFAULT ? twTheme.colors.error.DEFAULT : '#ef4444'),
+      main: '#ef4444',
     },
-    warning: { // Assuming warning is a direct value
-      main: (twTheme.colors && twTheme.colors.warning ? twTheme.colors.warning : '#f97316'),
+    warning: {
+      main: '#f97316',
     },
-    success: { // Assuming success is a direct value
-      main: (twTheme.colors && twTheme.colors.success ? twTheme.colors.success : '#22c55e'),
+    success: {
+      main: '#22c55e',
     },
     background: {
-      default: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[900] ? twTheme.colors.neutral[900] : '#111827'),
-      paper: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[800] ? twTheme.colors.neutral[800] : '#1f2937'),
+      default: '#111827',
+      paper: '#1f2937',
     },
     text: {
-      primary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[100] ? twTheme.colors.neutral[100] : '#f3f4f6'),
-      secondary: (twTheme.colors && twTheme.colors.neutral && twTheme.colors.neutral[300] ? twTheme.colors.neutral[300] : '#d1d5db'),
+      primary: '#f3f4f6',
+      secondary: '#d1d5db',
     },
   },
 });
