@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Button from './Button'; // Import the common Button component
 
 /**
  * Renders an interactive decision tree based on provided data.
@@ -18,14 +19,13 @@ import React, { useState, useEffect } from 'react';
  */
 function InteractiveDecisionTree({ treeData }) {
   if (!treeData || !treeData.nodes || !treeData.startNode) {
-    return <p className="text-red-500 p-4">Error: Decision tree data is invalid or missing.</p>; // Added padding
+    return <p className="text-red-500 p-4">Error: Decision tree data is invalid or missing.</p>;
   }
 
   const [currentNodeKey, setCurrentNodeKey] = useState(treeData.startNode);
   const [pathTaken, setPathTaken] = useState([]);
   const [recommendation, setRecommendation] = useState(null);
 
-  // Effect to reset component state if treeData changes (e.g., new topic selected)
   useEffect(() => {
     setCurrentNodeKey(treeData.startNode);
     setPathTaken([]);
@@ -78,12 +78,13 @@ function InteractiveDecisionTree({ treeData }) {
               ))}
             </ul>
           </div>
-          <button
+          <Button
             onClick={handleStartOver}
-            className="mt-6 px-6 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg shadow-md transition-colors duration-150"
+            variant="primary"
+            className="mt-6" // Removed size-specific padding as Button handles it
           >
             Start Over
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -95,14 +96,15 @@ function InteractiveDecisionTree({ treeData }) {
           </div>
           <div className="space-y-3">
             {currentNode.options.map((option, index) => (
-              <button
+              <Button
                 key={index}
                 onClick={() => handleOptionClick(option)}
-                className="w-full text-left px-4 py-3 bg-neutral-100 dark:bg-neutral-700 hover:bg-primary-light/20 dark:hover:bg-neutral-600 rounded-lg shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary"
+                variant="outline" // Using outline variant for options, can be adjusted
+                className="w-full text-left justify-start" // Ensure text is aligned left and button takes full width
               >
-                <p className="font-medium text-neutral-700 dark:text-neutral-200">{option.answer}</p>
+                <p className="font-medium">{option.answer}</p> {/* Removed dark/light specific text colors as Button handles variant */}
                 {option.description && <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{option.description}</p>}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

@@ -1,10 +1,10 @@
 import React, { Suspense, lazy } from 'react';
-import { Typography, CircularProgress } from '@mui/material'; // Keep necessary MUI imports
-import TopicPageLayout from '../common/TopicPageLayout'; // Import the new layout
-import SidebarLoadBalancing from './SidebarLoadBalancing';
+import { CircularProgress } from '@mui/material';
+import TopicPageLayout from '../common/TopicPageLayout';
+import TopicSidebar from '../common/TopicSidebar'; // Import the unified TopicSidebar
 import { loadBalancingAppData } from '../../data/loadBalancingAppData';
 
-// Lazy load views - these remain the same
+// Lazy load views
 const FundamentalsView = lazy(() => import('./FundamentalsView'));
 const AlgorithmsView = lazy(() => import('./AlgorithmsView'));
 const TypesView = lazy(() => import('./TypesView'));
@@ -26,7 +26,6 @@ const renderLoadBalancingView = (currentView, data) => {
     case 'practice':
       return <PracticeView {...commonProps} />;
     default:
-      // Fallback to fundamentals view or a placeholder
       return (
         <Suspense fallback={<CircularProgress />}>
           <FundamentalsView {...commonProps} />
@@ -35,15 +34,33 @@ const renderLoadBalancingView = (currentView, data) => {
   }
 };
 
+// Define the sections for the sidebar based on the views
+const loadBalancingSidebarSections = [
+  { id: 'fundamentals', title: 'Fundamentals' },
+  { id: 'algorithms', title: 'Algorithms' },
+  { id: 'types', title: 'Types of LBs' },
+  { id: 'scenarios', title: 'Scenarios & Trade-offs' },
+  { id: 'practice', title: 'Practice Questions' },
+];
+
 function LoadBalancingPage() {
+  const SidebarComponentWithProps = (props) => (
+    <TopicSidebar
+      topicTitle="Load Balancing" // Title for the sidebar
+      sections={loadBalancingSidebarSections} // Pass the sections data
+      currentView={props.currentView}
+      setCurrentView={props.setCurrentView}
+    />
+  );
+
   return (
     <TopicPageLayout
       pageTitle="Load Balancing"
-      SidebarComponent={SidebarLoadBalancing}
+      SidebarComponent={SidebarComponentWithProps} // Use the wrapper for TopicSidebar
       renderViewFunction={renderLoadBalancingView}
-      initialView="fundamentals" // Default view for this page
+      initialView="fundamentals"
       appData={loadBalancingAppData}
-      topicId="load-balancing" // Unique identifier for this topic page
+      topicId="load-balancing"
     />
   );
 }

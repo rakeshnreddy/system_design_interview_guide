@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import Button from './Button'; // Import the common Button component
+import Icon from './Icon'; // Import the common Icon component
 
 /**
  * A reusable modal dialog component that renders its children into a portal.
@@ -43,15 +45,15 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
       <div className={`bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-full ${sizeStyles[size]} transform transition-all duration-300 ease-in-out scale-100 opacity-100`}>
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700">
           <h3 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">{title || 'Modal Title'}</h3>
-          <button
+          <Button
             onClick={onClose}
-            className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+            variant="outline" // Or choose another appropriate variant like 'secondary' if it looks better
+            size="sm" // Small size for a close button
             aria-label="Close modal"
+            className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600" // Making it more like an icon button
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            <Icon name="close" className="h-5 w-5" /> {/* Using Icon component */}
+          </Button>
         </div>
         <div className="p-4 sm:p-6">
           {children}
