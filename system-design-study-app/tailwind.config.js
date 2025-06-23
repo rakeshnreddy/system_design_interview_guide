@@ -77,8 +77,8 @@ export default {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'), // Recommended for prose styling
-    // Add other plugins if you have them
-  ],
+  // plugins: [
+  //   require('@tailwindcss/typography'), // Recommended for prose styling
+  //   // Add other plugins if you have them
+  // ],
 }
