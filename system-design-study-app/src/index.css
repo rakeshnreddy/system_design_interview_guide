@@ -5,7 +5,7 @@
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
-    @apply tw-bg-neutral-100 dark:tw-bg-neutral-900 tw-text-neutral-800 dark:tw-text-neutral-200;
+    @apply bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200;
     /* Smoother font rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

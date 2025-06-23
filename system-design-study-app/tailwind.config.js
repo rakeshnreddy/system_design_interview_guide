@@ -7,7 +7,6 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx,vue}", // Path to all relevant source files
   ],
   darkMode: 'class', // Ensure dark mode is class-based
-  prefix: 'tw-', // Added Tailwind prefix
   theme: {
     extend: {
       colors: themeTokens.colors,
