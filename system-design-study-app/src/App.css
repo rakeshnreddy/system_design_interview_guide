@@ -1,14 +1,10 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  /* @apply max-w-screen-xl mx-auto p-8 text-center; */
+  @apply max-w-screen-xl mx-auto p-8 text-center;
 }
 
 .logo {
   height: 6em;
-  padding: 1.5em; /* Restored from @apply p-6; */
+  @apply p-6; /* Restored, was padding: 1.5em; */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -35,9 +31,9 @@
 }
 
 .card {
-  padding: 2em; /* Restored from @apply p-8; */
+  @apply p-8; /* Restored, was padding: 2em; */
 }
 
 .read-the-docs {
-  color: #888; /* Restored from @apply text-neutral-400; */
+  @apply text-neutral-400; /* Restored, was color: #888; */
 }
