@@ -82,11 +82,18 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   // though with the cleanup in useEffect, it might be less critical.
   // The class "mermaid" is sometimes used by mermaid.js for styling, but not strictly necessary when injecting SVG directly.
   return (
-    <div
-      key={validDiagramId}
-      ref={containerRef}
-      className="mermaid-diagram-container p-4 bg-white dark:bg-neutral-800 rounded shadow-lg my-4 flex justify-center items-center"
-    />
+    <Card
+      padding="p-4" // Equivalent to 'sm' or pass directly
+      shadow="lg"
+      rounded="lg" // Tailwind 'rounded-lg'
+      className="mermaid-diagram-container my-4 flex justify-center items-center"
+    >
+      <div
+        key={validDiagramId}
+        ref={containerRef}
+        // Inner div to hold the diagram, as Card adds its own padding and structure
+      />
+    </Card>
   );
 };
 

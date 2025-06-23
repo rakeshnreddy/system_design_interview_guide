@@ -158,7 +158,13 @@ const CachepediaView = ({ appData }) => {
               <p className="text-base text-neutral-600 dark:text-neutral-400"><strong className="font-semibold text-neutral-700 dark:text-neutral-200">Ideal Use Cases:</strong> {selectedCache.useWhen}</p>
             </div>
 
-            <div className="h-80 md:h-96 lg:h-[400px] p-3 border rounded-lg bg-white dark:bg-neutral-800 shadow-lg"> {/* Adjusted height and shadow */}
+            <Card
+              padding="p-3"
+              border={true}
+              rounded="lg"
+              shadow="lg"
+              className="h-80 md:h-96 lg:h-[400px]"
+            >
               {chartData ? (
                 // Ensure chart.js and react-chartjs-2 are installed for this to work
                 <Radar key={chartKey} data={chartData} options={chartOptions} />

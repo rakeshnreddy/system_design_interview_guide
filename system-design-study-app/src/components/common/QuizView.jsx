@@ -77,7 +77,7 @@ function QuizView({ quizTitle, questions }) {
 
   if (showResults) {
     return (
-      <div className="p-4 md:p-6 bg-white dark:bg-neutral-800 shadow-xl rounded-lg">
+      <Card padding="p-4 md:p-6" shadow="xl" rounded="lg">
         <h2 className="text-2xl font-bold mb-4 text-primary dark:text-primary-light">{quizTitle} - Results</h2>
         <p className="text-xl mb-4">You got {score} out of {questions.length} correct!</p>
         <ul className="space-y-4">
@@ -113,7 +113,7 @@ function QuizView({ quizTitle, questions }) {
   }
 
   return (
-    <div className="p-4 md:p-6 bg-white dark:bg-neutral-800 shadow-xl rounded-lg">
+    <Card padding="p-4 md:p-6" shadow="xl" rounded="lg">
       <h2 className="text-2xl font-bold mb-2 text-primary dark:text-primary-light">{quizTitle}</h2>
       <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">Question {currentQuestionIndex + 1} of {questions.length}</p>
 

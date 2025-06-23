@@ -58,7 +58,7 @@ function InteractiveDecisionTree({ treeData }) {
   }
 
   return (
-    <div className="p-4 md:p-6 bg-white dark:bg-neutral-800 shadow-xl rounded-lg">
+    <Card padding="p-4 md:p-6" shadow="xl" rounded="lg">
       <h2 className="text-2xl font-bold mb-4 text-primary dark:text-primary-light">{treeData.title || "Decision Tree"}</h2>
 
       {recommendation ? (
