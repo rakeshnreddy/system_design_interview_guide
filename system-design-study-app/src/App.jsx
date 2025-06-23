@@ -24,6 +24,19 @@ function AppContent() {
   return (
     <MuiThemeProvider theme={muiTheme}>
       <CssBaseline /> {/* Normalizes styles and applies MUI's dark background in dark mode */}
+      <div style={{
+        color: 'red',
+        backgroundColor: 'lightyellow',
+        padding: '10px',
+        fontSize: '20px',
+        border: '2px solid blue',
+        position: 'fixed', // Make it very obvious
+        top: '10px',
+        left: '10px',
+        zIndex: 9999
+      }}>
+        THIS IS A TEST DIV - Can you see colors?
+      </div>
       <Router>
         <Layout> {/* Layout now has access to AuthContext and benefits from MuiThemeProvider */}
           <Routes>
