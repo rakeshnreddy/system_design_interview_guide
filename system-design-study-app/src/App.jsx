@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CustomThemeProvider, useTheme as useCustomTheme } from './contexts/ThemeContext';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import Button from '@mui/material/Button'; // Added Button import
 import { lightTheme, darkTheme } from './styles/muiThemes';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
@@ -29,6 +30,21 @@ function AppContent() {
   return (
     <MuiThemeProvider theme={muiTheme}>
       <CssBaseline /> {/* Normalizes styles and applies MUI's dark background in dark mode */}
+      <Button
+        variant="contained"
+        sx={{
+          bgcolor: 'primary.main', // Should pick up green/yellow from the simplified muiTheme
+          color: 'text.primary',   // Should pick up themed text color from muiTheme
+          margin: '20px',
+          padding: '10px 20px',
+          fontSize: '16px',
+          '&:hover': {
+            bgcolor: 'secondary.main' // Should pick up magenta/cyan from muiTheme
+          }
+        }}
+      >
+        MUI SX TEST BUTTON
+      </Button>
       <Router>
         <Layout> {/* Layout now has access to AuthContext and benefits from MuiThemeProvider */}
           <Routes>
