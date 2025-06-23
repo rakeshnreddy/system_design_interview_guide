@@ -1,10 +1,10 @@
 import { createTheme } from '@mui/material/styles';
-import { colors, fontFamily } from './themeTokens.js';
+import themeTokens from './themeTokens.js'; // Changed to default import
 
 // Common typography and component overrides
 const commonThemeOptions = {
   typography: {
-    fontFamily: fontFamily?.sans?.join(',') || '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: themeTokens?.fontFamily?.sans?.join(',') || '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   shape: {
     borderRadius: 8,
@@ -17,31 +17,31 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: colors?.primary?.DEFAULT || '#1976D2',
-      light: colors?.primary?.light || '#4791db',
-      dark: colors?.primary?.dark || '#135ea7',
+      main: themeTokens?.colors?.primary?.DEFAULT || '#1976D2',
+      light: themeTokens?.colors?.primary?.light || '#4791db',
+      dark: themeTokens?.colors?.primary?.dark || '#135ea7',
     },
     secondary: {
-      main: colors?.secondary?.DEFAULT || '#f59e0b',
-      light: colors?.secondary?.light || '#fbbf24',
-      dark: colors?.secondary?.dark || '#d97706',
+      main: themeTokens?.colors?.secondary?.DEFAULT || '#f59e0b',
+      light: themeTokens?.colors?.secondary?.light || '#fbbf24',
+      dark: themeTokens?.colors?.secondary?.dark || '#d97706',
     },
     error: {
-      main: colors?.error?.DEFAULT || '#ef4444',
+      main: themeTokens?.colors?.error?.DEFAULT || '#ef4444',
     },
     warning: {
-      main: colors?.warning || '#f97316',
+      main: themeTokens?.colors?.warning || '#f97316',
     },
     success: {
-      main: colors?.success || '#22c55e',
+      main: themeTokens?.colors?.success || '#22c55e',
     },
     background: {
-      default: colors?.neutral?.[100] || '#f3f4f6',
-      paper: colors?.neutral?.[50] || '#ffffff',
+      default: themeTokens?.colors?.neutral?.[100] || '#f3f4f6',
+      paper: themeTokens?.colors?.neutral?.[50] || '#ffffff',
     },
     text: {
-      primary: colors?.neutral?.[800] || '#1f2937',
-      secondary: colors?.neutral?.[600] || '#4b5563',
+      primary: themeTokens?.colors?.neutral?.[800] || '#1f2937',
+      secondary: themeTokens?.colors?.neutral?.[600] || '#4b5563',
     },
   },
 });
@@ -52,31 +52,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: colors?.primary?.light || '#4791db',
-      light: colors?.accent?.light || '#73abdf',
-      dark: colors?.primary?.DEFAULT || '#1976D2',
+      main: themeTokens?.colors?.primary?.light || '#4791db',
+      light: themeTokens?.colors?.accent?.light || '#73abdf',
+      dark: themeTokens?.colors?.primary?.DEFAULT || '#1976D2',
     },
     secondary: {
-      main: colors?.secondary?.light || '#fbbf24',
-      light: colors?.secondary?.DEFAULT || '#fcd34d',
-      dark: colors?.secondary?.DEFAULT || '#f59e0b',
+      main: themeTokens?.colors?.secondary?.light || '#fbbf24',
+      light: themeTokens?.colors?.secondary?.DEFAULT || '#fcd34d',
+      dark: themeTokens?.colors?.secondary?.DEFAULT || '#f59e0b',
     },
     error: {
-      main: colors?.error?.DEFAULT || '#ef4444',
+      main: themeTokens?.colors?.error?.DEFAULT || '#ef4444',
     },
     warning: {
-      main: colors?.warning || '#f97316',
+      main: themeTokens?.colors?.warning || '#f97316',
     },
     success: {
-      main: colors?.success || '#22c55e',
+      main: themeTokens?.colors?.success || '#22c55e',
     },
     background: {
-      default: colors?.neutral?.[900] || '#111827',
-      paper: colors?.neutral?.[800] || '#1f2937',
+      default: themeTokens?.colors?.neutral?.[900] || '#111827',
+      paper: themeTokens?.colors?.neutral?.[800] || '#1f2937',
     },
     text: {
-      primary: colors?.neutral?.[100] || '#f3f4f6',
-      secondary: colors?.neutral?.[300] || '#d1d5db',
+      primary: themeTokens?.colors?.neutral?.[100] || '#f3f4f6',
+      secondary: themeTokens?.colors?.neutral?.[300] || '#d1d5db',
     },
   },
 });

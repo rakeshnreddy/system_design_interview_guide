@@ -1,6 +1,6 @@
 // system-design-study-app/src/styles/themeTokens.js
 
-export const colors = {
+const colors = {
   primary: {
     light: '#4791db',
     DEFAULT: '#1976D2',
@@ -36,11 +36,11 @@ export const colors = {
   warning: '#f97316',
 };
 
-export const fontFamily = {
+const fontFamily = {
   sans: ['Inter', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
 };
 
-export const fontSize = {
+const fontSize = {
   'caption': ['0.75rem', { lineHeight: '1rem' }],
   'body': ['1rem', { lineHeight: '1.5rem' }],
   'h3': ['1.5rem', { lineHeight: '2rem' }],
@@ -48,7 +48,7 @@ export const fontSize = {
   'h1': ['2.25rem', { lineHeight: '2.5rem' }],
 };
 
-export const spacing = {
+const spacing = {
   'spacing-0': '0px',
   'spacing-1': '0.25rem',
   'spacing-2': '0.5rem',
@@ -69,6 +69,11 @@ export const spacing = {
   '1.5': '0.375rem',
 };
 
-// It might be good to also export a combined 'theme' object for easier consumption
-// if muiThemes.js was structured to expect twTheme.colors, twTheme.fontFamily etc.
-// For now, exporting them separately as per the plan.
+const allThemeTokens = {
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+};
+
+export default allThemeTokens;

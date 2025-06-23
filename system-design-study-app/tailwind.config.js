@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import { colors, fontFamily, fontSize, spacing } from './src/styles/themeTokens.js';
+import themeTokens from './src/styles/themeTokens.js'; // Changed to default import
 
 export default {
   content: [
@@ -9,10 +9,10 @@ export default {
   darkMode: 'class', // Ensure dark mode is class-based
   theme: {
     extend: {
-      colors: colors,
-      fontFamily: fontFamily,
-      fontSize: fontSize,
-      spacing: spacing,
+      colors: themeTokens.colors,
+      fontFamily: themeTokens.fontFamily,
+      fontSize: themeTokens.fontSize,
+      spacing: themeTokens.spacing,
     }
   },
   plugins: [
