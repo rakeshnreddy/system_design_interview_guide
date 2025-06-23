@@ -57,7 +57,7 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: colors?.primary?.DEFAULT || '#1976D2',
+      main: colors?.primary?.DEFAULT || '#FF00FF', // Bright magenta fallback for testing
       light: colors?.primary?.light || '#4791db',
       dark: colors?.primary?.dark || '#135ea7',
     },
