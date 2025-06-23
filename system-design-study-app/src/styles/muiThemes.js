@@ -1,13 +1,13 @@
 import { createTheme } from '@mui/material/styles';
-// import tailwindConfigRaw from '../../tailwind.config.js';
+import tailwindConfigRaw from '../../tailwind.config.js'; // Uncommented
 
 // Defensively define twTheme
-// const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {};
+const twTheme = tailwindConfigRaw && tailwindConfigRaw.theme ? tailwindConfigRaw.theme : {}; // Uncommented
 
 // Common typography and component overrides
 const commonThemeOptions = {
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif', // Hardcoded Inter stack
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif', // Kept Hardcoded
   },
   shape: {
     borderRadius: 8,
@@ -20,31 +20,31 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976D2',
-      light: '#4791db',
-      dark: '#135ea7',
+      main: '#1976D2',       // Kept Hardcoded
+      light: '#4791db',      // Kept Hardcoded
+      dark: '#135ea7',       // Kept Hardcoded
     },
     secondary: {
-      main: '#f59e0b',
-      light: '#fbbf24',
-      dark: '#d97706',
+      main: '#f59e0b',       // Kept Hardcoded
+      light: '#fbbf24',      // Kept Hardcoded
+      dark: '#d97706',       // Kept Hardcoded
     },
     error: {
-      main: '#ef4444',
+      main: '#ef4444',       // Kept Hardcoded
     },
     warning: {
-      main: '#f97316',
+      main: '#f97316',       // Kept Hardcoded
     },
     success: {
-      main: '#22c55e',
+      main: '#22c55e',       // Kept Hardcoded
     },
     background: {
-      default: '#f3f4f6',
-      paper: '#ffffff',
+      default: '#f3f4f6',    // Kept Hardcoded
+      paper: '#ffffff',       // Kept Hardcoded
     },
     text: {
-      primary: '#1f2937',
-      secondary: '#4b5563',
+      primary: '#1f2937',   // Kept Hardcoded
+      secondary: '#4b5563',  // Kept Hardcoded
     },
   },
 });
@@ -55,31 +55,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4791db',    // Lighter blue for dark mode
-      light: '#73abdf',
-      dark: '#1976D2',
+      main: '#4791db',       // Kept Hardcoded
+      light: '#73abdf',      // Kept Hardcoded
+      dark: '#1976D2',       // Kept Hardcoded
     },
     secondary: {
-      main: '#fbbf24',    // Lighter amber for dark mode
-      light: '#fcd34d',
-      dark: '#f59e0b',
+      main: '#fbbf24',       // Kept Hardcoded
+      light: '#fcd34d',      // Kept Hardcoded
+      dark: '#f59e0b',       // Kept Hardcoded
     },
     error: {
-      main: '#ef4444',
+      main: '#ef4444',       // Kept Hardcoded
     },
     warning: {
-      main: '#f97316',
+      main: '#f97316',       // Kept Hardcoded
     },
     success: {
-      main: '#22c55e',
+      main: '#22c55e',       // Kept Hardcoded
     },
     background: {
-      default: '#111827',
-      paper: '#1f2937',
+      default: '#111827',    // Kept Hardcoded
+      paper: '#1f2937',       // Kept Hardcoded
     },
     text: {
-      primary: '#f3f4f6',
-      secondary: '#d1d5db',
+      primary: '#f3f4f6',   // Kept Hardcoded
+      secondary: '#d1d5db',  // Kept Hardcoded
     },
   },
 });
