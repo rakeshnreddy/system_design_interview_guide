@@ -119,7 +119,19 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'), // Recommended for prose styling
+    // Replaced require with import for ES Module compatibility with Vite
+    // Note: For this to work directly, @tailwindcss/typography would need to be imported at the top.
+    // However, Tailwind typically resolves plugin strings or direct plugin objects.
+    // A common pattern is to import it at the top and then use the variable.
+    // Let's try a direct string first, as Tailwind often handles this.
+    // If not, we'll import it at the top.
+    '@tailwindcss/typography',
     // Add other plugins if you have them
   ],
 }
+
+// If the string doesn't work, the alternative is:
+// import typographyPlugin from '@tailwindcss/typography';
+// ...
+// plugins: [typographyPlugin],
+// ...
