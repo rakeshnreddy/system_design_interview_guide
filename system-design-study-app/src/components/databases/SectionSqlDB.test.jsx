@@ -115,7 +115,8 @@ describe('SectionSqlDB', () => {
     expect(screen.queryByTestId('accordion-content-0')).toBeNull();
     const secondContentDiv = screen.getByTestId('accordion-content-1');
     expect(secondContentDiv).toBeInTheDocument();
-    expect(secondContentDiv).toHaveTextContent(/Indexing Strategies.*B-Trees/i); // Using content from the actual data
+    // Corrected regex to match the actual text content, which starts with "Indexes:"
+    expect(secondContentDiv).toHaveTextContent(/Indexes:.*B-Trees/i);
     expect(secondButton.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(firstButton.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
   });

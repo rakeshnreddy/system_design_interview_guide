@@ -122,6 +122,7 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       <div
         key={validDiagramId}
         ref={containerRef}
+        data-testid="mermaid-inner-container"
         // Inner div to hold the diagram, as Card adds its own padding and structure
       />
     </Card>

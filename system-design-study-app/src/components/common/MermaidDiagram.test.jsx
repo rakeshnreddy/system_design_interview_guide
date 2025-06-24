@@ -130,29 +130,27 @@ describe('MermaidDiagram', () => {
     });
     expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
     // Ensure no error/retry message is shown, container should be empty
+    // Ensure no error/retry message is shown, container should be empty
     expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
-    // Check that the container div itself is empty by querying its content.
-    // We expect the card to be there, but its inner div (the mermaid container) to be empty.
-    const cardElement = screen.getByTestId('card');
-    const mermaidContainer = cardElement.querySelector('div[key^="mermaid-"]'); // The direct child div
+    const mermaidContainer = screen.getByTestId('mermaid-inner-container');
     expect(mermaidContainer).toBeInTheDocument();
     expect(mermaidContainer.innerHTML).toBe('');
 
 
     // Test with null
     // Re-render with the original definition first to ensure mermaid-svg is back
+    // Need to use a different diagramId to ensure useEffect re-runs if only definition changes to null then back
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
+      rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear-again" />);
     });
     await screen.findByTestId('mermaid-svg'); // Make sure it rendered again
 
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear" />);
+      rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear-again" />);
     });
     expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
     expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
-    const cardElementAfterNull = screen.getByTestId('card');
-    const mermaidContainerAfterNull = cardElementAfterNull.querySelector('div[key^="mermaid-"]');
+    const mermaidContainerAfterNull = screen.getByTestId('mermaid-inner-container');
     expect(mermaidContainerAfterNull).toBeInTheDocument();
     expect(mermaidContainerAfterNull.innerHTML).toBe('');
   });
