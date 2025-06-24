@@ -49,3 +49,15 @@
   h3 { @apply text-2xl font-semibold mb-2; }
   */
 }
+
+/* Custom focus-visible styles for improved accessibility */
+*:focus-visible {
+  outline: 2px solid #1976D2; /* Tailwind primary.DEFAULT color */
+  outline-offset: 2px;
+  border-radius: 2px; /* Optional: adds a slight rounding to the outline itself */
+}
+
+/* Ensure high-contrast focus for specific components if needed, e.g., on dark backgrounds */
+/* .dark *:focus-visible { */
+  /* outline-color: #60a5fa; */ /* Tailwind primary.light color */
+/* } */
