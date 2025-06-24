@@ -91,8 +91,11 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         } else {
           containerRef.current.innerHTML = ''; // Clear if no definition
         }
-      } else if (!mermaidInstance.isInitialized && containerRef.current) {
-         containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid not initialized or container not ready.</p>`;
+      } else if (containerRef.current && mermaidInstance && !mermaidInstance.isInitialized) {
+         // This case should ideally be caught by the initialization block,
+         // but as a fallback if isInitialized is somehow false despite mermaidInstance existing.
+         containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library loaded but not initialized. Retrying...</p>`;
+         setTimeout(initializeAndRender, 500); // Retry initialization as well
       }
     };
 
