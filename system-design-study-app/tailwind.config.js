@@ -30,7 +30,7 @@ export default {
         // Colors from App.css - consider giving them semantic names if used consistently
         accent1: '#646cffaa',
         accent2: '#61dafbaa',
-        textMuted: '#888888', // from .read-the-docs
+        textMuted: '#4b5563', // neutral-600, use with dark:text-neutral-300 for dark mode
       },
       fontFamily: {
         sans: ['Inter', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],

@@ -30,7 +30,7 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900 p-4">
       <Card className="w-full max-w-md" shadow="shadow-xl" border="border border-neutral-200 dark:border-neutral-700">
         <h2 className="text-3xl font-bold text-center text-primary dark:text-primary-light mb-6">Login</h2>
-        {error && <p className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-3 rounded-md mb-4 text-sm">{error}</p>}
+        {error && <p role="alert" id="form-error-message" className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-3 rounded-md mb-4 text-sm">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -68,7 +68,7 @@ function LoginPage() {
             {loading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
-        <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-300">
           Don't have an account?{' '}
           <Link to="/signup" className="font-medium text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary">
             Sign up
