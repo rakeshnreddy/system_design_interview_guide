@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button'; // Import the common Button component
+import Card from './Card'; // Import the common Card component
 
 /**
  * Renders an interactive quiz component.
