@@ -70,7 +70,7 @@ function LoginPage() {
         </form>
         <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-300">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-medium text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary">
+          <Link to="/signup" className="font-medium text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary inline-block p-3 rounded">
             Sign up
           </Link>
         </p>

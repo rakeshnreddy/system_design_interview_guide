@@ -75,7 +75,7 @@ const Button = ({
   // Size styles mapping to Tailwind utility classes for padding and text size
   // These should use spacing and fontSize tokens from `tailwind.config.js`
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm', // Uses spacing-3, spacing-1.5 (custom or Tailwind default), fontSize.sm
+    sm: 'px-3 py-3 text-sm min-w-[2.75rem]', // Adjusted for 44px min height/width. py-3 (12px padding top/bottom) + text-sm (20px line-height) = 44px.
     md: 'px-4 py-2 text-base',// Uses spacing-4, spacing-2, fontSize.base
     lg: 'px-6 py-3 text-lg',  // Uses spacing-6, spacing-3, fontSize.lg
   };
