@@ -1,3 +1,4 @@
+import React from 'react'; // Added React import
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Layout from './Layout';
@@ -11,32 +12,35 @@ vi.mock('./Sidebar', () => ({
 }));
 
 // Mock MUI components that are not directly under test but are part of Layout
-vi.mock('@mui/material', async () => {
-  const actualMui = await vi.importActual('@mui/material');
-  return {
-    ...actualMui,
-    AppBar: ({ children, ...props }) => <header {...props}>{children}</header>,
-    Toolbar: ({ children, ...props }) => <div {...props}>{children}</div>,
-    IconButton: ({ children, ...props }) => <button {...props}>{children}</button>,
-    Typography: ({ children, noWrap, sx, ...props }) => (
-      <div
-        data-testid="mock-typography"
-        data-nowrap={noWrap ? 'true' : 'false'}
-        data-sx={JSON.stringify(sx)}
-        {...props}
-      >
-        {children}
-      </div>
-    ),
-    Box: ({ children, sx, ...props }) => (
-      <div data-testid="mock-box" data-sx={JSON.stringify(sx)} {...props}>
-        {children}
-      </div>
-    ),
-  };
-});
+vi.mock('@mui/material', () => ({
+  AppBar: ({ children, ...props }) => React.createElement('header', props, children),
+  Toolbar: ({ children, ...props }) => React.createElement('div', { ...props, 'data-testid': 'mock-toolbar' }, children), // Added testid for clarity
+  IconButton: ({ children, component: PassedComponent, ...props }) => {
+    if (PassedComponent) {
+      // If PassedComponent is Link, it needs a 'to' prop, which should be in ...props
+      return React.createElement(PassedComponent, props, children);
+    }
+    return React.createElement('button', props, children);
+  },
+  Typography: ({ children, noWrap, sx, ...props }) => (
+    React.createElement('div', {
+      'data-testid': "mock-typography",
+      'data-nowrap': noWrap ? 'true' : 'false',
+      'data-sx': JSON.stringify(sx),
+      ...props
+    }, children)
+  ),
+  Box: ({ children, sx, ...props }) => (
+    React.createElement('div', {
+      'data-testid': "mock-box",
+      'data-sx': JSON.stringify(sx),
+      ...props
+    }, children)
+  ),
+}));
+
 vi.mock('@mui/icons-material/Home', () => ({
-  default: () => <span data-testid="mock-home-icon">HomeIcon</span>,
+  default: () => React.createElement('span', { 'data-testid': "mock-home-icon" }, "HomeIcon"),
 }));
 
 

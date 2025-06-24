@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react'; // Added act
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
@@ -71,8 +71,10 @@ describe('App', () => {
     expect(await screen.findByText('Mocked CachesPage')).toBeInTheDocument();
   });
 
-  it('renders layout elements like the sidebar', () => {
-    renderAppWithRoute('/');
+  it('renders layout elements like the sidebar', async () => { // Made test async
+    await act(async () => {
+      renderAppWithRoute('/');
+    });
     // Check for a common layout element, e.g., a sidebar link
     // This assertion might need adjustment based on actual content.
     // The original test looked for "Caching Strategies", let's keep that.
