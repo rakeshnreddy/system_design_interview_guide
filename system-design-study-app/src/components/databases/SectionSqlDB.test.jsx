@@ -50,9 +50,8 @@ describe('SectionSqlDB', () => {
   test('accordion items are initially closed and show KeyboardArrowDownIcon', () => {
     render(<SectionSqlDB />);
     const firstItemTitle = 'Normalization vs. Denormalization';
-    // Content should not be in the document initially (or not visible, depending on how it's hidden)
-    // Using queryByText which returns null if not found.
-    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
+    // Content (identified by data-testid) should not be in the document initially
+    expect(screen.queryByTestId('accordion-content-0')).toBeNull();
 
     // Check for down arrow icon. The button contains the icon.
     const button = screen.getByText(firstItemTitle).closest('button');
@@ -70,8 +69,9 @@ describe('SectionSqlDB', () => {
     fireEvent.click(button);
 
     // Content should now be visible.
-    // Using a function to match text content more reliably with dangerouslySetInnerHTML
-    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
+    const contentDiv = screen.getByTestId('accordion-content-0');
+    expect(contentDiv).toBeInTheDocument();
+    expect(contentDiv).toHaveTextContent(/Normalization content/i); // Check for partial text within the div
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowDownIcon"]')).not.toBeInTheDocument();
   });
@@ -79,16 +79,17 @@ describe('SectionSqlDB', () => {
   test('clicking an open accordion item closes it', () => {
     render(<SectionSqlDB />);
     const firstItemTitle = 'Normalization vs. Denormalization';
-    const button = screen.getByText(firstItemTitle);
+    const button = screen.getByText(firstItemTitle).closest('button');
 
     // Open it first
     fireEvent.click(button);
-    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
+    expect(screen.getByTestId('accordion-content-0')).toBeInTheDocument();
+    expect(screen.getByTestId('accordion-content-0')).toHaveTextContent(/Normalization content/i);
     expect(button.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
 
     // Click again to close
     fireEvent.click(button);
-    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
+    expect(screen.queryByTestId('accordion-content-0')).toBeNull();
     expect(button.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
     expect(button.querySelector('[data-testid="KeyboardArrowUpIcon"]')).not.toBeInTheDocument();
   });
@@ -96,20 +97,22 @@ describe('SectionSqlDB', () => {
    test('only one accordion item can be open at a time', () => {
     render(<SectionSqlDB />);
     const firstItemTitle = "Normalization vs. Denormalization";
-    const secondItemTitle = "Indexing Strategies (B-Trees, B+Trees)";
+    const secondItemTitle = "Indexing Strategies (B-Trees, B+Trees)"; // This is accordion-content-1
 
     const firstButton = screen.getByText(firstItemTitle).closest('button');
     const secondButton = screen.getByText(secondItemTitle).closest('button');
 
     // Open first item
     fireEvent.click(firstButton);
-    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
-    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Indexing content'))).toBeNull();
+    expect(screen.getByTestId('accordion-content-0')).toBeInTheDocument();
+    expect(screen.getByTestId('accordion-content-0')).toHaveTextContent(/Normalization content/i);
+    expect(screen.queryByTestId('accordion-content-1')).toBeNull();
 
     // Open second item
     fireEvent.click(secondButton);
-    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
-    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Indexing content'))).toBeInTheDocument();
+    expect(screen.queryByTestId('accordion-content-0')).toBeNull();
+    expect(screen.getByTestId('accordion-content-1')).toBeInTheDocument();
+    expect(screen.getByTestId('accordion-content-1')).toHaveTextContent(/Indexing content/i);
     expect(secondButton.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(firstButton.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
   });

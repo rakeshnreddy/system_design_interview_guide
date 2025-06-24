@@ -115,7 +115,11 @@ const SectionSqlDB = () => {
             setOpenIdx={setOpenAccordion}
             lastItem={idx === deepDiveData.length - 1}
           >
-            <div className="prose prose-sm sm:prose-base max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: item.content }}></div>
+            <div
+              data-testid={`accordion-content-${idx}`}
+              className="prose prose-sm sm:prose-base max-w-none dark:prose-invert"
+              dangerouslySetInnerHTML={{ __html: item.content }}
+            ></div>
             {/* Placeholder for AI Query Button if needed for each accordion item */}
             {/* <Button size="sm" variant="outline" className="mt-2">Ask AI about this topic</Button> */}
           </AccordionItem>
