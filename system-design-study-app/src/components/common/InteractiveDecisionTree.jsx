@@ -55,7 +55,11 @@ function InteractiveDecisionTree({ treeData }) {
   const currentNode = treeData.nodes[currentNodeKey];
 
   if (!currentNode) {
-     return <p className="text-red-500">Error: Current node '{currentNodeKey}' not found in tree data.</p>;
+    return (
+      <p className="text-red-500">
+        {`Error: Current node '${currentNodeKey}' not found in tree data.`}
+      </p>
+    );
   }
 
   return (
