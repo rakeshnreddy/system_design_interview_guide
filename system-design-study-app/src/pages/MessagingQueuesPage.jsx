@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Corrected import
@@ -57,6 +58,9 @@ const mqSidebarSections = [
 ];
 
 function MessagingQueuesPage() {
+  const pageTitle = "Messaging Queues | System Design Interview Prep";
+  const pageDescription = "Explore message brokers, delivery semantics, and patterns for resilient and scalable distributed systems. Learn about Kafka, RabbitMQ, and more.";
+
   const SidebarComponentWithProps = (props) => (
     <TopicSidebar
       topicTitle="Messaging Queues"
@@ -67,14 +71,24 @@ function MessagingQueuesPage() {
   );
 
   return (
-    <TopicPageLayout
-      pageTitle="Messaging Queues"
-      SidebarComponent={SidebarComponentWithProps} // Correctly pass TopicSidebar with props
-      renderViewFunction={renderMessagingQueuesView}
-      initialView="intro"
-      appData={messagingQueuesAppData}
-      topicId="messaging-queues"
-    />
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Helmet>
+      <TopicPageLayout
+        pageTitle="Messaging Queues"
+        SidebarComponent={SidebarComponentWithProps} // Correctly pass TopicSidebar with props
+        renderViewFunction={renderMessagingQueuesView}
+        initialView="intro"
+        appData={messagingQueuesAppData}
+        topicId="messaging-queues"
+      />
+    </>
   );
 }
 

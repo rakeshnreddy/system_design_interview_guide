@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate for redirection
 import Card from '../components/common/Card';
@@ -40,8 +41,19 @@ function SignupPage() {
     setLoading(false);
   };
 
+  const pageTitle = "Sign Up | System Design Study App";
+  const pageDescription = "Create an account to access system design interview preparation guides, track your learning, and ace your interview.";
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900 p-4">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Helmet>
       <Card className="w-full max-w-md" shadow="shadow-xl" border="border border-neutral-200 dark:border-neutral-700">
         <h2 className="text-3xl font-bold text-center text-primary dark:text-primary-light mb-6">Create Account</h2>
         {error && <p role="alert" id="form-error-message" className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-3 rounded-md mb-4 text-sm">{error}</p>}
