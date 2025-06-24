@@ -87,8 +87,10 @@ describe('SignupPage', () => {
     expect(errorMessage).toHaveAttribute('id', 'form-error-message');
   });
 
-  test('Log in link has increased touch target padding', () => {
-    renderComponent();
+  test('Log in link has increased touch target padding', async () => { // Made test async
+    await act(async () => {
+      renderComponent();
+    });
     const loginLink = screen.getByRole('link', { name: /log in/i });
     expect(loginLink).toHaveClass('p-3');
   });

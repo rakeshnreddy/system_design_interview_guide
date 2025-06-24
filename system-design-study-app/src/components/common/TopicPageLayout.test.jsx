@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom'; // Moved import here
 import '@testing-library/jest-dom';
 import TopicPageLayout from './TopicPageLayout';
 import { vi } from 'vitest';
@@ -29,9 +30,7 @@ describe('TopicPageLayout', () => {
     mockRenderViewFunction.mockImplementation(() => <div data-testid="rendered-view">Rendered View Content</div>);
   });
 
-  it('renders content props and pageTitle', async () => { // Made test async
-    const { MemoryRouter } = await import('react-router-dom'); // Import MemoryRouter
-
+  it('renders content props and pageTitle', () => { // No longer needs async
     render(
       <MemoryRouter>
         <TopicPageLayout
@@ -52,10 +51,8 @@ describe('TopicPageLayout', () => {
     expect(mockRenderViewFunction).toHaveBeenCalledWith('testView', mockAppData);
   });
 
-  it('opens AI Scenario Modal when FAB is clicked', async () => { // Made test async
+  it('opens AI Scenario Modal when FAB is clicked', () => { // No longer needs async
     // mockRenderViewFunction is already defined and reset via beforeEach
-    const { MemoryRouter } = await import('react-router-dom'); // Import MemoryRouter
-
     render(
       <MemoryRouter>
         <TopicPageLayout
@@ -68,7 +65,7 @@ describe('TopicPageLayout', () => {
       />
     );
 
-    const fabButton = screen.getByRole('button', { name: /ask ai/i });
+    const fabButton = screen.getByRole('button', { name: 'ask ai' }); // Changed regex to string
     fireEvent.click(fabButton);
     expect(screen.getByTestId('ai-scenario-modal-mock')).toBeInTheDocument();
   });

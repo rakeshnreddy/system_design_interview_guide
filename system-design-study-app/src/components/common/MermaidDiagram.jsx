@@ -21,6 +21,7 @@ import Card from './Card'; // Import the Card component
  */
 const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const containerRef = useRef(null);
+  const timeoutIdRef = useRef(null); // Ref to store timeout ID
   // Ensure diagramId is always a string and valid for DOM IDs
   const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
 
@@ -38,7 +39,8 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         if (containerRef.current) {
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
         }
-        setTimeout(initializeAndRender, 500);
+        // Store timeout ID for cleanup
+        timeoutIdRef.current = setTimeout(initializeAndRender, 500);
         return;
       }
 
