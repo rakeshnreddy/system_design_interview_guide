@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button'; // Example usage of new Button
+import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
 
 const guides = [
   { path: '/caches', title: 'Caching Strategies', description: 'Master caching techniques, patterns, and trade-offs for high-performance systems.' },
@@ -13,16 +13,30 @@ const guides = [
 const HomePage = () => {
   const pageTitle = "System Design Interview Prep | Ace Your Interview";
   const pageDescription = "Comprehensive study guides on caching, databases, messaging queues, and more to help you ace your system design interview.";
+
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'twitter:card', content: 'summary_large_image', isProperty: false }, // Example
+      { name: 'twitter:title', content: pageTitle, isProperty: false }, // Twitter uses 'name' not 'property'
+      { name: 'twitter:description', content: pageDescription, isProperty: false },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
+
   return (
     <div className="text-center">
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-      </Helmet>
       <h1 className="text-5xl font-extrabold text-neutral-900 dark:text-white mb-6">
         Ace Your System Design Interview
       </h1>

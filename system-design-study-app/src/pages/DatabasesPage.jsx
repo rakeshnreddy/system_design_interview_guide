@@ -1,9 +1,9 @@
 // src/pages/DatabasesPage.jsx
-import React, { Suspense, lazy } from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Import the new TopicSidebar
+import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
 import { databasesAppData } from '../data/databasesAppData';
 
 const SectionIntroDB = lazy(() => import('../components/databases/SectionIntroDB'));
@@ -53,6 +53,27 @@ function DatabasesPage() {
   const pageTitle = "Database Selection | System Design Interview Prep";
   const pageDescription = "Learn to choose the right database (SQL vs. NoSQL), understand the CAP theorem, and explore various data models for system design interviews.";
 
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: pageTitle },
+      { name: 'twitter:description', content: pageDescription },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
+
   const SidebarComponentWithProps = (props) => (
     <TopicSidebar
       topicTitle="Database Topics" // Pass the topic title
@@ -64,14 +85,6 @@ function DatabasesPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-      </Helmet>
       <TopicPageLayout
         pageTitle="Databases Deep Dive"
         SidebarComponent={SidebarComponentWithProps}
