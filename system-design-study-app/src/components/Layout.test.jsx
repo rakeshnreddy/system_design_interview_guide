@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import Layout from './Layout';
 import { AuthProvider } from '../contexts/AuthContext'; // Assuming AuthProvider might be needed by children
-import { ThemeProvider } from '../contexts/ThemeContext'; // Assuming ThemeProvider might be needed
+import { CustomThemeProvider } from '../contexts/ThemeContext'; // Import the actual provider
 import '@testing-library/jest-dom';
 
 // Mock Sidebar as it's complex and not the focus of this specific test
@@ -49,13 +49,13 @@ describe('Layout Component', () => {
   const renderLayoutAtRoute = (route) => {
     return render(
       <MemoryRouter initialEntries={[route]}>
-        <ThemeProvider> {/* Assuming ThemeContext is used */}
+        <CustomThemeProvider> {/* Provide theme context */}
           <AuthProvider> {/* Assuming AuthContext is used */}
             <Layout>
               <div>Page Content</div>
             </Layout>
           </AuthProvider>
-        </ThemeProvider>
+        </CustomThemeProvider>
       </MemoryRouter>
     );
   };

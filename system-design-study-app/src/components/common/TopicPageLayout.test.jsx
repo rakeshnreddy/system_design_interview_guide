@@ -36,15 +36,18 @@ describe('TopicPageLayout', () => {
         <TopicPageLayout
           SidebarComponent={MockSidebarComponent}
           renderViewFunction={mockRenderViewFunction}
-        pageTitle="Test Topic Page"
-        appData={mockAppData}
-        initialView="testView"
-        topicId="test-topic"
-      />
+          pageTitle="Test Topic Page"
+          appData={mockAppData}
+          initialView="testView"
+          topicId="test-topic"
+        />
+      </MemoryRouter>
     );
 
-    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
-    expect(screen.getByText('Sidebar Content')).toBeInTheDocument();
+    // There are two sidebars rendered (temporary & permanent drawers)
+    const sidebars = screen.getAllByTestId('sidebar');
+    expect(sidebars.length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Sidebar Content').length).toBeGreaterThan(0);
     expect(screen.getByTestId('rendered-view')).toBeInTheDocument();
     expect(screen.getByText('Rendered View Content')).toBeInTheDocument();
     expect(screen.getByText('Test Topic Page')).toBeInTheDocument(); // Checks AppBar title
@@ -58,11 +61,12 @@ describe('TopicPageLayout', () => {
         <TopicPageLayout
           SidebarComponent={MockSidebarComponent}
           renderViewFunction={mockRenderViewFunction}
-        pageTitle="Test Topic with AI"
-        appData={{}}
-        initialView="default"
-        topicId="ai-topic"
-      />
+          pageTitle="Test Topic with AI"
+          appData={{}}
+          initialView="default"
+          topicId="ai-topic"
+        />
+      </MemoryRouter>
     );
 
     const fabButton = screen.getByRole('button', { name: 'ask ai' }); // Changed regex to string
