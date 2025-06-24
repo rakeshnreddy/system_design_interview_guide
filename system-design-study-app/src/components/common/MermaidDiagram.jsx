@@ -52,13 +52,23 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       // Clear previous diagram before rendering a new one
       containerRef.current.innerHTML = '';
       try {
-        // mermaid.render expects an ID of an element where it can temporarily render the SVG before giving it back
-        // It doesn't actually render *into* this ID if a callback is used.
-        // So, we create a temporary dummy element ID for this internal process.
-        const tempRenderId = `render-${validDiagramId}`;
+        const tempRenderId = `render-temp-${validDiagramId}`;
+        let tempElement = document.getElementById(tempRenderId);
+        if (!tempElement) {
+          tempElement = document.createElement('div');
+          tempElement.id = tempRenderId;
+          tempElement.style.display = 'none'; // Make it invisible
+          document.body.appendChild(tempElement);
+        }
+
         mermaidInstance.render(tempRenderId, diagramDefinition, (svgCode) => {
           if (containerRef.current) {
             containerRef.current.innerHTML = svgCode;
+            // Clean up the temporary element
+            const elToRemove = document.getElementById(tempRenderId);
+            if (elToRemove) {
+              elToRemove.parentNode.removeChild(elToRemove);
+            }
             // Optional: Adjust SVG styling if needed, e.g., for responsiveness
             const svgElement = containerRef.current.querySelector('svg');
             if (svgElement) {
