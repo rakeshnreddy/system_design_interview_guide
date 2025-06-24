@@ -25,9 +25,8 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
 
   useEffect(() => {
-    const mermaidInstance = window.mermaid;
-
     const initializeAndRender = async () => {
+      const mermaidInstance = window.mermaid; // Define mermaidInstance inside the async function or pass as arg
       if (!mermaidInstance) {
         if (containerRef.current) {
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
@@ -67,15 +66,22 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
             console.log(`MermaidDiagram: Rendering diagram for ID: ${validDiagramId}`);
             // It's crucial that mermaid.render is called after the DOM element (containerRef.current) is available.
             // The callback approach is generally safer.
-            const { svg } = await mermaidInstance.render(validDiagramId + "-svg", diagramDefinition);
-            if (containerRef.current) {
-                containerRef.current.innerHTML = svg;
+            // Reverting to the callback version of render.
+            // The first argument to render is an ID for mermaid's internal use if it needs to create a temporary element,
+            // even if we are using the callback to get the SVG code.
+            mermaidInstance.render(validDiagramId + "-temp-svg", diagramDefinition, (svgCode, bindFunctions) => {
+              if (containerRef.current) {
+                containerRef.current.innerHTML = svgCode;
+                if (bindFunctions) {
+                  bindFunctions(containerRef.current); // Bind events if necessary
+                }
                 const svgElement = containerRef.current.querySelector('svg');
                 if (svgElement) {
-                    svgElement.style.maxWidth = '100%';
-                    svgElement.style.height = 'auto';
+                  svgElement.style.maxWidth = '100%';
+                  svgElement.style.height = 'auto';
                 }
-            }
+              }
+            });
           } catch (e) {
             console.error("MermaidDiagram: Error rendering diagram:", validDiagramId, e);
             if (containerRef.current) {
@@ -86,7 +92,7 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
           containerRef.current.innerHTML = ''; // Clear if no definition
         }
       } else if (!mermaidInstance.isInitialized && containerRef.current) {
-         containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid initialized but state not updated, or container not ready.</p>`;
+         containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid not initialized or container not ready.</p>`;
       }
     };
 
