@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
  * @param {string} [props.className] - Additional CSS classes for styling the SVG.
  * @param {string | number} [props.size='1em'] - Size of the icon. Can be a number (pixels) or a string (e.g., '24px', '1.5em').
  * @param {string} [props.color='currentColor'] - Fill color for the SVG.
- * @param {string} props.ariaLabel - Accessible label for the icon.
+ * @param {string} props['aria-label'] - Accessible label for the icon.
  * @param {string} [props.title] - Optional title for the icon, often shown on hover.
  */
 const Icon = ({ name, className, size = '1em', color = 'currentColor', 'aria-label': ariaLabel, title, ...rest }) => {
