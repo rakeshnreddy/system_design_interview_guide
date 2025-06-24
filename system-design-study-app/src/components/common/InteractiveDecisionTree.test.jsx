@@ -2,14 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import InteractiveDecisionTree from './InteractiveDecisionTree';
+import { vi } from 'vitest';
 
 // Mock common components
-jest.mock('./Button', () => ({ children, onClick, disabled, className, ...rest }) => (
+vi.mock('./Button', () => ({ children, onClick, disabled, className, ...rest }) => (
   <button data-testid="button" onClick={onClick} disabled={disabled} className={className} {...rest}>
     {children}
   </button>
 ));
-jest.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
+vi.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
 
 
 const mockTreeData = {

@@ -2,9 +2,10 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MermaidDiagram from './MermaidDiagram';
+import { vi } from 'vitest';
 
 // Mock the Card component
-jest.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
+vi.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
 
 describe('MermaidDiagram', () => {
   const mockDiagramDefinition = 'graph TD;\nA-->B;';
@@ -13,8 +14,8 @@ describe('MermaidDiagram', () => {
   beforeEach(() => {
     // Reset the global mermaid object and its initialized state for each test
     mockMermaidAPI = {
-      initialize: jest.fn(),
-      render: jest.fn((id, definition, callback) => {
+      initialize: vi.fn(),
+      render: vi.fn((id, definition, callback) => {
         // Simulate successful rendering by calling the callback with mock SVG code
         callback('<svg data-testid="mermaid-svg"></svg>');
       }),

@@ -22,10 +22,12 @@ function PatternsView({ appData }) {
                   primary={<strong>Description:</strong>}
                   secondary={pattern.description}
                   sx={{ mb: 1 }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                 {pattern.pros && pattern.pros.length > 0 && (
                   <ListItemText
                     primary={<strong>Pros:</strong>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={
                       <List dense disablePadding>
                         {pattern.pros.map((pro, index) => (
@@ -41,6 +43,7 @@ function PatternsView({ appData }) {
                 {pattern.cons && pattern.cons.length > 0 && (
                   <ListItemText
                     primary={<strong>Cons:</strong>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={
                       <List dense disablePadding>
                         {pattern.cons.map((con, index) => (
@@ -56,6 +59,7 @@ function PatternsView({ appData }) {
                 <ListItemText
                   primary={<strong>Common Use Cases:</strong>}
                   secondary={pattern.useCases}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
