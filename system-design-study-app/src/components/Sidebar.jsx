@@ -9,13 +9,14 @@ import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
 
 const navItems = [
   { path: '/', label: 'Home', exact: true },
-  { path: '/interview-approach', label: 'Interview Approach' }, // Added new item
+  { path: '/topics', label: 'All Topics' }, // Added new "All Topics" link
+  { path: '/interview-approach', label: 'Interview Approach' },
   { path: '/caches', label: 'Caching Strategies' },
   { path: '/databases', label: 'Database Selection' },
   { path: '/messaging-queues', label: 'Messaging Queues' },
-  { path: '/load-balancing', label: 'Load Balancing' }, // Added new item
-  { path: '/api-design', label: 'API Design' }, // Added new item
-  { path: '/scalability-concepts', label: 'Scalability Concepts' }, // Added new item
+  { path: '/load-balancing', label: 'Load Balancing' },
+  { path: '/api-design', label: 'API Design' },
+  { path: '/scalability-concepts', label: 'Scalability Concepts' },
 ];
 
 const Sidebar = () => {
