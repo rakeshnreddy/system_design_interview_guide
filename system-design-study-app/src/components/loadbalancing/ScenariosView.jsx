@@ -26,14 +26,17 @@ function ScenariosView({ appData }) {
                   primary={<strong>Description:</strong>}
                   secondary={scenario.description}
                   sx={{ mb: 1 }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                 <ListItemText
                   primary={<strong>Solution / Strategy:</strong>}
                   secondary={scenario.solution.strategy}
                   sx={{ mb: 1 }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                  <ListItemText
                   primary={<strong>Key Components:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {scenario.solution.components.map((component, index) => (
