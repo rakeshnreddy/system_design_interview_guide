@@ -100,7 +100,7 @@ function SignupPage() {
         </form>
         <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-300">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary">
+          <Link to="/login" className="font-medium text-primary hover:text-primary-dark dark:text-primary-light dark:hover:text-primary inline-block p-3 rounded">
             Log in
           </Link>
         </p>

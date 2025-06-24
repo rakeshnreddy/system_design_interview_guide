@@ -39,7 +39,7 @@ const Layout = ({ children }) => {
             >
               <HomeIcon />
             </IconButton>
-            <Typography variant="h6" color="inherit" component="div">
+            <Typography variant="h6" color="inherit" component="div" noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
               System Design Guide
             </Typography>
           </Toolbar>
