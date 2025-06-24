@@ -2,14 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SectionSqlDB from './SectionSqlDB';
+import { vi } from 'vitest';
 
 // Mock Material UI Icons
-jest.mock('@mui/icons-material/KeyboardArrowDown', () => () => <svg data-testid="KeyboardArrowDownIcon" />);
-jest.mock('@mui/icons-material/KeyboardArrowUp', () => () => <svg data-testid="KeyboardArrowUpIcon" />);
+vi.mock('@mui/icons-material/KeyboardArrowDown', () => () => <svg data-testid="KeyboardArrowDownIcon" />);
+vi.mock('@mui/icons-material/KeyboardArrowUp', () => () => <svg data-testid="KeyboardArrowUpIcon" />);
 
 // Mock common components if they have complex logic or external dependencies not relevant to this test
-jest.mock('../common/Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
-jest.mock('../common/Button', () => ({ children, onClick, className, ...rest }) => (
+vi.mock('../common/Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
+vi.mock('../common/Button', () => ({ children, onClick, className, ...rest }) => (
   <button data-testid="button" onClick={onClick} className={className} {...rest}>
     {children}
   </button>

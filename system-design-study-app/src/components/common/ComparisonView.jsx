@@ -1,4 +1,5 @@
 import React from 'react';
+import Card from './Card'; // Import the Card component
 
 /**
  * Displays a comparison table for two items across multiple features.
