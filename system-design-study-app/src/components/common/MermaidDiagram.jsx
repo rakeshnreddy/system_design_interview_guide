@@ -9,19 +9,9 @@ import Card from './Card'; // Import the Card component
 // Note: 'base' theme requires customThemeVariables to be set.
 // We'll use 'default' and let users with dark mode rely on Mermaid's own detection or future theme switching.
 
-// Initialize mermaid globally once, if available and not already initialized.
-if (window.mermaid && typeof window.mermaid.initialize === 'function' && !window.mermaid.isInitialized) {
-  try {
-    window.mermaid.initialize({
-      startOnLoad: false, // We will render manually
-      theme: 'default',   // or 'neutral'
-      // securityLevel: 'loose', // Consider if complex diagrams fail due to DOMPurify/XSS protection
-    });
-    window.mermaid.isInitialized = true; // Flag to prevent re-initialization
-  } catch (e) {
-    console.error("Error initializing Mermaid from global:", e);
-  }
-}
+// Global flag to ensure mermaid is initialized only once.
+// We'll manage this within the component's useEffect for better control with CDN loading.
+// let isMermaidInitialized = false;
 
 /**
  * Renders a Mermaid diagram from a string definition.
@@ -35,46 +25,53 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
 
   useEffect(() => {
-    const mermaidInstance = window.mermaid; // Use the global mermaid
+    const mermaidInstance = window.mermaid;
 
-    if (mermaidInstance && containerRef.current && diagramDefinition) {
-      // Fallback initialization if it wasn't done during initial script load/module evaluation
-      if (typeof mermaidInstance.initialize === 'function' && !mermaidInstance.isInitialized) {
-        try {
-          mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
-          mermaidInstance.isInitialized = true;
-        } catch (e) {
-          console.error("Error re-initializing Mermaid in useEffect:", e);
-          // Potentially render an error message if initialization fails critically
+    if (mermaidInstance && typeof mermaidInstance.initialize === 'function' && !mermaidInstance.isInitialized) {
+      try {
+        console.log("Initializing Mermaid in useEffect");
+        mermaidInstance.initialize({
+          startOnLoad: false,
+          theme: 'default',
+          // securityLevel: 'loose', // Consider if complex diagrams fail
+        });
+        mermaidInstance.isInitialized = true; // Set the global flag
+      } catch (e) {
+        console.error("Error initializing Mermaid in useEffect:", e);
+        if (containerRef.current) {
+            containerRef.current.innerHTML = `<p class="text-red-500">Failed to initialize Mermaid: ${e.message}</p>`;
         }
+        return; // Stop if initialization fails
+      }
+    }
+
+    if (mermaidInstance && mermaidInstance.isInitialized && containerRef.current && diagramDefinition) {
+      containerRef.current.innerHTML = ''; // Clear previous diagram
+      const tempRenderId = `render-temp-${validDiagramId}`;
+
+      // Ensure the temporary element for rendering exists
+      let tempElement = document.getElementById(tempRenderId);
+      if (!tempElement) {
+        tempElement = document.createElement('div');
+        tempElement.id = tempRenderId;
+        tempElement.style.display = 'none';
+        document.body.appendChild(tempElement);
       }
 
-      // Clear previous diagram before rendering a new one
-      containerRef.current.innerHTML = '';
       try {
-        const tempRenderId = `render-temp-${validDiagramId}`;
-        let tempElement = document.getElementById(tempRenderId);
-        if (!tempElement) {
-          tempElement = document.createElement('div');
-          tempElement.id = tempRenderId;
-          tempElement.style.display = 'none'; // Make it invisible
-          document.body.appendChild(tempElement);
-        }
-
+        console.log(`Attempting to render Mermaid diagram with ID: ${tempRenderId}`);
         mermaidInstance.render(tempRenderId, diagramDefinition, (svgCode) => {
           if (containerRef.current) {
             containerRef.current.innerHTML = svgCode;
-            // Clean up the temporary element
-            const elToRemove = document.getElementById(tempRenderId);
-            if (elToRemove) {
-              elToRemove.parentNode.removeChild(elToRemove);
-            }
-            // Optional: Adjust SVG styling if needed, e.g., for responsiveness
             const svgElement = containerRef.current.querySelector('svg');
             if (svgElement) {
               svgElement.style.maxWidth = '100%';
-              svgElement.style.height = 'auto'; // Maintain aspect ratio
+              svgElement.style.height = 'auto';
             }
+          }
+          // Clean up the temporary element
+          if (tempElement && tempElement.parentNode) {
+            tempElement.parentNode.removeChild(tempElement);
           }
         });
       } catch (e) {
@@ -82,12 +79,20 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         if (containerRef.current) {
           containerRef.current.innerHTML = `<p class="text-red-500">Error rendering diagram: ${e.message}. Check console.</p>`;
         }
+        // Clean up temp element on error too
+        if (tempElement && tempElement.parentNode) {
+            tempElement.parentNode.removeChild(tempElement);
+        }
       }
-    } else if (containerRef.current) {
-      // If no diagram definition, clear the container
-      containerRef.current.innerHTML = '';
+    } else if (containerRef.current && !diagramDefinition) {
+      containerRef.current.innerHTML = ''; // Clear if no definition
+    } else if (!mermaidInstance) {
+        if (containerRef.current) {
+            containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Waiting for CDN...</p>`;
+        }
+        // Optionally, you could add a retry mechanism or a listener for when window.mermaid becomes available
     }
-  }, [diagramDefinition, validDiagramId]); // validDiagramId in dependency array
+  }, [diagramDefinition, validDiagramId]);
 
   // Using a key on the div helps React re-render it properly if diagramId changes,
   // though with the cleanup in useEffect, it might be less critical.

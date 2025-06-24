@@ -22,9 +22,11 @@ function ProtocolsView({ appData }) {
                   primary={<strong>Structure / Key Characteristics:</strong>}
                   secondary={protocol.structure}
                   sx={{ mb: 1 }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                 <ListItemText
                   primary={<strong>Pros:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {protocol.pros.map((pro, index) => (
@@ -38,6 +40,7 @@ function ProtocolsView({ appData }) {
                 />
                 <ListItemText
                   primary={<strong>Cons:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {protocol.cons.map((con, index) => (
@@ -52,6 +55,7 @@ function ProtocolsView({ appData }) {
                 <ListItemText
                   primary={<strong>Common Use Cases:</strong>}
                   secondary={protocol.useCases}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
