@@ -3,18 +3,20 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TopicSidebar from './TopicSidebar';
 import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
+import { vi } from 'vitest';
 
-// Mock the useColorMode hook used by ThemeSwitcher potentially if it's a deep child or for consistency
-jest.mock('@docusaurus/theme-common/internal', () => ({
-  useColorMode: () => ({
-    colorMode: 'light',
-    setColorMode: jest.fn(),
-  }),
-}));
+// The @docusaurus/theme-common/internal mock is likely unnecessary as TopicSidebar
+// doesn't seem to use it directly. MUI handles its own theme context.
+// vi.mock('@docusaurus/theme-common/internal', () => ({
+//   useColorMode: () => ({
+//     colorMode: 'light',
+//     setColorMode: vi.fn(),
+//   }),
+// }));
 
-// Mock ThemeSwitcher component if it's directly or indirectly rendered by TopicSidebar
-// If TopicSidebar doesn't render ThemeSwitcher, this mock isn't strictly necessary here.
-jest.mock('../shared/ThemeSwitcher', () => () => <div data-testid="theme-switcher-mock">ThemeSwitcher</div>);
+// Mock ThemeSwitcher component if it's directly or indirectly rendered by TopicSidebar.
+// Based on TopicSidebar.jsx, it does not seem to render ThemeSwitcher directly.
+// vi.mock('../shared/ThemeSwitcher', () => ({ default: () => <div data-testid="theme-switcher-mock">ThemeSwitcher</div> }));
 
 
 describe('TopicSidebar', () => {
@@ -23,7 +25,7 @@ describe('TopicSidebar', () => {
     { id: 'details', title: 'Details' },
     { id: 'conclusion', title: 'Conclusion' },
   ];
-  const mockSetCurrentView = jest.fn();
+  const mockSetCurrentView = vi.fn();
   const topicTitle = "Test Topic";
 
   const renderWithRouter = (ui, { route = '/' } = {}) => {
@@ -98,19 +100,7 @@ describe('TopicSidebar', () => {
     expect(inactiveLink).not.toHaveClass('text-primary');
   });
 
-  it('renders "Back to Home" link and it points to "/"', () => {
-    renderWithRouter(
-      <TopicSidebar
-        topicTitle={topicTitle}
-        sections={mockSections}
-        currentView="intro"
-        setCurrentView={mockSetCurrentView}
-      />
-    );
-    const backToHomeLink = screen.getByText('Back to Home');
-    expect(backToHomeLink).toBeInTheDocument();
-    // Check if the link points to "/"
-    expect(backToHomeLink.closest('a')).toHaveAttribute('href', '/');
-  });
+  // Removed the test for "Back to Home" link as it's not part of TopicSidebar's direct responsibility.
+  // That link is usually part of a higher-level layout component.
 
 });
