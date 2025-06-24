@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button'; // Example usage of new Button
 
@@ -10,8 +11,18 @@ const guides = [
 ];
 
 const HomePage = () => {
+  const pageTitle = "System Design Interview Prep | Ace Your Interview";
+  const pageDescription = "Comprehensive study guides on caching, databases, messaging queues, and more to help you ace your system design interview.";
   return (
     <div className="text-center">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Helmet>
       <h1 className="text-5xl font-extrabold text-neutral-900 dark:text-white mb-6">
         Ace Your System Design Interview
       </h1>

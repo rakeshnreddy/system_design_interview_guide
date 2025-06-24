@@ -1,5 +1,6 @@
 // src/pages/DatabasesPage.jsx
 import React, { Suspense, lazy } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Import the new TopicSidebar
@@ -49,6 +50,9 @@ const databaseSidebarSections = [
 ];
 
 function DatabasesPage() {
+  const pageTitle = "Database Selection | System Design Interview Prep";
+  const pageDescription = "Learn to choose the right database (SQL vs. NoSQL), understand the CAP theorem, and explore various data models for system design interviews.";
+
   const SidebarComponentWithProps = (props) => (
     <TopicSidebar
       topicTitle="Database Topics" // Pass the topic title
@@ -59,14 +63,24 @@ function DatabasesPage() {
   );
 
   return (
-    <TopicPageLayout
-      pageTitle="Databases Deep Dive"
-      SidebarComponent={SidebarComponentWithProps}
-      renderViewFunction={renderDatabasesView}
-      initialView="intro"
-      appData={databasesAppData}
-      topicId="databases"
-    />
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Helmet>
+      <TopicPageLayout
+        pageTitle="Databases Deep Dive"
+        SidebarComponent={SidebarComponentWithProps}
+        renderViewFunction={renderDatabasesView}
+        initialView="intro"
+        appData={databasesAppData}
+        topicId="databases"
+      />
+    </>
   );
 }
 

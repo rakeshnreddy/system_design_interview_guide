@@ -1,5 +1,6 @@
 // src/pages/CachesPage.jsx
 import React, { Suspense, lazy } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Import the new TopicSidebar
@@ -49,6 +50,9 @@ const cacheSidebarSections = [
 ];
 
 function CachesPage() {
+  const pageTitle = "Caching Strategies | System Design Interview Prep";
+  const pageDescription = "Master caching techniques, patterns, and trade-offs for high-performance systems. Learn about cache invalidation, eviction policies, and more.";
+
   const SidebarComponentWithProps = (props) => (
     <TopicSidebar
       topicTitle="Caching Topics" // Pass the topic title
@@ -59,14 +63,24 @@ function CachesPage() {
   );
 
   return (
-    <TopicPageLayout
-      pageTitle="Caching Strategies"
-      SidebarComponent={SidebarComponentWithProps}
-      renderViewFunction={renderCachesView}
-      initialView="fundamentals"
-      appData={cachesAppData}
-      topicId="caches"
-    />
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+      </Helmet>
+      <TopicPageLayout
+        pageTitle="Caching Strategies"
+        SidebarComponent={SidebarComponentWithProps}
+        renderViewFunction={renderCachesView}
+        initialView="fundamentals"
+        appData={cachesAppData}
+        topicId="caches"
+      />
+    </>
   );
 }
 
