@@ -1,20 +1,24 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CustomThemeProvider, useTheme as useCustomTheme } from './contexts/ThemeContext';
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
 import { lightTheme, darkTheme } from './styles/muiThemes';
 import Layout from './components/Layout';
-import HomePage from './pages/HomePage';
-import CachesPage from './pages/CachesPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import DatabasesPage from './pages/DatabasesPage';
-import MessagingQueuesPage from './pages/MessagingQueuesPage';
-import LoadBalancingPage from './components/loadbalancing/LoadBalancingPage';
-import ApiDesignPage from './components/apidesign/ApiDesignPage';
-import ScalabilityConceptsPage from './components/scalabilityconcepts/ScalabilityConceptsPage';
-import InterviewApproachPage from './components/interviewapproach/InterviewApproachPage';
+import LoadingSpinner from './components/common/LoadingSpinner'; // Import the loading spinner
 import './styles/global.css';
+
+// Dynamically import page components
+const HomePage = lazy(() => import('./pages/HomePage'));
+const CachesPage = lazy(() => import('./pages/CachesPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const DatabasesPage = lazy(() => import('./pages/DatabasesPage'));
+const MessagingQueuesPage = lazy(() => import('./pages/MessagingQueuesPage'));
+const LoadBalancingPage = lazy(() => import('./components/loadbalancing/LoadBalancingPage'));
+const ApiDesignPage = lazy(() => import('./components/apidesign/ApiDesignPage'));
+const ScalabilityConceptsPage = lazy(() => import('./components/scalabilityconcepts/ScalabilityConceptsPage'));
+const InterviewApproachPage = lazy(() => import('./components/interviewapproach/InterviewApproachPage'));
 
 // Inner component to access both Auth and CustomTheme contexts
 function AppContent() {
@@ -26,18 +30,20 @@ function AppContent() {
       <CssBaseline /> {/* Normalizes styles and applies MUI's dark background in dark mode */}
       <Router>
         <Layout> {/* Layout now has access to AuthContext and benefits from MuiThemeProvider */}
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/caches" element={<CachesPage />} />
-            <Route path="/databases" element={<DatabasesPage />} />
-            <Route path="/messaging-queues" element={<MessagingQueuesPage />} />
-            <Route path="/load-balancing" element={<LoadBalancingPage />} />
-            <Route path="/api-design" element={<ApiDesignPage />} />
-            <Route path="/scalability-concepts" element={<ScalabilityConceptsPage />} />
-            <Route path="/interview-approach" element={<InterviewApproachPage />} />
-          </Routes>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/caches" element={<CachesPage />} />
+              <Route path="/databases" element={<DatabasesPage />} />
+              <Route path="/messaging-queues" element={<MessagingQueuesPage />} />
+              <Route path="/load-balancing" element={<LoadBalancingPage />} />
+              <Route path="/api-design" element={<ApiDesignPage />} />
+              <Route path="/scalability-concepts" element={<ScalabilityConceptsPage />} />
+              <Route path="/interview-approach" element={<InterviewApproachPage />} />
+            </Routes>
+          </Suspense>
         </Layout>
       </Router>
     </MuiThemeProvider>
