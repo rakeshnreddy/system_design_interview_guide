@@ -26,9 +26,11 @@ function TypesView({ appData }) {
                   primary={<strong>Description:</strong>}
                   secondary={lbType.description}
                   sx={{ mb: 1 }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                 <ListItemText
                   primary={<strong>Pros:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {lbType.pros.map((pro, index) => (
@@ -42,6 +44,7 @@ function TypesView({ appData }) {
                 />
                 <ListItemText
                   primary={<strong>Cons:</strong>}
+                  secondaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <List dense disablePadding>
                       {lbType.cons.map((con, index) => (
@@ -56,6 +59,7 @@ function TypesView({ appData }) {
                 <ListItemText
                   primary={<strong>Use Cases:</strong>}
                   secondary={lbType.useCases}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />

@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button';
-import Icon from '../common/Icon';   // Import Icon
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // AccordionItem Component (can be moved to a common components folder if used elsewhere)
 const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) => {
@@ -22,7 +23,7 @@ const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) 
                 aria-expanded={isOpen}
             >
                 <span className="text-lg">{title}</span>
-                <Icon name={isOpen ? "chevron-up" : "chevron-down"} className="h-5 w-5" />
+                {isOpen ? <KeyboardArrowUpIcon className="h-5 w-5" /> : <KeyboardArrowDownIcon className="h-5 w-5" />}
             </Button>
             {isOpen && (
                 <div className={`p-5 text-base text-neutral-600 dark:text-neutral-300 bg-white dark:bg-neutral-700/30 ${lastItem ? 'rounded-b-lg' : 'border-b border-neutral-300 dark:border-neutral-600'}`}>
