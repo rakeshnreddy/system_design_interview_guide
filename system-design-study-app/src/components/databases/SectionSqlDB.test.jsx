@@ -5,16 +5,21 @@ import SectionSqlDB from './SectionSqlDB';
 import { vi } from 'vitest';
 
 // Mock Material UI Icons
-vi.mock('@mui/icons-material/KeyboardArrowDown', () => () => <svg data-testid="KeyboardArrowDownIcon" />);
-vi.mock('@mui/icons-material/KeyboardArrowUp', () => () => <svg data-testid="KeyboardArrowUpIcon" />);
+// Assuming KeyboardArrowDown and KeyboardArrowUp are default exports from their modules
+vi.mock('@mui/icons-material/KeyboardArrowDown', () => ({ default: () => <svg data-testid="KeyboardArrowDownIcon" /> }));
+vi.mock('@mui/icons-material/KeyboardArrowUp', () => ({ default: () => <svg data-testid="KeyboardArrowUpIcon" /> }));
 
 // Mock common components if they have complex logic or external dependencies not relevant to this test
-vi.mock('../common/Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
-vi.mock('../common/Button', () => ({ children, onClick, className, ...rest }) => (
-  <button data-testid="button" onClick={onClick} className={className} {...rest}>
-    {children}
-  </button>
-));
+vi.mock('../common/Card', () => ({
+  default: ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>
+}));
+vi.mock('../common/Button', () => ({
+  default: ({ children, onClick, className, ...rest }) => (
+    <button data-testid="button" onClick={onClick} className={className} {...rest}>
+      {children}
+    </button>
+  )
+}));
 
 describe('SectionSqlDB', () => {
   const mockDeepDiveData = [

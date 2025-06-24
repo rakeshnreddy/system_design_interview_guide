@@ -5,7 +5,9 @@ import MermaidDiagram from './MermaidDiagram';
 import { vi } from 'vitest';
 
 // Mock the Card component
-vi.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
+vi.mock('./Card', () => ({
+  default: ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>
+}));
 
 describe('MermaidDiagram', () => {
   const mockDiagramDefinition = 'graph TD;\nA-->B;';
