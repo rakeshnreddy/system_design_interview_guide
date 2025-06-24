@@ -26,6 +26,12 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
 
   useEffect(() => {
     const initializeAndRender = async () => {
+      // Prioritize clearing if diagramDefinition is empty
+      if (containerRef.current && !diagramDefinition) {
+        containerRef.current.innerHTML = '';
+        return;
+      }
+
       const mermaidInstance = window.mermaid; // Define mermaidInstance inside the async function or pass as arg
       if (!mermaidInstance) {
         if (containerRef.current) {
