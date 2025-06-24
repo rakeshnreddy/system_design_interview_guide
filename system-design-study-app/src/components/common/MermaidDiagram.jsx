@@ -25,14 +25,15 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
 
   useEffect(() => {
-    const initializeAndRender = async () => {
-      // Prioritize clearing if diagramDefinition is empty
-      if (containerRef.current && !diagramDefinition) {
-        containerRef.current.innerHTML = '';
-        return;
-      }
+    // If there's no diagram definition, ensure the container is cleared and do nothing else.
+    if (containerRef.current && !diagramDefinition) {
+      containerRef.current.innerHTML = '';
+      return; // Exit early
+    }
 
-      const mermaidInstance = window.mermaid; // Define mermaidInstance inside the async function or pass as arg
+    // Proceed with initialization and rendering only if there is a diagramDefinition
+    const initializeAndRender = async () => {
+      const mermaidInstance = window.mermaid;
       if (!mermaidInstance) {
         if (containerRef.current) {
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
