@@ -50,8 +50,9 @@ describe('SectionSqlDB', () => {
   test('accordion items are initially closed and show KeyboardArrowDownIcon', () => {
     render(<SectionSqlDB />);
     const firstItemTitle = 'Normalization vs. Denormalization';
-    // Content should not be visible initially
-    expect(screen.queryByText('Normalization content.')).not.toBeVisible();
+    // Content should not be in the document initially (or not visible, depending on how it's hidden)
+    // Using queryByText which returns null if not found.
+    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
 
     // Check for down arrow icon. The button contains the icon.
     const button = screen.getByText(firstItemTitle).closest('button');
@@ -68,10 +69,9 @@ describe('SectionSqlDB', () => {
 
     fireEvent.click(button);
 
-    // Content should now be visible. We use dangerouslySetInnerHTML so direct text match for <p> is tricky.
-    // A better approach would be to have a test-id on the content div if possible,
-    // or check for a snippet of the text without HTML.
-    expect(screen.getByText(/Normalization content\./)).toBeInTheDocument();
+    // Content should now be visible.
+    // Using a function to match text content more reliably with dangerouslySetInnerHTML
+    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowDownIcon"]')).not.toBeInTheDocument();
   });
@@ -83,13 +83,12 @@ describe('SectionSqlDB', () => {
 
     // Open it first
     fireEvent.click(button);
-    expect(screen.getByText(/Normalization content\./)).toBeInTheDocument();
+    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
     expect(button.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
 
     // Click again to close
     fireEvent.click(button);
-    // A robust way to check for not visible/not present if content is removed from DOM:
-    expect(screen.queryByText(/Normalization content\./)).not.toBeVisible();
+    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
     expect(button.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
     expect(button.querySelector('[data-testid="KeyboardArrowUpIcon"]')).not.toBeInTheDocument();
   });
@@ -99,18 +98,18 @@ describe('SectionSqlDB', () => {
     const firstItemTitle = "Normalization vs. Denormalization";
     const secondItemTitle = "Indexing Strategies (B-Trees, B+Trees)";
 
-    const firstButton = screen.getByText(firstItemTitle);
-    const secondButton = screen.getByText(secondItemTitle);
+    const firstButton = screen.getByText(firstItemTitle).closest('button');
+    const secondButton = screen.getByText(secondItemTitle).closest('button');
 
     // Open first item
     fireEvent.click(firstButton);
-    expect(screen.getByText(/Normalization content\./)).toBeInTheDocument();
-    expect(screen.queryByText(/Indexing content\./)).not.toBeVisible();
+    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeInTheDocument();
+    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Indexing content'))).toBeNull();
 
     // Open second item
     fireEvent.click(secondButton);
-    expect(screen.queryByText(/Normalization content\./)).not.toBeVisible();
-    expect(screen.getByText(/Indexing content\./)).toBeInTheDocument();
+    expect(screen.queryByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Normalization content'))).toBeNull();
+    expect(screen.getByText((content, element) => element.tagName.toLowerCase() === 'p' && content.startsWith('Indexing content'))).toBeInTheDocument();
     expect(secondButton.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(firstButton.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
   });
