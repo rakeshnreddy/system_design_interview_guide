@@ -5,12 +5,16 @@ import InteractiveDecisionTree from './InteractiveDecisionTree';
 import { vi } from 'vitest';
 
 // Mock common components
-vi.mock('./Button', () => ({ children, onClick, disabled, className, ...rest }) => (
-  <button data-testid="button" onClick={onClick} disabled={disabled} className={className} {...rest}>
-    {children}
-  </button>
-));
-vi.mock('./Card', () => ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>);
+vi.mock('./Button', () => ({
+  default: ({ children, onClick, disabled, className, ...rest }) => (
+    <button data-testid="button" onClick={onClick} disabled={disabled} className={className} {...rest}>
+      {children}
+    </button>
+  )
+}));
+vi.mock('./Card', () => ({
+  default: ({ children, ...rest }) => <div data-testid="card" {...rest}>{children}</div>
+}));
 
 
 const mockTreeData = {

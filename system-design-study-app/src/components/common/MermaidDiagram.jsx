@@ -27,8 +27,6 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   useEffect(() => {
     const mermaidInstance = window.mermaid;
 
-    const mermaidInstance = window.mermaid;
-
     const initializeAndRender = async () => {
       if (!mermaidInstance) {
         if (containerRef.current) {
