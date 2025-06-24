@@ -109,7 +109,7 @@ function InteractiveDecisionTree({ treeData }) {
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 

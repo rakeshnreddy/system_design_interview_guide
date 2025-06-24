@@ -108,7 +108,7 @@ function QuizView({ quizTitle, questions }) {
         >
           Retake Quiz
         </Button>
-      </div>
+      </Card>
     );
   }
 
@@ -181,7 +181,7 @@ function QuizView({ quizTitle, questions }) {
           </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 

@@ -62,7 +62,7 @@ function ComparisonView({ comparisonTitle, item1Name, item2Name, featuresData, s
           <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 

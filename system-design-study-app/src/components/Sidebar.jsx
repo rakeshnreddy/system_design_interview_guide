@@ -86,7 +86,7 @@ const Sidebar = () => {
         )}
       </div>
 
-      <div className="mt-auto pt-5 text-center text-xs text-neutral-400 dark:text-neutral-500">
+      <div className="mt-auto pt-5 text-center text-xs text-neutral-500 dark:text-neutral-500">
         <p>&copy; {new Date().getFullYear()} StudyApp Inc.</p>
       </div>
     </div>
