@@ -14,30 +14,24 @@ describe('MermaidDiagram', () => {
   let mockMermaidAPI;
 
   beforeEach(() => {
-    // Reset the global mermaid object and its initialized state for each test
     mockMermaidAPI = {
       initialize: vi.fn(),
-      render: vi.fn((diagramId, mermaidDefinition, callback) => {
-        if (mermaidDefinition.includes("error")) {
-          // Simulate error by not calling callback or throwing if appropriate
-          // For now, just don't call callback to simulate a silent failure that might lead to timeout or error message in component
-          // Or, to directly test error handling in component:
-          // throw new Error('Simulated Mermaid Test Render Error');
-          // However, the component's catch block might format this differently.
-          // Let's try to make the component show its own error message.
-          // The component's catch block will set innerHTML to an error message.
-          // To test this, we let it throw, or make the callback throw.
-          // For simplicity, if the test needs an error, it can re-mock render.
-          const svgId = diagramId.replace(/-temp-svg$/, ''); // Match component's potential svg id
-          callback(`<svg data-testid="${svgId.includes('new') ? 'mermaid-svg-new' : 'mermaid-svg'}"></svg>`, () => {});
-          return;
+      render: vi.fn((renderId, definition, callback) => {
+        // The component passes validDiagramId + "-temp-svg" as renderId
+        // The testid in the svg should be based on validDiagramId without the suffix.
+        // For simplicity in the mock, we'll use a generic 'mermaid-svg' or 'mermaid-svg-new'
+        // and ensure the tests look for these specific testids.
+        let svgTestId = 'mermaid-svg';
+        if (renderId.includes('test-change-new')) { // Specific for the rerender test case
+            svgTestId = 'mermaid-svg-new';
         }
-        // Simulate successful rendering by calling the callback with mock SVG code
-        // The ID passed to the callback's SVG should match what the component expects for data-testid
-        const svgId = diagramId.replace(/-temp-svg$/, ''); // Match component's potential svg id
-        callback(`<svg data-testid="${svgId.includes('new') ? 'mermaid-svg-new' : 'mermaid-svg'}"></svg>`, () => {});
+         // Simulate error condition for the error test
+        if (definition.includes("error-diagram")) { // Use a specific string to trigger error
+            throw new Error('Test render error');
+        }
+        callback(`<svg data-testid="${svgTestId}"></svg>`, vi.fn());
       }),
-      isInitialized: false, // Ensure this is reset
+      isInitialized: false,
     };
     window.mermaid = mockMermaidAPI;
   });
@@ -74,56 +68,64 @@ describe('MermaidDiagram', () => {
     await act(async () => {
       render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-render" />);
     });
-    // Check that render was called. The first argument is a generated ID for Mermaid's internal use.
+    // Check that render was called. The first argument is the dynamically generated ID.
+    // The component generates an ID like `mermaid-${diagramId}-temp-svg` for the render call.
     expect(mockMermaidAPI.render).toHaveBeenCalledWith(
-      "mermaid-test-render-temp-svg", // The ID passed to mermaid.render
+      `mermaid-test-render-temp-svg`,
       mockDiagramDefinition,
-      expect.any(Function) // The callback
+      expect.any(Function)
     );
-    expect(screen.getByTestId('mermaid-svg')).toBeInTheDocument(); // data-testid in the SVG comes from the modified ID in the mock
+    expect(screen.getByTestId('mermaid-svg')).toBeInTheDocument();
   });
 
   test('clears previous diagram when definition changes', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-change" />);
-    await screen.findByTestId('mermaid-svg');
+    await screen.findByTestId('mermaid-svg'); // Ensure initial SVG is rendered
 
     const newDefinition = 'graph LR;\nC-->D;';
-    // No need to change mockImplementationOnce if the beforeEach mock is flexible enough
-    // or ensure it's reset/called with new args properly if stateful.
-    // The current beforeEach mock should handle this by using the ID to generate the testid.
+    // The mock in beforeEach is now designed to handle 'new' in the ID for testid
 
-    await act(async () => { // act might not be strictly necessary if just rerendering and checking
-      rerender(<MermaidDiagram diagramDefinition={newDefinition} diagramId="test-change-new" />); // Use a new diagramId to ensure new SVG
+    await act(async () => {
+      rerender(<MermaidDiagram diagramDefinition={newDefinition} diagramId="test-change-new" />);
     });
 
     await screen.findByTestId('mermaid-svg-new'); // Wait for the new SVG
-    expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument(); // Old one should be gone
-    expect(mockMermaidAPI.render).toHaveBeenCalledWith(
-      "mermaid-test-change-new-temp-svg",
+    expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+    expect(mockMermaidAPI.render).toHaveBeenLastCalledWith( // Check the last call specifically
+      `mermaid-test-change-new-temp-svg`,
       newDefinition,
       expect.any(Function)
     );
   });
 
   test('displays error message if mermaid rendering fails', async () => {
-    mockMermaidAPI.render.mockImplementationOnce((id, definition, callback) => {
-      // Simulate an error being thrown by mermaid's internals or the callback
-      // For the component's catch block to trigger, the error needs to happen within its try block.
-      // Let's make the callback itself throw, or mermaid.render throw.
-      throw new Error('Test render error');
-    });
-
-    await act(async () => { // act might not be strictly needed if error is sync
-      render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-error" />);
+    // No need to mockImplementationOnce here if the beforeEach mock handles "error-diagram"
+    await act(async () => {
+      render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     });
     expect(screen.getByText(/Error rendering diagram: Test render error/)).toBeInTheDocument();
   });
 
   test('displays message if mermaid library is not available', async () => {
     delete window.mermaid;
-    // Use jest.useFakeTimers() and jest.advanceTimersByTime() if testing the setTimeout retry logic
+    vi.useFakeTimers(); // Use fake timers for setTimeout
+    render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-no-mermaid" />);
+    expect(screen.getByText('Mermaid library not available yet. Retrying...')).toBeInTheDocument();
+
+    // Fast-forward timers to see if retry message persists or changes (though current logic doesn't change it)
     await act(async () => {
-       render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-no-mermaid" />);
+        vi.advanceTimersByTime(500);
+    });
+    expect(screen.getByText('Mermaid library not available yet. Retrying...')).toBeInTheDocument();
+    vi.useRealTimers(); // Restore real timers
+  });
+
+  test('clears container if diagramDefinition is empty or null', async () => {
+    const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
+    await screen.findByTestId('mermaid-svg');
+
+    await act(async () => {
+      rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
     });
     expect(screen.getByText('Mermaid library not available yet. Retrying...')).toBeInTheDocument();
   });
