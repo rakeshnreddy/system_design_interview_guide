@@ -31,6 +31,18 @@ const HomePage = () => {
         ))}
       </div>
 
+      <div className="mt-12">
+        <Card className="hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col items-center">
+          <h2 className="text-2xl font-bold text-primary dark:text-primary-light mb-3 pt-5">Explore All Topics</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6 px-5">
+            Browse and search through a comprehensive list of all study topics.
+          </p>
+          <Link to="/topics" className="mt-auto w-full p-5">
+            <Button variant="secondary" size="lg" className="w-full">Go to All Topics</Button>
+          </Link>
+        </Card>
+      </div>
+
       <Card padding="p-8" shadow="xl" rounded="xl" className="mt-16">
          <h3 className="text-3xl font-bold text-neutral-800 dark:text-white mb-4">Why These Guides?</h3>
          <ul className="list-disc list-inside text-left max-w-xl mx-auto text-neutral-600 dark:text-neutral-300 space-y-2">
