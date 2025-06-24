@@ -122,27 +122,39 @@ describe('MermaidDiagram', () => {
 
   test('clears container if diagramDefinition is empty or null', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
-    await screen.findByTestId('mermaid-svg');
+    await screen.findByTestId('mermaid-svg'); // Wait for initial render
 
+    // Test with empty string
     await act(async () => {
       rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
     });
-    expect(screen.getByText('Mermaid library not available yet. Retrying...')).toBeInTheDocument();
-  });
-
-  test('clears container if diagramDefinition is empty or null', async () => {
-    const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
-    await screen.findByTestId('mermaid-svg');
-
-    await act(async () => { // act might not be strictly needed
-      rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
-    });
     expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+    // Ensure no error/retry message is shown, container should be empty
+    expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
+    // Check that the container div itself is empty by querying its content.
+    // We expect the card to be there, but its inner div (the mermaid container) to be empty.
+    const cardElement = screen.getByTestId('card');
+    const mermaidContainer = cardElement.querySelector('div[key^="mermaid-"]'); // The direct child div
+    expect(mermaidContainer).toBeInTheDocument();
+    expect(mermaidContainer.innerHTML).toBe('');
+
+
+    // Test with null
+    // Re-render with the original definition first to ensure mermaid-svg is back
+    await act(async () => {
+      rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
+    });
+    await screen.findByTestId('mermaid-svg'); // Make sure it rendered again
 
     await act(async () => {
       rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear" />);
     });
     expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+    expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
+    const cardElementAfterNull = screen.getByTestId('card');
+    const mermaidContainerAfterNull = cardElementAfterNull.querySelector('div[key^="mermaid-"]');
+    expect(mermaidContainerAfterNull).toBeInTheDocument();
+    expect(mermaidContainerAfterNull.innerHTML).toBe('');
   });
 
    test('handles cases where containerRef might become null during async rendering (though unlikely with normal flow)', async () => {

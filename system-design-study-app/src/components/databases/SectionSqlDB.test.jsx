@@ -71,7 +71,7 @@ describe('SectionSqlDB', () => {
     // Content should now be visible.
     const contentDiv = screen.getByTestId('accordion-content-0');
     expect(contentDiv).toBeInTheDocument();
-    expect(contentDiv).toHaveTextContent(/Normalization content/i); // Check for partial text within the div
+    expect(contentDiv).toHaveTextContent(/Normalization: Process of organizing data/i);
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(screen.getByText(firstItemTitle).closest('button').querySelector('[data-testid="KeyboardArrowDownIcon"]')).not.toBeInTheDocument();
   });
@@ -83,8 +83,9 @@ describe('SectionSqlDB', () => {
 
     // Open it first
     fireEvent.click(button);
-    expect(screen.getByTestId('accordion-content-0')).toBeInTheDocument();
-    expect(screen.getByTestId('accordion-content-0')).toHaveTextContent(/Normalization content/i);
+    const openedContentDiv = screen.getByTestId('accordion-content-0');
+    expect(openedContentDiv).toBeInTheDocument();
+    expect(openedContentDiv).toHaveTextContent(/Normalization: Process of organizing data/i);
     expect(button.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
 
     // Click again to close
@@ -104,15 +105,17 @@ describe('SectionSqlDB', () => {
 
     // Open first item
     fireEvent.click(firstButton);
-    expect(screen.getByTestId('accordion-content-0')).toBeInTheDocument();
-    expect(screen.getByTestId('accordion-content-0')).toHaveTextContent(/Normalization content/i);
+    const firstContentDiv = screen.getByTestId('accordion-content-0');
+    expect(firstContentDiv).toBeInTheDocument();
+    expect(firstContentDiv).toHaveTextContent(/Normalization: Process of organizing data/i);
     expect(screen.queryByTestId('accordion-content-1')).toBeNull();
 
     // Open second item
     fireEvent.click(secondButton);
     expect(screen.queryByTestId('accordion-content-0')).toBeNull();
-    expect(screen.getByTestId('accordion-content-1')).toBeInTheDocument();
-    expect(screen.getByTestId('accordion-content-1')).toHaveTextContent(/Indexing content/i);
+    const secondContentDiv = screen.getByTestId('accordion-content-1');
+    expect(secondContentDiv).toBeInTheDocument();
+    expect(secondContentDiv).toHaveTextContent(/Indexing Strategies.*B-Trees/i); // Using content from the actual data
     expect(secondButton.querySelector('[data-testid="KeyboardArrowUpIcon"]')).toBeInTheDocument();
     expect(firstButton.querySelector('[data-testid="KeyboardArrowDownIcon"]')).toBeInTheDocument();
   });
