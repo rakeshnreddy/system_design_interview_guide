@@ -1,8 +1,8 @@
-import React, { Suspense, lazy } from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Corrected import
+import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
 import { messagingQueuesAppData } from '../data/messagingQueuesAppData';
 
 // Lazy load views
@@ -61,6 +61,27 @@ function MessagingQueuesPage() {
   const pageTitle = "Messaging Queues | System Design Interview Prep";
   const pageDescription = "Explore message brokers, delivery semantics, and patterns for resilient and scalable distributed systems. Learn about Kafka, RabbitMQ, and more.";
 
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: pageTitle },
+      { name: 'twitter:description', content: pageDescription },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
+
   const SidebarComponentWithProps = (props) => (
     <TopicSidebar
       topicTitle="Messaging Queues"
@@ -72,14 +93,6 @@ function MessagingQueuesPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-      </Helmet>
       <TopicPageLayout
         pageTitle="Messaging Queues"
         SidebarComponent={SidebarComponentWithProps} // Correctly pass TopicSidebar with props
