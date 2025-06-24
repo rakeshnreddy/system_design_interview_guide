@@ -32,13 +32,12 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
     }
 
     // Proceed with initialization and rendering only if there is a diagramDefinition
-    const initializeAndRender = async () => {
+    const initializeAndRender = () => { // Removed async as render now uses callback
       const mermaidInstance = window.mermaid;
       if (!mermaidInstance) {
         if (containerRef.current) {
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
         }
-        // Simple retry, ideally listen for script load or use a more robust loader
         setTimeout(initializeAndRender, 500);
         return;
       }
@@ -106,8 +105,23 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       }
     };
 
-    initializeAndRender();
+    const tryInitAndRender = () => {
+      if (document.readyState === 'complete') {
+        initializeAndRender();
+      } else {
+        console.log("MermaidDiagram: Document not ready, deferring Mermaid initialization/render.");
+        window.addEventListener('load', initializeAndRender, { once: true });
+      }
+    };
 
+    tryInitAndRender();
+
+    return () => {
+      // Cleanup: Remove event listener if the component unmounts before 'load' fires
+      window.removeEventListener('load', initializeAndRender);
+      // Note: setTimeout from initializeAndRender's retry logic is not cleaned up here.
+      // A more robust implementation might use a ref to store the timeout ID and clear it.
+    };
   }, [diagramDefinition, validDiagramId]);
 
   // Using a key on the div helps React re-render it properly if diagramId changes,

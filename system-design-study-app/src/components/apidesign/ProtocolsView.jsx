@@ -24,38 +24,30 @@ function ProtocolsView({ appData }) {
                   sx={{ mb: 1 }}
                   secondaryTypographyProps={{ component: 'div' }}
                 />
-                <ListItemText
-                  primary={<strong>Pros:</strong>}
-                  secondaryTypographyProps={{ component: 'div' }}
-                  secondary={
-                    <List dense disablePadding>
-                      {protocol.pros.map((pro, index) => (
-                        <ListItem key={index} sx={{ pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
-                          <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={pro} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  }
-                  sx={{ mb: 1 }}
-                />
-                <ListItemText
-                  primary={<strong>Cons:</strong>}
-                  secondaryTypographyProps={{ component: 'div' }}
-                  secondary={
-                    <List dense disablePadding>
-                      {protocol.cons.map((con, index) => (
-                        <ListItem key={index} sx={{ pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
-                          <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={con} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  }
-                  sx={{ mb: 1 }}
-                />
+
+                <Typography component="div" sx={{ mb: 0.5, mt: 1 }} ><strong>Pros:</strong></Typography>
+                <List dense disablePadding sx={{ pl: 2 }}>
+                  {protocol.pros.map((pro, index) => (
+                    <ListItem key={index} sx={{ display: 'list-item', listStyleType: 'disc', py: 0.2, pl:0 }}>
+                      <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={pro} />
+                    </ListItem>
+                  ))}
+                </List>
+
+                <Typography component="div" sx={{ mb: 0.5, mt: 1 }}><strong>Cons:</strong></Typography>
+                <List dense disablePadding sx={{ pl: 2 }}>
+                  {protocol.cons.map((con, index) => (
+                    <ListItem key={index} sx={{ display: 'list-item', listStyleType: 'disc', py: 0.2, pl:0 }}>
+                      <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={con} />
+                    </ListItem>
+                  ))}
+                </List>
+
                 <ListItemText
                   primary={<strong>Common Use Cases:</strong>}
                   secondary={protocol.useCases}
                   secondaryTypographyProps={{ component: 'div' }}
+                  sx={{ mt: 1 }}
                 />
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />

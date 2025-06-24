@@ -34,19 +34,14 @@ function ScenariosView({ appData }) {
                   sx={{ mb: 1 }}
                   secondaryTypographyProps={{ component: 'div' }}
                 />
-                 <ListItemText
-                  primary={<strong>Key Components:</strong>}
-                  secondaryTypographyProps={{ component: 'div' }}
-                  secondary={
-                    <List dense disablePadding>
-                      {scenario.solution.components.map((component, index) => (
-                        <ListItem key={index} sx={{ pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
-                           <ListItemText primaryTypographyProps={{ variant: 'body2'}} primary={component} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  }
-                />
+                <Typography component="div" sx={{ mb: 0.5, mt: 1 }}><strong>Key Components:</strong></Typography>
+                <List dense disablePadding sx={{ pl: 2 }}>
+                  {scenario.solution.components.map((component, index) => (
+                    <ListItem key={index} sx={{ display: 'list-item', listStyleType: 'disc', py: 0.2, pl: 0 }}>
+                      <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={component} />
+                    </ListItem>
+                  ))}
+                </List>
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
             </React.Fragment>
