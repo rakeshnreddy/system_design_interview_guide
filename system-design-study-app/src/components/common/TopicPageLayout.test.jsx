@@ -14,17 +14,22 @@ import { vi } from 'vitest';
 // If a color mode hook from another library was truly used, it would be mocked here.
 
 describe('TopicPageLayout', () => {
-  // Mock necessary child components that TopicPageLayout *does* use or pass props to,
-  // if they interfere with the test or are complex.
-  // For example, if SidebarComponent or AiScenarioModal were complex:
   vi.mock('./AiScenarioModal', () => ({ default: () => <div data-testid="ai-scenario-modal-mock">AiScenarioModal</div> }));
-  // The SidebarComponent is passed as a prop, so its internals are less likely to interfere
-  // unless it throws errors during render.
+
+  // Define mocks/helpers at the describe level if they are used in multiple tests
+  // or to potentially help with parsing/transformation issues.
+  const MockSidebarComponent = () => <div data-testid="sidebar">Sidebar Content</div>;
+  const mockRenderViewFunction = vi.fn();
+  const mockAppData = { some: 'data' };
+
+  beforeEach(() => {
+    // Reset mocks before each test if needed
+    mockRenderViewFunction.mockClear();
+    // Set a default mock implementation if views are rendered in multiple tests
+    mockRenderViewFunction.mockImplementation(() => <div data-testid="rendered-view">Rendered View Content</div>);
+  });
 
   it('renders content props and pageTitle', async () => { // Made test async
-    const MockSidebarComponent = () => <div data-testid="sidebar">Sidebar Content</div>;
-    const mockRenderViewFunction = vi.fn(() => <div data-testid="rendered-view">Rendered View Content</div>);
-    const mockAppData = { some: 'data' };
     const { MemoryRouter } = await import('react-router-dom'); // Import MemoryRouter
 
     render(
@@ -47,12 +52,8 @@ describe('TopicPageLayout', () => {
     expect(mockRenderViewFunction).toHaveBeenCalledWith('testView', mockAppData);
   });
 
-  // Removed 'renders the topic title' as it's covered above
-  // Removed 'renders ThemeSwitcher' as it's not directly part of TopicPageLayout's responsibility in the new structure
-
   it('opens AI Scenario Modal when FAB is clicked', async () => { // Made test async
-    const MockSidebarComponent = () => <div data-testid="sidebar">Sidebar Content</div>;
-    const mockRenderViewFunction = vi.fn(() => <div data-testid="rendered-view">Rendered View Content</div>);
+    // mockRenderViewFunction is already defined and reset via beforeEach
     const { MemoryRouter } = await import('react-router-dom'); // Import MemoryRouter
 
     render(
