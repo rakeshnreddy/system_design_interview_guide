@@ -9,31 +9,32 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: '#60a5fa', // Existing blue-400
-          DEFAULT: '#1976D2', // Defined primary blue
-          dark: '#2563eb',  // Existing blue-600
+          light: '#00A0A0', // Lighter teal
+          DEFAULT: '#008080', // Deep teal
+          dark: '#006060',  // Darker teal
         },
         secondary: {
-          light: '#fbbf24', // Existing amber-400
-          DEFAULT: '#f59e0b', // Existing amber-500
-          dark: '#d97706',  // Existing amber-600
+          light: '#FFB733', // Lighter orange
+          DEFAULT: '#FFA500', // Vibrant orange
+          dark: '#CC8400',  // Darker orange
         },
         neutral: {
-          100: '#f3f4f6', // gray-100
-          300: '#d1d5db', // gray-300
-          600: '#4b5563', // gray-600
-          800: '#1f2937', // gray-800
-          900: '#111827', // gray-900
+          100: '#F5F5F5', // Light gray
+          300: '#D3D3D3', // Medium-light gray
+          600: '#A9A9A9', // Medium gray
+          800: '#666666', // Dark gray
+          900: '#333333', // Very dark gray
         },
         white: '#ffffff',
         black: '#000000',
         // Colors from App.css - consider giving them semantic names if used consistently
-        accent1: '#646cffaa',
-        accent2: '#61dafbaa',
-        textMuted: '#4b5563', // neutral-600, use with dark:text-neutral-300 for dark mode
+        accent1: '#646cffaa', // Will be overridden or removed if not part of new theme
+        accent2: '#61dafbaa', // Will be overridden or removed if not part of new theme
+        textMuted: '#A9A9A9', // neutral-600, use with dark:text-neutral-300 for dark mode
       },
       fontFamily: {
-        sans: ['Inter', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['Montserrat', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'], // Added for headings
       },
       fontSize: {
         'caption': ['0.75rem', { lineHeight: '1rem' }],    // 12px

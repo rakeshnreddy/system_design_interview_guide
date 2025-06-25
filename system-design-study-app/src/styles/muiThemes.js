@@ -17,20 +17,24 @@ const twTheme = tailwindConfig.theme.extend;
 
 const commonThemeOptions = {
   typography: {
-    fontFamily: twTheme.fontFamily.sans.join(','),
+    fontFamily: twTheme.fontFamily.sans.join(','), // Body font
     h1: {
+      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
       ...parseFontSize(twTheme.fontSize.h1),
       // fontWeight: 700, // MUI default or specify
     },
     h2: {
+      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
       ...parseFontSize(twTheme.fontSize.h2),
       // fontWeight: 700, // MUI default or specify
     },
     h3: {
+      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
       ...parseFontSize(twTheme.fontSize.h3),
       // fontWeight: 700, // MUI default or specify
     },
     body1: { // Mapping 'body' to MUI's 'body1'
+      fontFamily: twTheme.fontFamily.sans.join(','), // Explicitly body font
       ...parseFontSize(twTheme.fontSize.body),
     },
     caption: {
