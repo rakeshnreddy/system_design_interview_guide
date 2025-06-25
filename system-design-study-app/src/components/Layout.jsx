@@ -50,7 +50,14 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="sticky" component="header" sx={{ bgcolor: 'primary.main' }}>
+      <AppBar
+        position="sticky"
+        component="header"
+        sx={{
+          bgcolor: 'primary.main',
+          zIndex: (theme) => theme.zIndex.appBar // Ensure AppBar is above other content
+        }}
+      >
         <Container maxWidth="lg">
           <Toolbar disableGutters>
             <Typography
