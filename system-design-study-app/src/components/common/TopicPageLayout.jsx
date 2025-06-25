@@ -107,9 +107,9 @@ function TopicPageLayout({
               // Offset by main AppBar height (assuming default toolbar height)
               // This assumes TopicPageLayout is rendered directly in a context where 0,0 is below main AppBar
               // More robustly, this offset should come from the actual main AppBar's height via theme or context
-              // For now, using a common MUI pattern for default AppBar height
-              top: theme.mixins.toolbar?.minHeight || '64px',
-              height: `calc(100% - ${theme.mixins.toolbar?.minHeight || '64px'})`,
+              // Using a fixed 64px which is a common MUI AppBar height.
+              top: '64px',
+              height: 'calc(100vh - 64px)', // Ensure it fills viewport height below appbar
             },
           })}
           open
