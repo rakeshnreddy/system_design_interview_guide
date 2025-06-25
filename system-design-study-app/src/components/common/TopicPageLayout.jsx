@@ -126,6 +126,14 @@ function TopicPageLayout({
         }}
       >
         <Toolbar />
+        <div style={{ border: '2px solid green', padding: '10px', margin: '10px', backgroundColor: 'lightgreen', color: 'black' }}>
+          <Typography><strong>Diagnostic Info:</strong></Typography>
+          <Typography>Current View Prop (for Sidebar): {currentView}</Typography>
+          <Typography>Initial View Prop (from page): {initialView}</Typography>
+          <Typography>Topic ID: {topicId}</Typography>
+          <Typography>Page Title: {pageTitle}</Typography>
+          <Typography>appData available: {appData ? 'Yes' : 'No'}</Typography>
+        </div>
         <Suspense fallback={
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 112px)' }}>
             <CircularProgress size={60} />
