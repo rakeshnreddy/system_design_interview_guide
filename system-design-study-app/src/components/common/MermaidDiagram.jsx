@@ -77,23 +77,43 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
             // Reverting to the callback version of render.
             // The first argument to render is an ID for mermaid's internal use if it needs to create a temporary element,
             // even if we are using the callback to get the SVG code.
-            mermaidInstance.render(validDiagramId + "-temp-svg", diagramDefinition, (svgCode, bindFunctions) => {
+            const renderPromise = new Promise((resolve, reject) => {
+              mermaidInstance.render(validDiagramId + "-temp-svg", diagramDefinition, (svgCode, bindFunctions) => {
+                try {
+                  if (containerRef.current) {
+                    containerRef.current.innerHTML = svgCode;
+                    if (bindFunctions) {
+                      bindFunctions(containerRef.current);
+                    }
+                    const svgElement = containerRef.current.querySelector('svg');
+                    if (svgElement) {
+                      svgElement.style.maxWidth = '100%';
+                      svgElement.style.height = 'auto';
+                    }
+                    resolve(); // Resolve the promise on success
+                  } else {
+                    // This case should ideally not happen if component is still mounted
+                    console.warn("MermaidDiagram: Container ref became null during render callback.");
+                    reject(new Error("Container ref became null during render callback."));
+                  }
+                } catch (innerError) {
+                  reject(innerError); // Reject if error within callback processing
+                }
+              });
+              // It's possible mermaid.render itself might throw if definition is bad before async part
+            });
+
+            renderPromise.catch(e => {
+              console.error("MermaidDiagram: Error during or after mermaid.render (async):", validDiagramId, e);
               if (containerRef.current) {
-                containerRef.current.innerHTML = svgCode;
-                if (bindFunctions) {
-                  bindFunctions(containerRef.current); // Bind events if necessary
-                }
-                const svgElement = containerRef.current.querySelector('svg');
-                if (svgElement) {
-                  svgElement.style.maxWidth = '100%';
-                  svgElement.style.height = 'auto';
-                }
+                containerRef.current.innerHTML = `<p class="text-red-500" data-testid="mermaid-error-async">Error rendering diagram (async): ${e.message}. Check console.</p>`;
               }
             });
-          } catch (e) {
-            console.error("MermaidDiagram: Error rendering diagram:", validDiagramId, e);
+
+          } catch (e) { // This synchronous catch is for errors thrown directly by mermaid.render call itself
+            console.error("MermaidDiagram: Synchronous error calling mermaid.render:", validDiagramId, e);
             if (containerRef.current) {
-              containerRef.current.innerHTML = `<p class="text-red-500">Error rendering diagram: ${e.message}. Check console.</p>`;
+              containerRef.current.innerHTML = `<p class="text-red-500" data-testid="mermaid-error-sync">Error calling render: ${e.message}. Check console.</p>`;
             }
           }
         } else {
