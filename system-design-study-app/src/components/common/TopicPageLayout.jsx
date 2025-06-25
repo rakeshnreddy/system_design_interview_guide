@@ -37,20 +37,21 @@ function TopicPageLayout({
   }, [initialView, topicId]);
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', width: '100%', height: '100%' }}> {/* Ensure root takes space */}
       <CssBaseline />
-      {/* This AppBar is for the content within TopicPageLayout, not the main site AppBar */}
+      {/* Temporarily comment out inner AppBar and Nav Box (Drawers) to isolate main content Box */}
+      {/*
       <AppBar
-        position="sticky" // Changed from "fixed"
+        position="sticky"
         sx={(theme) => ({
-          top: 0, // Stick to the top of its scrolling container
+          top: 0,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
           backgroundColor: alpha(theme.palette.background.default, 0.85),
           backdropFilter: 'blur(8px)',
           boxShadow: theme.shadows[1],
           color: 'text.primary',
-          zIndex: theme.zIndex.appBar - 100 // Lower zIndex than main AppBar
+          zIndex: theme.zIndex.appBar - 100
         })}
       >
         <Toolbar>
@@ -63,7 +64,6 @@ function TopicPageLayout({
           >
             <MenuIcon />
           </IconButton>
-          {/* FIX: Home button is added here for consistent navigation */}
           <IconButton
             color="inherit"
             aria-label="go home"
@@ -97,19 +97,15 @@ function TopicPageLayout({
         </Drawer>
         <Drawer
           variant="permanent"
-          sx={(theme) => ({ // Added theme access for toolbar height
+          sx={(theme) => ({
             display: { xs: 'none', sm: 'block' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
               bgcolor: 'background.paper',
               borderRight: 'none',
-              // Offset by main AppBar height (assuming default toolbar height)
-              // This assumes TopicPageLayout is rendered directly in a context where 0,0 is below main AppBar
-              // More robustly, this offset should come from the actual main AppBar's height via theme or context
-              // Using a fixed 64px which is a common MUI AppBar height.
               top: '64px',
-              height: 'calc(100vh - 64px)', // Ensure it fills viewport height below appbar
+              height: 'calc(100vh - 64px)',
             },
           })}
           open
@@ -117,6 +113,7 @@ function TopicPageLayout({
           <SidebarComponent currentView={currentView} setCurrentView={setCurrentView} />
         </Drawer>
       </Box>
+      */}
       <Box
         component="main"
         sx={{
