@@ -34,7 +34,7 @@ function TopicPageLayout({
 
   useEffect(() => {
     setCurrentView(initialView);
-  }, [initialView, topicId]);
+  }, [topicId]); // Only depend on topicId to reset view when the topic changes
 
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>

@@ -71,7 +71,7 @@ describe('MermaidDiagram', () => {
     // useEffect runs, schedules setTimeout.
     // Advance timers to execute the setTimeout callback.
     await act(async () => {
-      vi.runOnlyPendingTimers();
+      vi.runAllTimers(); // Use runAllTimers for robustness
     });
     // Now the callback should have executed, including mockMermaidAPI.render
     // Check that render was called. The first argument is the dynamically generated ID.
@@ -87,8 +87,7 @@ describe('MermaidDiagram', () => {
   test('clears previous diagram when definition changes', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-change" />);
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve(); // Flush microtasks
+      vi.runAllTimers(); // Exhaust all timers for initial render
     });
     await screen.findByTestId('mermaid-svg'); // Ensure initial SVG is rendered
 
@@ -97,8 +96,7 @@ describe('MermaidDiagram', () => {
 
     rerender(<MermaidDiagram diagramDefinition={newDefinition} diagramId="test-change-new" />);
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve(); // Flush microtasks
+      vi.runAllTimers(); // Exhaust all timers for the re-render
     });
 
     await waitFor(() => {
@@ -115,7 +113,7 @@ describe('MermaidDiagram', () => {
   test('displays error message if mermaid rendering fails', async () => {
     render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     await act(async () => {
-      vi.runOnlyPendingTimers(); // Advance timers to execute setTimeout containing render logic
+      vi.runAllTimers(); // Advance timers to execute setTimeout containing render logic
     });
     // Updated matcher to be more flexible and match the actual async error message format
     expect(screen.getByText((content, element) =>
@@ -142,17 +140,16 @@ describe('MermaidDiagram', () => {
   test('clears container if diagramDefinition is empty or null', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve(); // Flush microtasks
+      vi.runAllTimers(); // Initial render
     });
     await screen.findByTestId('mermaid-svg'); // Wait for initial render
 
     // Test with empty string
     rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
-    // useEffect for empty definition is synchronous, but let's flush any potential old timers/promises.
+    // The clearing for empty definition is synchronous within the effect.
+    // Run timers to clear any old ones.
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve();
+       vi.runAllTimers();
     });
 
     await waitFor(() => {
@@ -167,16 +164,14 @@ describe('MermaidDiagram', () => {
     // Re-render with the original definition first to ensure mermaid-svg is back
     rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear-again" />);
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve();
+      vi.runAllTimers();
     });
     await screen.findByTestId('mermaid-svg'); // Make sure it rendered again
 
     // Test with null
     rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear-again" />);
     await act(async () => {
-      vi.runOnlyPendingTimers();
-      await Promise.resolve();
+      vi.runAllTimers();
     });
 
     await waitFor(() => {
