@@ -75,9 +75,11 @@ describe('App', () => {
     await act(async () => {
       renderAppWithRoute('/');
     });
-    // Check for a common layout element, e.g., a sidebar link
-    // This assertion might need adjustment based on actual content.
-    // The original test looked for "Caching Strategies", let's keep that.
-    expect(screen.getByRole('link', { name: /Caching Strategies/i })).toBeInTheDocument();
+    // Check for a common layout element, e.g., a header navigation link from the new Layout.
+    // The old test looked for "Caching Strategies" (likely from a sidebar).
+    // The new Layout has "Home", "Topics", "About", "Contact" in the header.
+    // We also need to wait for HomePage to load before checking layout elements around it.
+    expect(await screen.findByText('Mocked HomePage')).toBeInTheDocument(); // Ensure page content is loaded
+    expect(screen.getByRole('link', { name: /Topics/i })).toBeInTheDocument(); // Check for new header link
   });
 });
