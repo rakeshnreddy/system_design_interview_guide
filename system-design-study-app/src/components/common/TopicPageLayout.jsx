@@ -123,6 +123,8 @@ function TopicPageLayout({
           flexGrow: 1,
           p: 3,
           bgcolor: 'background.paper', // Use theme-aware background color
+          border: '5px dashed blue',     // Added border for visibility
+          minHeight: 'calc(100vh - 150px)', // Added minHeight to ensure it takes space
         }}
       >
         <Toolbar />
