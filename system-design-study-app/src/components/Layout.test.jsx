@@ -1,27 +1,46 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'; // Renamed to MuiThemeProvider
+import { CustomThemeProvider } from '../contexts/ThemeContext'; // Import CustomThemeProvider
 import Layout from './Layout';
 
-// Mock ThemeContext if your Layout uses it directly
-// jest.mock('../contexts/ThemeContext', () => ({
-//   useThemeContext: () => ({ mode: 'light', toggleTheme: jest.fn() }),
-// }));
+// Mocking localStorage for ThemeContext
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = value.toString();
+    },
+    clear: () => {
+      store = {};
+    },
+    removeItem: (key) => {
+      delete store[key];
+    }
+  };
+})();
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-const theme = createTheme();
+
+const muiTheme = createTheme(); // For MuiThemeProvider
 
 describe('Layout Component', () => {
   const TestChild = () => <div>Test Child Content</div>;
 
   beforeEach(() => {
+    // Clear localStorage before each test to ensure a consistent starting theme state
+    window.localStorage.clear();
     render(
       <Router>
-        <ThemeProvider theme={theme}>
-          <Layout>
-            <TestChild />
-          </Layout>
-        </ThemeProvider>
+        <CustomThemeProvider> {/* Added CustomThemeProvider */}
+          <MuiThemeProvider theme={muiTheme}> {/* MUI's ThemeProvider */}
+            <Layout>
+              <TestChild />
+            </Layout>
+          </MuiThemeProvider>
+        </CustomThemeProvider>
       </Router>
     );
   });
