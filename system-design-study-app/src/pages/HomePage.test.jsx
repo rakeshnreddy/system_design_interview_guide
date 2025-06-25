@@ -51,9 +51,9 @@ describe('HomePage Component', () => {
     expect(startLearningButtons.length).toBeGreaterThanOrEqual(3);
   });
 
-  test('renders "Explore All Topics" card section', () => {
-    expect(screen.getByRole('heading', { name: /Explore All Topics/i, level: 2 })).toBeInTheDocument(); // The one in the card
-    expect(screen.getByRole('link', { name: /Go to All Topics/i })).toBeInTheDocument();
+  test('renders "Looking for More?" card section', () => {
+    expect(screen.getByRole('heading', { name: /Looking for More?/i, level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Go to All Topics Page/i })).toBeInTheDocument();
   });
 
   test('renders "Why These Guides?" section', () => {
