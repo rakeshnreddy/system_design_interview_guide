@@ -6,6 +6,7 @@ import Button from './common/Button';
 import IconButton from '@mui/material/IconButton'; // For theme toggle button
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
+import logo from '../assets/logo.svg'; // Import the new logo
 
 const navItems = [
   { path: '/', label: 'Home', exact: true },
@@ -37,12 +38,9 @@ const Sidebar = () => {
   return (
     <div className="w-72 bg-white dark:bg-neutral-800 p-5 shadow-2xl flex flex-col">
       <div className="mb-4 flex justify-between items-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-extrabold text-primary dark:text-primary-light">
-            System Design
-          </h1>
-          <span className="text-sm text-neutral-500 dark:text-neutral-400">Study Guides</span>
-        </div>
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="App Logo" className="h-12 w-auto" /> {/* Increased logo size */}
+        </Link>
         <IconButton onClick={toggleTheme} color="inherit" aria-label="toggle theme">
           {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
