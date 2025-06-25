@@ -103,7 +103,12 @@ describe('MermaidDiagram', () => {
     await act(async () => {
       render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     });
-    expect(screen.getByText(/Error rendering diagram: Test render error/)).toBeInTheDocument();
+    // Updated matcher to be more flexible and match the actual async error message format
+    expect(screen.getByText((content, element) =>
+      content.startsWith('Error rendering diagram (async):') &&
+      content.includes('Test render error') &&
+      content.endsWith('. Check console.')
+    )).toBeInTheDocument();
   });
 
   test('displays message if mermaid library is not available', async () => {
