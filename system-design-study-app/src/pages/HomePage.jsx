@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom'; // Changed Link to RouterLink for consistency
 import Card from '../components/common/Card';
 import Button from '../components/common/Button'; // Existing Button
 import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
@@ -9,6 +9,10 @@ const guides = [
   { path: '/caches', title: 'Caching Strategies', description: 'Master caching techniques, patterns, and trade-offs for high-performance systems.' },
   { path: '/databases', title: 'Database Selection', description: 'Learn to choose the right database by understanding SQL vs. NoSQL, CAP theorem, and various data models.' },
   { path: '/messaging-queues', title: 'Messaging Queues', description: 'Explore message brokers, delivery semantics, and patterns for resilient and scalable distributed systems.' },
+  { path: '/load-balancing', title: 'Load Balancing', description: 'Understand various load balancing algorithms and their impact on system availability and performance.' },
+  { path: '/api-design', title: 'API Design', description: 'Principles of designing robust, scalable, and maintainable APIs, including REST and GraphQL.' },
+  { path: '/scalability-concepts', title: 'Scalability Concepts', description: 'Core concepts for scaling systems, including horizontal vs. vertical scaling, and statelessness.' },
+  { path: '/interview-approach', title: 'Interview Approach', description: 'Strategies and frameworks for effectively navigating the system design interview.' },
 ];
 
 const HomePage = () => {
@@ -41,13 +45,10 @@ const HomePage = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'primary.dark', // A distinct background color for the hero
+          bgcolor: 'primary.dark',
           color: 'common.white',
           py: { xs: 6, sm: 8, md: 10 },
           textAlign: 'center',
-          // Negative margins to make it full-width if Layout's main container has padding
-          // This depends on how Layout's <main> padding is handled.
-          // For now, assuming HomePage is directly within Layout's <Container>
         }}
       >
         <Container maxWidth="md">
@@ -55,7 +56,10 @@ const HomePage = () => {
             variant="h2"
             component="h1"
             gutterBottom
-            sx={{ fontWeight: 'bold', fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' } }}
+            sx={{
+              fontWeight: 'bold',
+              fontSize: { xs: '2.2rem', sm: '3rem', md: '3.75rem' } // Reduced font sizes
+            }}
           >
             Ace Your System Design Interview
           </Typography>
@@ -63,13 +67,16 @@ const HomePage = () => {
             variant="h5"
             component="p"
             paragraph
-            sx={{ mb: 4, fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+            sx={{
+              mb: 4,
+              fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } // Adjusted subtitle font sizes
+            }}
           >
             Comprehensive study guides designed to help you master complex topics and impress in your next technical interview.
           </Typography>
           <MuiButton
             variant="contained"
-            color="secondary" // A contrasting color for CTA
+            color="secondary"
             size="large"
             component={RouterLink}
             to="/topics"
@@ -80,35 +87,35 @@ const HomePage = () => {
         </Container>
       </Box>
 
-      {/* Existing Content - wrapped in a div for centering if needed, or directly use Layout's container */}
-      <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6 } }}> {/* Added padding for spacing after hero */}
+      {/* Main Content Area */}
+      <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6 } }}>
 
         {/* Guides Section */}
         <Typography variant="h4" component="h2" sx={{ mb: 6, fontWeight:'bold' }}>
           Featured Study Guides
         </Typography>
-        <div className="grid md:grid-cols-3 gap-8">
+        {/* Updated to make the grid responsive with more items */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {guides.map((guide) => (
             <Card key={guide.title} className="hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col">
               <h2 className="text-2xl font-bold text-primary dark:text-primary-light mb-3">{guide.title}</h2>
               <p className="text-neutral-600 dark:text-neutral-400 mb-6 min-h-[60px] flex-grow">{guide.description}</p>
               <RouterLink to={guide.path} className="mt-auto">
-                {/* Using the existing custom Button component */}
                 <Button variant="primary" size="lg" className="w-full">Start Learning</Button>
               </RouterLink>
             </Card>
           ))}
         </div>
 
-        {/* Explore All Topics Card */}
+        {/* Explore All Topics Card - This might be redundant if all topics are listed above, or could link to a more detailed search/filter page */}
         <div className="mt-12">
           <Card className="hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1 flex flex-col items-center">
-            <h2 className="text-2xl font-bold text-primary dark:text-primary-light mb-3 pt-5">Explore All Topics</h2>
+            <h2 className="text-2xl font-bold text-primary dark:text-primary-light mb-3 pt-5">Looking for More?</h2>
             <p className="text-neutral-600 dark:text-neutral-400 mb-6 px-5">
-              Browse and search through a comprehensive list of all study topics.
+              Browse and search through our comprehensive list of all study topics.
             </p>
             <RouterLink to="/topics" className="mt-auto w-full p-5">
-              <Button variant="secondary" size="lg" className="w-full">Go to All Topics</Button>
+              <Button variant="secondary" size="lg" className="w-full">Go to All Topics Page</Button>
             </RouterLink>
           </Card>
         </div>
