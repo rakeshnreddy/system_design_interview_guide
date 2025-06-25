@@ -46,7 +46,7 @@ const HomePage = () => {
       <Box
         sx={{
           bgcolor: 'primary.dark',
-          color: 'common.white',
+          color: (theme) => theme.palette.getContrastText(theme.palette.primary.dark),
           py: { xs: 6, sm: 8, md: 10 },
           textAlign: 'center',
         }}
@@ -58,7 +58,8 @@ const HomePage = () => {
             gutterBottom
             sx={{
               fontWeight: 'bold',
-              fontSize: { xs: '2.2rem', sm: '3rem', md: '3.75rem' } // Reduced font sizes
+              fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3.2rem' }, // Further reduced font sizes
+              lineHeight: { xs: 1.2, sm: 1.3 } // Added line height adjustment
             }}
           >
             Ace Your System Design Interview
@@ -69,7 +70,8 @@ const HomePage = () => {
             paragraph
             sx={{
               mb: 4,
-              fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } // Adjusted subtitle font sizes
+              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' }, // Further adjusted subtitle
+              lineHeight: { xs: 1.3, sm: 1.4 }
             }}
           >
             Comprehensive study guides designed to help you master complex topics and impress in your next technical interview.

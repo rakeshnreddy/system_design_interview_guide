@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useTheme, useMediaQuery } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; // For mobile menu
+import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-// Placeholder for ThemeContext if you have one
-// import { useThemeContext } from '../contexts/ThemeContext';
+import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -16,15 +15,11 @@ const navItems = [
 ];
 
 const Layout = ({ children }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const muiMaterialTheme = useTheme();
+  const isMobile = useMediaQuery(muiMaterialTheme.breakpoints.down('sm'));
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  // Placeholder for theme toggle function
-  // const { mode, toggleTheme } = useThemeContext() || { mode: 'light', toggleTheme: () => console.log("Theme context not available") };
-  const mode = 'light'; // Default to light for now
-  const toggleTheme = () => console.log("Toggle theme clicked");
-
+  const { themeMode, toggleTheme } = useCustomTheme();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -48,7 +43,7 @@ const Layout = ({ children }) => {
         </Button>
       ))}
       <IconButton sx={{ mt: 1 }} onClick={toggleTheme} color="inherit" aria-label="toggle theme">
-        {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>
     </Box>
   );
@@ -66,7 +61,7 @@ const Layout = ({ children }) => {
                 flexGrow: 1,
                 mr: 2,
                 textDecoration: 'none',
-                color: 'common.white',
+                color: 'primary.contrastText',
                 fontWeight: 'bold',
               }}
             >
@@ -92,13 +87,17 @@ const Layout = ({ children }) => {
                     key={item.label}
                     component={RouterLink}
                     to={item.path}
-                    sx={{ color: 'common.white', mx: 1 }}
+                    sx={{ color: 'primary.contrastText', mx: 1 }}
                   >
                     {item.label}
                   </Button>
                 ))}
-                <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit" aria-label="toggle site theme">
-                  {mode === 'dark' ? <Brightness7Icon sx={{color: 'common.white'}} /> : <Brightness4Icon sx={{color: 'common.white'}}/>}
+                <IconButton
+                  sx={{ ml: 1, color: 'primary.contrastText' }}
+                  onClick={toggleTheme}
+                  aria-label="toggle site theme"
+                >
+                  {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                 </IconButton>
               </Box>
             )}
@@ -116,7 +115,15 @@ const Layout = ({ children }) => {
         {children}
       </Container>
 
-      <Box component="footer" sx={{ bgcolor: 'grey.200', color: 'text.secondary', py: 3, mt: 'auto' }}>
+      <Box
+        component="footer"
+        sx={{
+          bgcolor: (theme) => theme.palette.action.hover, // Theme-aware footer background
+          color: 'text.secondary',
+          py: 3,
+          mt: 'auto'
+        }}
+      >
         <Container maxWidth="lg">
           <Typography variant="body2" align="center">
             © {new Date().getFullYear()} System Design Guide. All rights reserved.
