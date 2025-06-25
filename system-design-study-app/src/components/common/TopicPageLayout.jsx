@@ -97,10 +97,21 @@ function TopicPageLayout({
         </Drawer>
         <Drawer
           variant="permanent"
-          sx={{
+          sx={(theme) => ({ // Added theme access for toolbar height
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, bgcolor: 'background.paper', borderRight: 'none' },
-          }}
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              bgcolor: 'background.paper',
+              borderRight: 'none',
+              // Offset by main AppBar height (assuming default toolbar height)
+              // This assumes TopicPageLayout is rendered directly in a context where 0,0 is below main AppBar
+              // More robustly, this offset should come from the actual main AppBar's height via theme or context
+              // For now, using a common MUI pattern for default AppBar height
+              top: theme.mixins.toolbar?.minHeight || '64px',
+              height: `calc(100% - ${theme.mixins.toolbar?.minHeight || '64px'})`,
+            },
+          })}
           open
         >
           <SidebarComponent currentView={currentView} setCurrentView={setCurrentView} />
@@ -111,10 +122,7 @@ function TopicPageLayout({
         sx={{
           flexGrow: 1,
           p: 3,
-          bgcolor: 'grey.50',
-          '@media (prefers-color-scheme: dark)': {
-            bgcolor: 'grey.900',
-          },
+          bgcolor: 'background.paper', // Use theme-aware background color
         }}
       >
         <Toolbar />
