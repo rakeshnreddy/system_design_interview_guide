@@ -39,15 +39,18 @@ function TopicPageLayout({
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
+      {/* This AppBar is for the content within TopicPageLayout, not the main site AppBar */}
       <AppBar
-        position="fixed"
+        position="sticky" // Changed from "fixed"
         sx={(theme) => ({
+          top: 0, // Stick to the top of its scrolling container
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
           backgroundColor: alpha(theme.palette.background.default, 0.85),
           backdropFilter: 'blur(8px)',
           boxShadow: theme.shadows[1],
           color: 'text.primary',
+          zIndex: theme.zIndex.appBar - 100 // Lower zIndex than main AppBar
         })}
       >
         <Toolbar>
