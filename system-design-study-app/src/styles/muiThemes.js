@@ -1,4 +1,4 @@
-import * as muiStyles from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'; // Changed to named import
 import tailwindConfig from '../../tailwind.config.js'; // Adjust path as necessary
 
 // Helper function to parse Tailwind fontSize array [size, {lineHeight}]
@@ -60,7 +60,7 @@ const commonThemeOptions = {
 };
 
 // Light Theme
-export const lightTheme = muiStyles.createTheme({
+export const lightTheme = createTheme({ // Changed from muiStyles.createTheme
   ...commonThemeOptions,
   palette: {
     mode: 'light',
@@ -91,7 +91,7 @@ export const lightTheme = muiStyles.createTheme({
 // For dark theme, you might want to use different shades or specific dark mode colors from your Tailwind config
 // For simplicity, this example inverts some colors or uses darker shades.
 // Ideally, your tailwind.config.js would have a more detailed dark mode color palette.
-export const darkTheme = muiStyles.createTheme({
+export const darkTheme = createTheme({ // Changed from muiStyles.createTheme
   ...commonThemeOptions,
   palette: {
     mode: 'dark',
