@@ -14,6 +14,7 @@ describe('MermaidDiagram', () => {
   let mockMermaidAPI;
 
   beforeEach(() => {
+    vi.useFakeTimers(); // Use fake timers for all tests in this suite
     mockMermaidAPI = {
       initialize: vi.fn(),
       render: vi.fn((renderId, definition, callback) => {
@@ -37,6 +38,7 @@ describe('MermaidDiagram', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers(); // Restore real timers after each test
     // Clean up the global mermaid object
     delete window.mermaid;
     // Clean up any temporary divs that might be left in the body from tests
@@ -65,9 +67,13 @@ describe('MermaidDiagram', () => {
   });
 
   test('calls mermaid.render with diagram definition and renders SVG', async () => {
+    render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-render" />);
+    // useEffect runs, schedules setTimeout.
+    // Advance timers to execute the setTimeout callback.
     await act(async () => {
-      render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-render" />);
+      vi.runOnlyPendingTimers();
     });
+    // Now the callback should have executed, including mockMermaidAPI.render
     // Check that render was called. The first argument is the dynamically generated ID.
     // The component generates an ID like `mermaid-${diagramId}-temp-svg` for the render call.
     expect(mockMermaidAPI.render).toHaveBeenCalledWith(
@@ -80,17 +86,25 @@ describe('MermaidDiagram', () => {
 
   test('clears previous diagram when definition changes', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-change" />);
+    await act(async () => {
+      vi.runOnlyPendingTimers();
+      await Promise.resolve(); // Flush microtasks
+    });
     await screen.findByTestId('mermaid-svg'); // Ensure initial SVG is rendered
 
     const newDefinition = 'graph LR;\nC-->D;';
     // The mock in beforeEach is now designed to handle 'new' in the ID for testid
 
+    rerender(<MermaidDiagram diagramDefinition={newDefinition} diagramId="test-change-new" />);
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition={newDefinition} diagramId="test-change-new" />);
+      vi.runOnlyPendingTimers();
+      await Promise.resolve(); // Flush microtasks
     });
 
-    await screen.findByTestId('mermaid-svg-new'); // Wait for the new SVG
-    expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('mermaid-svg-new')).toBeInTheDocument();
+      expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+    });
     expect(mockMermaidAPI.render).toHaveBeenLastCalledWith( // Check the last call specifically
       `mermaid-test-change-new-temp-svg`,
       newDefinition,
@@ -99,9 +113,9 @@ describe('MermaidDiagram', () => {
   });
 
   test('displays error message if mermaid rendering fails', async () => {
-    // No need to mockImplementationOnce here if the beforeEach mock handles "error-diagram"
+    render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     await act(async () => {
-      render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
+      vi.runOnlyPendingTimers(); // Advance timers to execute setTimeout containing render logic
     });
     // Updated matcher to be more flexible and match the actual async error message format
     expect(screen.getByText((content, element) =>
@@ -127,37 +141,50 @@ describe('MermaidDiagram', () => {
 
   test('clears container if diagramDefinition is empty or null', async () => {
     const { rerender } = render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear" />);
+    await act(async () => {
+      vi.runOnlyPendingTimers();
+      await Promise.resolve(); // Flush microtasks
+    });
     await screen.findByTestId('mermaid-svg'); // Wait for initial render
 
     // Test with empty string
+    rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
+    // useEffect for empty definition is synchronous, but let's flush any potential old timers/promises.
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition="" diagramId="test-clear" />);
+      vi.runOnlyPendingTimers();
+      await Promise.resolve();
     });
-    expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
-    // Ensure no error/retry message is shown, container should be empty
-    // Ensure no error/retry message is shown, container should be empty
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+      const mermaidContainer = screen.getByTestId('mermaid-inner-container');
+      expect(mermaidContainer.innerHTML).toBe('');
+    });
     expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
-    const mermaidContainer = screen.getByTestId('mermaid-inner-container');
-    expect(mermaidContainer).toBeInTheDocument();
-    expect(mermaidContainer.innerHTML).toBe('');
 
 
     // Test with null
     // Re-render with the original definition first to ensure mermaid-svg is back
-    // Need to use a different diagramId to ensure useEffect re-runs if only definition changes to null then back
+    rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear-again" />);
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-clear-again" />);
+      vi.runOnlyPendingTimers();
+      await Promise.resolve();
     });
     await screen.findByTestId('mermaid-svg'); // Make sure it rendered again
 
+    // Test with null
+    rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear-again" />);
     await act(async () => {
-      rerender(<MermaidDiagram diagramDefinition={null} diagramId="test-clear-again" />);
+      vi.runOnlyPendingTimers();
+      await Promise.resolve();
     });
-    expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mermaid-svg')).not.toBeInTheDocument();
+      const mermaidContainerAfterNull = screen.getByTestId('mermaid-inner-container');
+      expect(mermaidContainerAfterNull.innerHTML).toBe('');
+    });
     expect(screen.queryByText('Mermaid library not available yet. Retrying...')).toBeNull();
-    const mermaidContainerAfterNull = screen.getByTestId('mermaid-inner-container');
-    expect(mermaidContainerAfterNull).toBeInTheDocument();
-    expect(mermaidContainerAfterNull.innerHTML).toBe('');
   });
 
    test('handles cases where containerRef might become null during async rendering (though unlikely with normal flow)', async () => {

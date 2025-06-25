@@ -7,36 +7,44 @@ import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
 import { cachesAppData } from '../data/cachesAppData';
 
 // Lazy load views
-const FundamentalsView = lazy(() => import('../components/caches/FundamentalsView'));
-const CachepediaView = lazy(() => import('../components/caches/CachepediaView'));
-const PatternsView = lazy(() => import('../components/caches/PatternsView'));
-const ScenariosView = lazy(() => import('../components/caches/ScenariosView'));
-const PracticeView = lazy(() => import('../components/caches/PracticeView'));
-const CodeLibraryView = lazy(() => import('../components/caches/CodeLibraryView'));
+// const FundamentalsView = lazy(() => import('../components/caches/FundamentalsView'));
+// const CachepediaView = lazy(() => import('../components/caches/CachepediaView'));
+// const PatternsView = lazy(() => import('../components/caches/PatternsView'));
+// const ScenariosView = lazy(() => import('../components/caches/ScenariosView'));
+// const PracticeView = lazy(() => import('../components/caches/PracticeView'));
+// const CodeLibraryView = lazy(() => import('../components/caches/CodeLibraryView'));
+
+// For testing Suspense - import the minimal test view
+const MinimalLazyTestView = lazy(() => import('../components/common/MinimalLazyTestView'));
+
 
 // This function will be passed to TopicPageLayout
 const renderCachesView = (currentView, data) => {
-  const commonProps = { appData: data };
-  switch (currentView) {
-    case 'fundamentals':
-      return <FundamentalsView {...commonProps} />;
-    case 'cachepedia':
-      return <CachepediaView {...commonProps} />;
-    case 'patterns':
-      return <PatternsView {...commonProps} />;
-    case 'scenarios':
-      return <ScenariosView {...commonProps} />;
-    case 'practice':
-      return <PracticeView {...commonProps} />;
-    case 'code':
-      return <CodeLibraryView {...commonProps} />;
-    default:
-      return (
-        <Suspense fallback={<CircularProgress />}>
-          <FundamentalsView {...commonProps} />
-        </Suspense>
-      );
-  }
+  // const commonProps = { appData: data };
+  // For testing, always return MinimalLazyTestView, ignoring currentView and data for now
+  return <MinimalLazyTestView />;
+
+  // Original switch statement:
+  // switch (currentView) {
+  //   case 'fundamentals':
+  //     return <FundamentalsView {...commonProps} />;
+  //   case 'cachepedia':
+  //     return <CachepediaView {...commonProps} />;
+  //   case 'patterns':
+  //     return <PatternsView {...commonProps} />;
+  //   case 'scenarios':
+  //     return <ScenariosView {...commonProps} />;
+  //   case 'practice':
+  //     return <PracticeView {...commonProps} />;
+  //   case 'code':
+  //     return <CodeLibraryView {...commonProps} />;
+  //   default:
+  //     return (
+  //       <Suspense fallback={<CircularProgress />}>
+  //         <FundamentalsView {...commonProps} />
+  //       </Suspense>
+  //     );
+  // }
 };
 
 // Define the sections for the sidebar

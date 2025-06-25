@@ -136,6 +136,7 @@ function TopicPageLayout({
           <Typography>Page Title: {pageTitle}</Typography>
           <Typography>appData available: {appData ? 'Yes' : 'No'}</Typography>
         </div>
+        {/* Re-enabled Suspense to test with MinimalLazyTestView */}
         <Suspense fallback={
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 112px)' }}>
             <CircularProgress size={60} />
