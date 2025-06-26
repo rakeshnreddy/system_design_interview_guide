@@ -45,8 +45,8 @@ const HomePage = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'primary.dark',
-          color: (theme) => theme.palette.getContrastText(theme.palette.primary.dark),
+          bgcolor: 'var(--surface-bg)', // Updated to use theme variable
+          color: 'var(--text-primary)',   // Updated to use theme variable
           py: { xs: 6, sm: 8, md: 10 },
           textAlign: 'center',
         }}
@@ -58,8 +58,9 @@ const HomePage = () => {
             gutterBottom
             sx={{
               fontWeight: 'bold',
-              fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3.2rem' }, // Further reduced font sizes
-              lineHeight: { xs: 1.2, sm: 1.3 } // Added line height adjustment
+              fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3.2rem' },
+              lineHeight: { xs: 1.2, sm: 1.3 },
+              color: 'var(--text-primary)' // Ensure heading also uses text-primary
             }}
           >
             Ace Your System Design Interview
@@ -70,19 +71,20 @@ const HomePage = () => {
             paragraph
             sx={{
               mb: 4,
-              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' }, // Further adjusted subtitle
-              lineHeight: { xs: 1.3, sm: 1.4 }
+              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' },
+              lineHeight: { xs: 1.3, sm: 1.4 },
+              color: 'var(--text-secondary)' // Subtitle uses text-secondary
             }}
           >
             Comprehensive study guides designed to help you master complex topics and impress in your next technical interview.
           </Typography>
           <MuiButton
             variant="contained"
-            color="secondary"
+            color="primary" // Changed from secondary to primary
             size="large"
             component={RouterLink}
             to="/topics"
-            sx={{ padding: '10px 30px', fontSize: '1.1rem' }}
+            sx={{ padding: '10px 30px', fontSize: '1.1rem' }} // Will pick up primary button styles from theme
           >
             Explore All Topics
           </MuiButton>
