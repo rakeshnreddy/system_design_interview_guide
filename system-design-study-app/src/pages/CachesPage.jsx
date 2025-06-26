@@ -21,8 +21,8 @@ const renderCachesView = (currentView, data) => {
     case 'fundamentals':
       return <FundamentalsView {...commonProps} />;
     case 'cachepedia':
-      // return <CachepediaView {...commonProps} />; // Original
-      return <div data-testid="cachepedia-test-content">CACHE PEDIA TEST VIEW VIA DIV</div>; // Diagnostic
+      return <CachepediaView {...commonProps} />; // Original
+      // return <div data-testid="cachepedia-test-content">CACHE PEDIA TEST VIEW VIA DIV</div>; // Diagnostic
     case 'patterns':
       return <PatternsView {...commonProps} />;
     case 'scenarios':
