@@ -43,16 +43,17 @@ const loadBalancingSidebarSections = [
   { id: 'practice', title: 'Practice Questions' },
 ];
 
-function LoadBalancingPage() {
-  const SidebarComponentWithProps = (props) => (
-    <TopicSidebar
-      topicTitle="Load Balancing" // Title for the sidebar
-      sections={loadBalancingSidebarSections} // Pass the sections data
-      currentView={props.currentView}
-      setCurrentView={props.setCurrentView}
-    />
-  );
+// Moved SidebarComponentWithProps outside the LoadBalancingPage component
+const SidebarComponentWithProps = (props) => (
+  <TopicSidebar
+    topicTitle="Load Balancing" // Title for the sidebar
+    sections={loadBalancingSidebarSections} // Pass the sections data
+    currentView={props.currentView}
+    setCurrentView={props.setCurrentView}
+  />
+);
 
+function LoadBalancingPage() {
   return (
     <TopicPageLayout
       pageTitle="Load Balancing"

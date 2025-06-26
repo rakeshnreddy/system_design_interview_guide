@@ -49,6 +49,16 @@ const databaseSidebarSections = [
     { id: 'summary', title: 'DB Comparison Summary' },
 ];
 
+// Moved SidebarComponentWithProps outside the DatabasesPage component
+const SidebarComponentWithProps = (props) => (
+  <TopicSidebar
+    topicTitle="Database Topics" // Pass the topic title
+    sections={databaseSidebarSections} // Pass the sections data
+    currentView={props.currentView}
+    setCurrentView={props.setCurrentView}
+  />
+);
+
 function DatabasesPage() {
   const pageTitle = "Database Selection | System Design Interview Prep";
   const pageDescription = "Learn to choose the right database (SQL vs. NoSQL), understand the CAP theorem, and explore various data models for system design interviews.";
@@ -73,15 +83,6 @@ function DatabasesPage() {
       metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
     };
   }, [pageTitle, pageDescription]);
-
-  const SidebarComponentWithProps = (props) => (
-    <TopicSidebar
-      topicTitle="Database Topics" // Pass the topic title
-      sections={databaseSidebarSections} // Pass the sections data
-      currentView={props.currentView}
-      setCurrentView={props.setCurrentView}
-    />
-  );
 
   return (
     <>

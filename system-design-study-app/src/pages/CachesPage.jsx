@@ -48,6 +48,16 @@ const cacheSidebarSections = [
   { id: 'code', title: 'Code Library' },
 ];
 
+// Moved SidebarComponentWithProps outside the CachesPage component
+const SidebarComponentWithProps = (props) => (
+  <TopicSidebar
+    topicTitle="Caching Topics" // Pass the topic title
+    sections={cacheSidebarSections} // Pass the sections data
+    currentView={props.currentView}
+    setCurrentView={props.setCurrentView}
+  />
+);
+
 function CachesPage() {
   const pageTitle = "Caching Strategies | System Design Interview Prep";
   const pageDescription = "Master caching techniques, patterns, and trade-offs for high-performance systems. Learn about cache invalidation, eviction policies, and more.";
@@ -72,15 +82,6 @@ function CachesPage() {
       metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
     };
   }, [pageTitle, pageDescription]);
-
-  const SidebarComponentWithProps = (props) => (
-    <TopicSidebar
-      topicTitle="Caching Topics" // Pass the topic title
-      sections={cacheSidebarSections} // Pass the sections data
-      currentView={props.currentView}
-      setCurrentView={props.setCurrentView}
-    />
-  );
 
   return (
     <>

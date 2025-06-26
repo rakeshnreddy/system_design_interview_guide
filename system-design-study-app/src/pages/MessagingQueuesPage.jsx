@@ -57,6 +57,16 @@ const mqSidebarSections = [
   { id: 'practice', title: 'Practice Questions' },
 ];
 
+// Moved SidebarComponentWithProps outside the MessagingQueuesPage component
+const SidebarComponentWithProps = (props) => (
+  <TopicSidebar
+    topicTitle="Messaging Queues"
+    sections={mqSidebarSections}
+    currentView={props.currentView}
+    setCurrentView={props.setCurrentView}
+  />
+);
+
 function MessagingQueuesPage() {
   const pageTitle = "Messaging Queues | System Design Interview Prep";
   const pageDescription = "Explore message brokers, delivery semantics, and patterns for resilient and scalable distributed systems. Learn about Kafka, RabbitMQ, and more.";
@@ -81,15 +91,6 @@ function MessagingQueuesPage() {
       metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
     };
   }, [pageTitle, pageDescription]);
-
-  const SidebarComponentWithProps = (props) => (
-    <TopicSidebar
-      topicTitle="Messaging Queues"
-      sections={mqSidebarSections}
-      currentView={props.currentView}
-      setCurrentView={props.setCurrentView}
-    />
-  );
 
   return (
     <>
