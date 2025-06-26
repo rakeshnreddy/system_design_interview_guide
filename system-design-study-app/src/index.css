@@ -1,6 +1,29 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
+:root {
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+
+  /* Light Theme Palette */
+  --background: #ffffff;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --accent-primary: #4FD1C5;
+  --surface-bg: #f7fafc; /* Card and surface backgrounds */
+  --border-color: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Palette */
+  --background: #1a202c;
+  --text-primary: #edf2f7;
+  --text-secondary: #a0aec0;
+  --accent-primary: #4FD1C5;
+  --surface-bg: #2d3748; /* Card and surface backgrounds */
+  --border-color: #4a5568;
+}
+
 @theme {
   /* Colors from tailwind.config.js */
   --color-primary-light: #67e8f9;
@@ -36,11 +59,18 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
-    @apply bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200;
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
     /* Smoother font rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
   }
   /* Example: More opinionated heading styles (optional) */
   /*
