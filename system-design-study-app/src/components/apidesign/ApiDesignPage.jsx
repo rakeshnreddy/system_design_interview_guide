@@ -47,16 +47,17 @@ const apiDesignSidebarSections = [
   { id: 'practice', title: 'Practice Questions' },
 ];
 
-function ApiDesignPage() {
-  const SidebarComponentWithProps = (props) => (
-    <TopicSidebar
-      topicTitle="API Design Topics" // Pass the topic title
-      sections={apiDesignSidebarSections} // Pass the sections data
-      currentView={props.currentView}
-      setCurrentView={props.setCurrentView}
-    />
-  );
+// Moved SidebarComponentWithProps outside the ApiDesignPage component
+const SidebarComponentWithProps = (props) => (
+  <TopicSidebar
+    topicTitle="API Design Topics" // Pass the topic title
+    sections={apiDesignSidebarSections} // Pass the sections data
+    currentView={props.currentView}
+    setCurrentView={props.setCurrentView}
+  />
+);
 
+function ApiDesignPage() {
   return (
     <TopicPageLayout
       pageTitle="API Design"
