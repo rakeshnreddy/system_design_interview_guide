@@ -1,5 +1,4 @@
-// import { createTheme } from '@mui/material/styles'; // Original
-import createTheme from '@mui/material/styles/createTheme'; // Attempting direct import
+import { createTheme } from '@mui/material/styles'; // Reverted to standard named import
 import tailwindConfig from '../../tailwind.config.js'; // Adjust path as necessary
 
 // Helper function to parse Tailwind fontSize array [size, {lineHeight}]
