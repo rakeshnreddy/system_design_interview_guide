@@ -31,7 +31,8 @@ export function useTheme() {
 /**
  * Provides theme context to its children components.
  * Manages the current theme mode (light/dark), persists it to localStorage,
- * and applies the 'dark' class to the documentElement for Tailwind CSS.
+ * and applies both the `dark` class and `data-theme` attribute to the
+ * documentElement for Tailwind CSS and custom variables.
  * @param {object} props - The component props.
  * @param {React.ReactNode} props.children - The child components to be wrapped by the provider.
  */
@@ -51,8 +52,10 @@ export function CustomThemeProvider({ children }) {
     const root = window.document.documentElement;
     if (themeMode === 'dark') {
       root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
     } else {
       root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
     }
     localStorage.setItem('themeMode', themeMode);
   }, [themeMode]);
