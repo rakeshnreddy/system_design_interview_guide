@@ -1,120 +1,189 @@
-import { createTheme } from '@mui/material/styles'; // Reverted to standard named import
-import tailwindConfig from '../../tailwind.config.js'; // Adjust path as necessary
+import { createTheme } from '@mui/material/styles';
 
-// Helper function to parse Tailwind fontSize array [size, {lineHeight}]
-const parseFontSize = (fontSizeArray) => {
-  if (Array.isArray(fontSizeArray)) {
-    return {
-      fontSize: fontSizeArray[0],
-      lineHeight: fontSizeArray[1]?.lineHeight || 'normal',
-    };
-  }
-  return { fontSize: fontSizeArray, lineHeight: 'normal' };
-};
+import { alpha } from '@mui/material/styles';
 
-// Extracting tokens from Tailwind config
-const twTheme = tailwindConfig.theme.extend;
+import { alpha } from '@mui/material/styles';
+
+// Fallback color values (from your CSS variables)
+const FALLBACK_ACCENT_PRIMARY = '#4FD1C5';
+// Light theme fallbacks
+const FALLBACK_BACKGROUND_LIGHT = '#ffffff';
+const FALLBACK_TEXT_PRIMARY_LIGHT = '#1a202c';
+const FALLBACK_TEXT_SECONDARY_LIGHT = '#4a5568';
+const FALLBACK_SURFACE_BG_LIGHT = '#f7fafc';
+const FALLBACK_BORDER_COLOR_LIGHT = '#e2e8f0';
+// Dark theme fallbacks
+const FALLBACK_BACKGROUND_DARK = '#1a202c';
+const FALLBACK_TEXT_PRIMARY_DARK = '#edf2f7';
+const FALLBACK_TEXT_SECONDARY_DARK = '#a0aec0';
+const FALLBACK_SURFACE_BG_DARK = '#2d3748';
+const FALLBACK_BORDER_COLOR_DARK = '#4a5568';
+
+const FALLBACK_SECONDARY_ACCENT_LIGHT = FALLBACK_TEXT_SECONDARY_LIGHT; // Example, adjust if needed
+const FALLBACK_SECONDARY_ACCENT_DARK = FALLBACK_TEXT_SECONDARY_DARK; // Example, adjust if needed
+
 
 const commonThemeOptions = {
   typography: {
-    fontFamily: twTheme.fontFamily.sans.join(','), // Body font
-    h1: {
-      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
-      ...parseFontSize(twTheme.fontSize.h1),
-      // fontWeight: 700, // MUI default or specify
-    },
-    h2: {
-      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
-      ...parseFontSize(twTheme.fontSize.h2),
-      // fontWeight: 700, // MUI default or specify
-    },
-    h3: {
-      fontFamily: twTheme.fontFamily.serif.join(','), // Heading font
-      ...parseFontSize(twTheme.fontSize.h3),
-      // fontWeight: 700, // MUI default or specify
-    },
-    body1: { // Mapping 'body' to MUI's 'body1'
-      fontFamily: twTheme.fontFamily.sans.join(','), // Explicitly body font
-      ...parseFontSize(twTheme.fontSize.body),
-    },
-    caption: {
-      ...parseFontSize(twTheme.fontSize.caption),
-    },
-    // Add other MUI typography variants if needed, mapping from your Tailwind scale
-    // e.g., h4, h5, h6, subtitle1, subtitle2, body2, button, overline
+    fontFamily: 'var(--font-body)',
+    h1: { fontFamily: 'var(--font-heading)' },
+    h2: { fontFamily: 'var(--font-heading)' },
+    h3: { fontFamily: 'var(--font-heading)' },
+    h4: { fontFamily: 'var(--font-heading)' },
+    h5: { fontFamily: 'var(--font-heading)' },
+    h6: { fontFamily: 'var(--font-heading)' },
   },
   shape: {
-    borderRadius: parseInt(twTheme.borderRadius.DEFAULT, 10),
+    borderRadius: 4,
   },
-  spacing: (factor) => `${factor * 0.25}rem`, // Assuming 1 unit in MUI spacing is 4px (0.25rem) like Tailwind's spacing-1
-  // Override component defaults here using Tailwind tokens if needed
-  // components: {
-  //   MuiButton: {
-  //     styleOverrides: {
-  //       root: {
-  //         // Example: textTransform: 'none',
-  //       },
-  //     },
-  //   },
-  // },
+  spacing: (factor) => `${factor * 8}px`,
+
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'var(--surface-bg)',
+          color: 'var(--text-primary)',
+          boxShadow: '0 2px 4px -1px var(--border-color)',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'var(--surface-bg)',
+          border: '1px solid var(--border-color)',
+          color: 'var(--text-primary)',
+        },
+      },
+    },
+    // MuiButton is overridden per-theme (light/dark) below to set correct contrastText
+  },
 };
 
 // Light Theme
-export const lightTheme = createTheme({ // Changed from muiStyles.createTheme
+export const lightTheme = createTheme({
   ...commonThemeOptions,
   palette: {
     mode: 'light',
     primary: {
-      main: twTheme.colors.primary.DEFAULT,
-      light: twTheme.colors.primary.light,
-      dark: twTheme.colors.primary.dark,
+      main: FALLBACK_ACCENT_PRIMARY,
+      light: alpha(FALLBACK_ACCENT_PRIMARY, 0.8),
+      dark: alpha(FALLBACK_ACCENT_PRIMARY, 0.7), // Darken more for better contrast potential
+      contrastText: FALLBACK_TEXT_PRIMARY_LIGHT, // Text that contrasts with main
     },
     secondary: {
-      main: twTheme.colors.secondary.DEFAULT,
-      light: twTheme.colors.secondary.light,
-      dark: twTheme.colors.secondary.dark,
+      main: FALLBACK_SECONDARY_ACCENT_LIGHT,
+      contrastText: FALLBACK_TEXT_PRIMARY_LIGHT,
     },
     background: {
-      default: twTheme.colors.neutral[100], // gray-100
-      paper: twTheme.colors.white,
+      default: FALLBACK_BACKGROUND_LIGHT, // Fallback for MUI internals
+      paper: FALLBACK_SURFACE_BG_LIGHT,   // Fallback for MUI internals
     },
     text: {
-      primary: twTheme.colors.neutral[800],   // gray-800
-      secondary: twTheme.colors.neutral[600], // gray-600
-      // muted: twTheme.colors.textMuted, // If you added this to Tailwind
+      primary: FALLBACK_TEXT_PRIMARY_LIGHT, // Fallback for MUI internals
+      secondary: FALLBACK_TEXT_SECONDARY_LIGHT, // Fallback for MUI internals
     },
-    // Add other custom light theme palette colors if needed, referencing twTheme.colors
+    divider: FALLBACK_BORDER_COLOR_LIGHT, // Fallback for MUI internals
   },
+  components: {
+    ...commonThemeOptions.components,
+    MuiButton: {
+      styleOverrides: {
+        containedPrimary: {
+          backgroundColor: 'var(--accent-primary)',
+          color: FALLBACK_TEXT_PRIMARY_LIGHT, // Ensure this contrasts with --accent-primary
+          '&:hover': {
+            backgroundColor: 'var(--accent-primary)', // CSS var for runtime
+            filter: 'brightness(90%)',
+          },
+        },
+        textPrimary: {
+          color: 'var(--accent-primary)', // CSS var for runtime
+          '&:hover': {
+            backgroundColor: alpha(FALLBACK_ACCENT_PRIMARY, 0.08),
+          },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: 'var(--accent-primary)', // CSS var for runtime
+          '&:hover': {
+            color: 'var(--accent-primary)', // CSS var for runtime
+            filter: 'brightness(80%)',
+          }
+        }
+      }
+    }
+  }
 });
 
 // Dark Theme
-// For dark theme, you might want to use different shades or specific dark mode colors from your Tailwind config
-// For simplicity, this example inverts some colors or uses darker shades.
-// Ideally, your tailwind.config.js would have a more detailed dark mode color palette.
-export const darkTheme = createTheme({ // Changed from muiStyles.createTheme
+export const darkTheme = createTheme({
   ...commonThemeOptions,
   palette: {
     mode: 'dark',
     primary: {
-      // Adjust for dark mode if your primary.DEFAULT is too dark
-      main: twTheme.colors.primary.light, // Using light variant for dark mode primary
-      light: twTheme.colors.primary.DEFAULT, // Original default as light for dark mode
-      dark: twTheme.colors.primary.dark, // Keep dark as is or adjust
+      main: FALLBACK_ACCENT_PRIMARY,
+      light: alpha(FALLBACK_ACCENT_PRIMARY, 0.8), // May need adjustment for dark theme
+      dark: alpha(FALLBACK_ACCENT_PRIMARY, 0.7),  // May need adjustment for dark theme
+      contrastText: FALLBACK_TEXT_PRIMARY_DARK, // Text that contrasts with main on dark background
     },
     secondary: {
-      main: twTheme.colors.secondary.light, // Using light variant for dark mode secondary
-      light: twTheme.colors.secondary.DEFAULT,
-      dark: twTheme.colors.secondary.dark,
+      main: FALLBACK_SECONDARY_ACCENT_DARK,
+      contrastText: FALLBACK_TEXT_PRIMARY_DARK,
     },
     background: {
-      default: twTheme.colors.neutral[900], // gray-900
-      paper: twTheme.colors.neutral[800],   // gray-800
+      default: FALLBACK_BACKGROUND_DARK, // Fallback for MUI internals
+      paper: FALLBACK_SURFACE_BG_DARK,   // Fallback for MUI internals
     },
     text: {
-      primary: twTheme.colors.neutral[100],   // gray-100 (light text on dark background)
-      secondary: twTheme.colors.neutral[300], // gray-300
-      // muted: lighten(twTheme.colors.textMuted, 0.5), // Example: lighten muted text for dark mode
+      primary: FALLBACK_TEXT_PRIMARY_DARK,   // Fallback for MUI internals
+      secondary: FALLBACK_TEXT_SECONDARY_DARK, // Fallback for MUI internals
     },
-    // Add other custom dark theme palette colors if needed
+    divider: FALLBACK_BORDER_COLOR_DARK, // Fallback for MUI internals
+  },
+  components: {
+    ...commonThemeOptions.components,
+    MuiButton: {
+      styleOverrides: {
+        containedPrimary: {
+          backgroundColor: 'var(--accent-primary)', // CSS var for runtime
+          color: FALLBACK_TEXT_PRIMARY_DARK, // Ensure this contrasts
+          '&:hover': {
+            backgroundColor: 'var(--accent-primary)', // CSS var for runtime
+            filter: 'brightness(110%)',
+          },
+        },
+        textPrimary: {
+          color: 'var(--accent-primary)', // CSS var for runtime
+          '&:hover': {
+            backgroundColor: alpha(FALLBACK_ACCENT_PRIMARY, 0.12),
+          },
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'var(--surface-bg)', // CSS var for runtime (dark)
+          color: 'var(--text-primary)',       // CSS var for runtime (dark)
+          boxShadow: '0 2px 4px -1px var(--border-color)', // CSS var for runtime (dark)
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: 'var(--accent-primary)', // CSS var for runtime
+          '&:hover': {
+            color: 'var(--accent-primary)', // CSS var for runtime
+            filter: 'brightness(120%)',
+          }
+        }
+      }
+    }
   },
 });

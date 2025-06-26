@@ -4,45 +4,59 @@ export default {
     "./index.html", // Path to your main HTML file
     "./src/**/*.{js,ts,jsx,tsx,vue}", // Path to all relevant source files
   ],
-  darkMode: 'class', // Ensure dark mode is class-based
+  darkMode: ['attr', '[data-theme="dark"]'], // Enable dark mode using a data attribute
   theme: {
     extend: {
       colors: {
+        // New theme palette using CSS variables
+        background: 'var(--background)',
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'accent-primary': 'var(--accent-primary)',
+        'surface-bg': 'var(--surface-bg)',
+        'border-color': 'var(--border-color)',
+
+        // Keeping existing semantic color names if they are still used
+        // or if they should map to the new CSS variables.
+        // For example, if 'primary.DEFAULT' should now be 'accent-primary':
         primary: {
-          light: '#00A0A0', // Lighter teal
-          DEFAULT: '#008080', // Deep teal
-          dark: '#006060',  // Darker teal
+          light: 'var(--accent-primary)', // Or a lighter shade if defined
+          DEFAULT: 'var(--accent-primary)',
+          dark: 'var(--accent-primary)', // Or a darker shade if defined
         },
-        secondary: {
-          light: '#FFB733', // Lighter orange
-          DEFAULT: '#FFA500', // Vibrant orange
-          dark: '#CC8400',  // Darker orange
+        secondary: { // Example: if secondary is still needed and maps to something
+          light: 'var(--text-secondary)', // Just an example, map as needed
+          DEFAULT: 'var(--text-secondary)',
+          dark: 'var(--text-secondary)',
         },
-        neutral: {
-          100: '#F5F5F5', // Light gray
-          300: '#D3D3D3', // Medium-light gray
-          600: '#A9A9A9', // Medium gray
-          800: '#666666', // Dark gray
-          900: '#333333', // Very dark gray
+        neutral: { // You might map these to your new text/surface colors
+          100: 'var(--surface-bg)', // Example: light surface
+          300: 'var(--border-color)', // Example: border/divider
+          600: 'var(--text-secondary)',
+          800: 'var(--text-primary)',
+          900: 'var(--text-primary)', // Example: dark surface might be text-primary on a very dark bg
         },
-        white: '#ffffff',
-        black: '#000000',
-        // Colors from App.css - consider giving them semantic names if used consistently
-        accent1: '#646cffaa', // Will be overridden or removed if not part of new theme
-        accent2: '#61dafbaa', // Will be overridden or removed if not part of new theme
-        textMuted: '#A9A9A9', // neutral-600, use with dark:text-neutral-300 for dark mode
+        white: '#ffffff', // Keep if needed, or use CSS var if white is part of theme
+        black: '#000000', // Keep if needed, or use CSS var
       },
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'], // Added for headings
+        // Update to use new CSS variable based font families
+        sans: ['var(--font-body)'], // Default sans-serif font
+        serif: ['var(--font-heading)'], // Default serif/heading font
+        // Specific named families if needed, also using CSS vars
+        heading: ['var(--font-heading)'],
+        body: ['var(--font-body)'],
       },
+      // Font sizes, line heights, spacing, etc., can remain as they are if they
+      // don't need to change based on the new theme variables directly.
+      // If they do, they could also be defined using CSS variables if necessary,
+      // though it's less common for these to be in CSS vars unless highly dynamic.
       fontSize: {
-        'caption': ['0.75rem', { lineHeight: '1rem' }],    // 12px
-        'body': ['1rem', { lineHeight: '1.5rem' }],        // 16px
-        'h3': ['1.25rem', { lineHeight: '1.75rem' }],   // 20px
-        'h2': ['1.5rem', { lineHeight: '2rem' }],      // 24px
-        'h1': ['2.25rem', { lineHeight: '2.5rem' }],    // 36px
-        // Example additional sizes if needed
+        'caption': ['0.75rem', { lineHeight: '1rem' }],
+        'body': ['1rem', { lineHeight: '1.5rem' }],
+        'h3': ['1.25rem', { lineHeight: '1.75rem' }],
+        'h2': ['1.5rem', { lineHeight: '2rem' }],
+        'h1': ['2.25rem', { lineHeight: '2.5rem' }],
         'xs': ['0.75rem', { lineHeight: '1rem' }],
         'sm': ['0.875rem', { lineHeight: '1.25rem' }],
         'base': ['1rem', { lineHeight: '1.5rem' }],
@@ -55,61 +69,29 @@ export default {
         '6xl': ['3.75rem', { lineHeight: '1' }],
       },
       lineHeight: {
-        'caption': '1rem',    // 16px
-        'body': '1.5rem',     // 24px
-        'h3': '1.75rem',    // 28px
-        'h2': '2rem',       // 32px
-        'h1': '2.5rem',     // 40px
+        'caption': '1rem',
+        'body': '1.5rem',
+        'h3': '1.75rem',
+        'h2': '2rem',
+        'h1': '2.5rem',
       },
       spacing: {
-        // 4px base unit scale
-        '0': '0px',
-        '1': '4px',
-        '2': '8px',
-        '3': '12px',
-        '4': '16px',
-        '5': '20px',
-        '6': '24px',
-        '7': '28px',
-        '8': '32px',
-        '9': '36px',
-        '10': '40px',
-        '11': '44px',
-        '12': '48px',
-        '14': '56px',
-        '16': '64px',
-        '20': '80px',
-        '24': '96px',
-        '28': '112px',
-        '32': '128px',
-        '36': '144px',
-        '40': '160px',
-        '44': '176px',
-        '48': '192px',
-        '52': '208px',
-        '56': '224px',
-        '60': '240px',
-        '64': '256px',
-        '72': '288px',
-        '80': '320px',
-        '96': '384px',
-        // Spacing values from App.css (converted to 4px scale where possible or kept as is)
-        'app-root-padding': '2rem', // 32px, maps to spacing-8
-        'logo-padding': '1.5em',    // This is relative, may need to be hardcoded or re-evaluated
-        'card-padding': '2em',      // This is relative, may need to be hardcoded or re-evaluated
+        '0': '0px', '1': '4px', '2': '8px', '3': '12px', '4': '16px',
+        '5': '20px', '6': '24px', '7': '28px', '8': '32px', '9': '36px',
+        '10': '40px', '11': '44px', '12': '48px', '14': '56px', '16': '64px',
+        '20': '80px', '24': '96px', '28': '112px', '32': '128px', '36': '144px',
+        '40': '160px', '44': '176px', '48': '192px', '52': '208px', '56': '224px',
+        '60': '240px', '64': '256px', '72': '288px', '80': '320px', '96': '384px',
+        'app-root-padding': '2rem',
+        'logo-padding': '1.5em',
+        'card-padding': '2em',
       },
       borderRadius: {
-        'DEFAULT': '8px', // from muiThemes.js
-        'sm': '4px',
-        'md': '8px', // Default
-        'lg': '12px',
-        'xl': '16px',
-        '2xl': '24px',
-        'full': '9999px',
+        'DEFAULT': '8px', 'sm': '4px', 'md': '8px', 'lg': '12px',
+        'xl': '16px', '2xl': '24px', 'full': '9999px',
       },
-      // Extend other properties like boxShadow, etc., if needed
       boxShadow: {
-        'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)', // Example default shadow
+        'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -120,19 +102,6 @@ export default {
     },
   },
   plugins: [
-    // Replaced require with import for ES Module compatibility with Vite
-    // Note: For this to work directly, @tailwindcss/typography would need to be imported at the top.
-    // However, Tailwind typically resolves plugin strings or direct plugin objects.
-    // A common pattern is to import it at the top and then use the variable.
-    // Let's try a direct string first, as Tailwind often handles this.
-    // If not, we'll import it at the top.
     '@tailwindcss/typography',
-    // Add other plugins if you have them
   ],
 }
-
-// If the string doesn't work, the alternative is:
-// import typographyPlugin from '@tailwindcss/typography';
-// ...
-// plugins: [typographyPlugin],
-// ...
