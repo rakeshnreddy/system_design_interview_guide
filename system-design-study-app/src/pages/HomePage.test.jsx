@@ -31,10 +31,9 @@ describe('HomePage Component', () => {
     expect(screen.getByText(/Comprehensive study guides designed to help you master complex topics/i)).toBeInTheDocument();
   });
 
-  test('renders the hero section call-to-action button linking to topics', () => {
-    const ctaButton = screen.getByRole('link', { name: /Explore All Topics/i });
-    expect(ctaButton).toBeInTheDocument();
-    expect(ctaButton).toHaveAttribute('href', '/topics');
+  test('hero section call-to-action button should be removed', () => {
+    const ctaButton = screen.queryByRole('link', { name: /Explore All Topics/i });
+    expect(ctaButton).not.toBeInTheDocument();
   });
 
   test('renders "Featured Study Guides" section title', () => {

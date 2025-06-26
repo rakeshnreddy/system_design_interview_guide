@@ -45,8 +45,8 @@ const HomePage = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'var(--surface-bg)', // Updated to use theme variable
-          color: 'var(--text-primary)',   // Updated to use theme variable
+          // bgcolor removed to use page default
+          color: 'var(--text-primary)',   // Ensure text color is theme-aware
           py: { xs: 6, sm: 8, md: 10 },
           textAlign: 'center',
         }}
@@ -60,7 +60,7 @@ const HomePage = () => {
               fontWeight: 'bold',
               fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3.2rem' },
               lineHeight: { xs: 1.2, sm: 1.3 },
-              color: 'var(--text-primary)' // Ensure heading also uses text-primary
+              color: 'var(--text-primary)' // Explicitly set to ensure visibility
             }}
           >
             Ace Your System Design Interview
@@ -68,26 +68,17 @@ const HomePage = () => {
           <Typography
             variant="h5"
             component="p"
-            paragraph
+            paragraph // This adds bottom margin, consider if mb: 4 is still needed or adjust
             sx={{
-              mb: 4,
+              // mb: 4, // Typography with paragraph prop already adds margin-bottom. Adjust if more space is needed.
               fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' },
               lineHeight: { xs: 1.3, sm: 1.4 },
-              color: 'var(--text-secondary)' // Subtitle uses text-secondary
+              color: 'var(--text-secondary)' // Explicitly set for visibility
             }}
           >
             Comprehensive study guides designed to help you master complex topics and impress in your next technical interview.
           </Typography>
-          <MuiButton
-            variant="contained"
-            color="primary" // Changed from secondary to primary
-            size="large"
-            component={RouterLink}
-            to="/topics"
-            sx={{ padding: '10px 30px', fontSize: '1.1rem' }} // Will pick up primary button styles from theme
-          >
-            Explore All Topics
-          </MuiButton>
+          {/* "Explore All Topics" MuiButton removed */}
         </Container>
       </Box>
 
@@ -95,7 +86,7 @@ const HomePage = () => {
       <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 6 } }}>
 
         {/* Guides Section */}
-        <Typography variant="h4" component="h2" sx={{ mb: 6, fontWeight:'bold' }}>
+        <Typography variant="h4" component="h2" sx={{ mb: 6, fontWeight:'bold', color: 'var(--text-primary)' }}>
           Featured Study Guides
         </Typography>
         {/* Updated to make the grid responsive with more items */}
