@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Link } from 'react-router-dom'; // Added Link for IconButton
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useTheme, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home'; // Import HomeIcon
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
@@ -60,6 +61,16 @@ const Layout = ({ children }) => {
       >
         <Container maxWidth="lg">
           <Toolbar disableGutters>
+            <IconButton
+              component={Link}
+              to="/"
+              color="inherit"
+              aria-label="go home"
+              edge="start" // Good for first item in toolbar
+              sx={{ mr: 1, color: 'primary.contrastText' }} // Added margin right
+            >
+              <HomeIcon />
+            </IconButton>
             <Typography
               variant="h6"
               component={RouterLink}
