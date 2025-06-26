@@ -155,7 +155,7 @@ const CachepediaView = ({ appData }) => {
                   {selectedCache.cons.map((con, i) => <li key={i}>{con}</li>)}
                 </ul>
               </div>
-              <p className="text-base text-neutral-600 dark:text-neutral-400"><strong className="font-semibold text-neutral-700 dark:text-neutral-200">Ideal Use Cases:</strong> {selectedCache.useWhen}</p>
+              <p className="text-base text-neutral-600 dark:text-neutral-400"><strong className="font-semibold text-neutral-700 dark:text-neutral-200">Ideal Use Cases:</strong> {selectedCache.whenToUse}</p>
             </div>
 
             <Card
