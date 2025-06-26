@@ -20,6 +20,7 @@ const ApiDesignPage = lazy(() => import('./components/apidesign/ApiDesignPage'))
 const ScalabilityConceptsPage = lazy(() => import('./components/scalabilityconcepts/ScalabilityConceptsPage'));
 const InterviewApproachPage = lazy(() => import('./components/interviewapproach/InterviewApproachPage'));
 const TopicsListPage = lazy(() => import('./pages/TopicsListPage')); // Added new Topics List Page
+const TopicDetailPage = lazy(() => import('./pages/TopicDetailPage'));
 
 // Inner component to access both Auth and CustomTheme contexts
 function AppContent() {
@@ -44,6 +45,7 @@ function AppContent() {
               <Route path="/scalability-concepts" element={<ScalabilityConceptsPage />} />
               <Route path="/interview-approach" element={<InterviewApproachPage />} />
               <Route path="/topics" element={<TopicsListPage />} /> {/* Added route for Topics List Page */}
+              <Route path="/topic/:topicId" element={<TopicDetailPage />} />
             </Routes>
           </Suspense>
         </Layout>
