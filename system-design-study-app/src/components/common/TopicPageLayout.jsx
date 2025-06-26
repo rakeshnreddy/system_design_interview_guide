@@ -39,44 +39,7 @@ function TopicPageLayout({
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
       <CssBaseline />
-      {/* Inner AppBar for topic title, sticky below main Layout's AppBar */}
-      <AppBar
-        position="sticky"
-        sx={(theme) => ({
-          top: 0, // Sticks to the top of its scrolling container within TopicPageLayout's flex item
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` }, // Positioned to the right of the permanent drawer
-          backgroundColor: alpha(theme.palette.background.default, 0.85),
-          backdropFilter: 'blur(8px)',
-          boxShadow: theme.shadows[1],
-          color: 'text.primary',
-          zIndex: theme.zIndex.appBar - 100 // Ensure it's below the main site AppBar if any overlap configuration occurs
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }} // Only show on small screens
-          >
-            <MenuIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="go home"
-            component={Link}
-            to="/"
-            sx={{ display: { xs: 'none', sm: 'inline-flex' }, mr: 2 }} // Hide on xs, show on sm and up
-          >
-            <HomeIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {pageTitle}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      {/* Inner AppBar for topic title - REMOVED */}
 
       {/* Navigation Drawer (Sidebar) */}
       <Box
@@ -134,10 +97,10 @@ function TopicPageLayout({
           // width: { sm: `calc(100% - ${drawerWidth}px)` }, // This was part of original flex setup
         }}
       >
-        {/* Toolbar spacer for the inner sticky AppBar */}
-        <Toolbar />
+        {/* Toolbar spacer for the inner sticky AppBar - REMOVED */}
+        {/* <Toolbar /> */}
         <Suspense fallback={
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 128px)' /* Account for two AppBars roughly */ }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 64px)' /* Account for one main AppBar roughly */ }}>
             <CircularProgress size={60} />
           </Box>
         }>
