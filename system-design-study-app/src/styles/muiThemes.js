@@ -1,5 +1,4 @@
-import { createTheme } from '@mui/material/styles';
-import { alpha } from '@mui/material/styles';
+import { createTheme, alpha } from '@mui/material/styles';
 
 // Fallback color values (from your CSS variables)
 const FALLBACK_ACCENT_PRIMARY = '#4FD1C5';
