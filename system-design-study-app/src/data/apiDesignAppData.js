@@ -1,5 +1,9 @@
 export const apiDesignAppData = {
   title: "API Design",
+  overview: `An API (Application Programming Interface) is a set of rules, protocols, and tools that allows different software applications to communicate with each other. In system design, APIs are the fundamental building blocks for creating modular, scalable, and maintainable systems. They define how various components of a system, or different systems altogether, interact, exchange data, and invoke functionality without needing to know the intricacies of each other's internal implementations. This abstraction enables decoupling, promotes reusability, and facilitates integration between disparate services, whether they are internal microservices or external third-party services.
+
+APIs can be broadly categorized as synchronous or asynchronous. Synchronous APIs require the client to send a request and wait for an immediate response from the server. This blocking nature is suitable for operations where the client needs a quick confirmation or data to proceed, like retrieving user details. In contrast, asynchronous APIs allow the client to send a request and continue processing without waiting for an immediate response; the server processes the request in the background and notifies the client upon completion, often via webhooks or message queues. The choice between synchronous and asynchronous design significantly impacts system responsiveness, resource utilization, and fault tolerance. For example, long-running tasks like video processing are better suited for asynchronous APIs to avoid tying up client resources, while quick data lookups benefit from synchronous interaction. Design choices here are crucial for user experience and system efficiency.`,
+  metrics: [
   metrics: [
     {
       id: "rps_api",
@@ -84,6 +88,16 @@ export const apiDesignAppData = {
     {
       term: "Statelessness",
       definition: "A characteristic of REST APIs where each request from a client to a server must contain all the information needed to understand the request, and cannot take advantage of any stored context on the server."
+    },
+    {
+      id: "hypermedia", // Added id for consistency
+      term: "HATEOAS",
+      definition: "Hypermedia As The Engine Of Application State: REST constraint where responses include hyperlinks for discoverability."
+    },
+    {
+      id: "schemaFirst", // Added id for consistency
+      term: "Schema-First",
+      definition: "Design approach where the API/schema is defined before implementation (common in GraphQL)."
     }
   ],
   protocols: [
@@ -127,41 +141,34 @@ export const apiDesignAppData = {
     {
       id: "graphql",
       name: "GraphQL",
-      structure: "Clients request exactly the data they need using a query language. Typically uses a single endpoint (e.g., /graphql). A Schema Definition Language (SDL) defines data types, fields, and relationships, forming a strong contract.",
+      // 'description' from prompt is mapped to 'structure' here for consistency
+      structure: "A query language and runtime allowing clients to request exactly the data they need, with a single endpoint.",
       pros: [
-        "Clients fetch only the specific data they need, eliminating over-fetching and reducing under-fetching (multiple round trips).",
-        "Strongly typed schema enables better client-side tooling, validation, and introspection.",
-        "A single request can fetch data from multiple resources (types) in a nested manner.",
-        "Supports real-time updates via Subscriptions (often over WebSockets).",
-        "Evolving versions are easier to manage as new fields can be added without breaking existing clients; clients only request fields they know."
+        "Reduces over-fetching and under-fetching",
+        "Strongly typed schema with introspection",
+        "Evolvable without versioning"
       ],
       cons: [
-        "Can be more complex to implement on the server-side compared to simple REST APIs (resolver logic, schema management).",
-        "Caching is more complex than standard HTTP caching; requires field-level caching strategies or tools like Apollo Engine/DataDog.",
-        "File uploads are not natively part of the GraphQL specification and require workarounds like multipart requests or separate upload endpoints.",
-        "Rate limiting and query cost analysis can be challenging due to the flexible nature of queries (e.g., deeply nested queries can be expensive).",
-        "Performance can be an issue if resolvers are not optimized or lead to N+1 query problems."
+        "Increased server complexity",
+        "Caching can be more difficult",
+        "Query performance must be carefully managed"
       ],
-      whenToUse: [
-        "Applications with complex data requirements, nested data, or where clients need to fetch varying subsets of data (e.g., social media feeds, dashboards).",
-        "Mobile applications needing efficient data loading to save bandwidth and battery.",
-        "Frontends that need to aggregate data from multiple microservices through a single API call.",
-        "When you want to provide a flexible and powerful data querying capability to diverse clients."
+      whenToUse: [ // Mapped from prompt's whenToUse (string) to array for consistency
+        "Ideal when clients need flexible queries or multiple related resources in one request (e.g., mobile apps)."
       ],
-      whenNotToUse: [
-        "Very simple CRUD-based APIs where the overhead of GraphQL schema and resolvers is not justified.",
-        "When HTTP caching mechanisms are heavily relied upon and sufficient for performance needs.",
-        "APIs primarily serving large binary files (though metadata can be GraphQL).",
-        "If the team lacks experience with GraphQL concepts and server-side implementation."
+      whenNotToUse: [ // Mapped from prompt's whenNotToUse (string) to array for consistency
+        "Avoid for simple CRUD APIs where REST suffices or when caching at HTTP layer is critical."
       ],
       interviewTalkingPoints: [
-        "Explain how it solves over/under-fetching via client-specified queries.",
-        "Highlight the role of the schema (SDL) as a strong contract.",
-        "Discuss its suitability for complex data graphs and mobile clients.",
-        "Mention challenges like caching complexity and rate limiting."
+        "Explain schema design and resolver functions.",
+        "Discuss how GraphQL enables client-driven requests.",
+        "Mention potential performance pitfalls with deeply nested queries."
       ],
-      defendingYourDecision: "GraphQL was chosen to empower our diverse frontend clients (web and mobile) to fetch exactly the data they need, reducing data transfer and improving perceived performance. This is crucial for our [application type, e.g., content aggregation platform] with its complex and interconnected data models. The strongly typed schema also improves developer experience and reduces integration errors.",
-      useCases: "Applications with complex data requirements or nested data (e.g., social media feeds). Mobile applications needing efficient data loading. Frontends that need to aggregate data from multiple microservices."
+      defendingYourDecision: "We chose GraphQL to reduce round-trips for our mobile clients that need aggregated data in a single call.",
+      useCases: [ // Mapped from prompt's useCases (array)
+        "Mobile application backends",
+        "APIs with evolving front-end requirements"
+      ]
     },
     {
       id: "grpc",
@@ -342,6 +349,25 @@ export const apiDesignAppData = {
       pros: ["Optimizes API for specific client needs, reducing over/under-fetching.", "Allows frontends to evolve independently.", "Can simplify frontend logic."],
       cons: ["Can lead to code duplication if multiple BFFs share common logic.", "Increases the number of services to manage."],
       useCases: "Applications with multiple distinct frontend clients (e.g., web, mobile, desktop) that have different data and interaction requirements."
+    },
+    {
+      id: "api_versioning_general",
+      name: "API Versioning", // Changed from patternName to name for consistency
+      description: "Techniques for evolving APIs without breaking existing clients (URL versioning, header versioning, semantic versioning).",
+      strategies: [
+        { name: "Path Versioning", detail: "Include version in URL (e.g., /v1/users)." },
+        { name: "Header Versioning", detail: "Use custom headers to indicate version." }
+      ],
+      pros: ["Clear separation of versions", "Easy to deprecate old versions"],
+      cons: ["URL clutter (for path versioning)", "Clients must update headers (for header versioning)"] // Clarified cons
+    },
+    {
+      id: "idempotency_key_pattern",
+      name: "Idempotency Key", // Changed from patternName to name for consistency
+      description: "A unique key provided by the client to ensure repeated requests do not create duplicates (useful for payment or create operations).",
+      pros: ["Prevents duplicate side-effects", "Simplifies retry logic"],
+      cons: ["Requires key management on server", "Potential for resource leaks if keys not expired"],
+      example: "Clients send X-Idempotency-Key header with POST /orders to prevent double ordering."
     }
   ],
   security: [
@@ -426,6 +452,24 @@ export const apiDesignAppData = {
         "Offset or cursor pagination depending on data characteristics.",
         "Consider GraphQL for advanced querying capabilities if users have diverse data needs."
       ]
+    },
+    {
+      id: "tweetApi", // Changed from key to id for consistency
+      title: "Designing the Tweet API",
+      description: "Define endpoints for creating, reading, and deleting tweets. Consider rate limiting and idempotency.",
+      problem: "High read/write ratio and need to support millions of tweets per day.",
+      solution: "RESTful endpoints: POST /tweets (idempotent with X-Idempotency-Key), GET /tweets/{id}, GET /users/{id}/tweets?limit=50. Use caching on GET endpoints and paginate with cursors.",
+      challenges: "Handling pagination, rate-limiting abusive clients, securing write endpoints.",
+      learnings: "Idempotency keys simplify retries; cursor-based pagination scales better than offset pagination."
+    },
+    {
+      id: "ecommerceGraphQL", // Changed from key to id for consistency
+      title: "GraphQL API for E-Commerce",
+      description: "Expose product, category, and cart data via a single GraphQL endpoint with nested queries.",
+      problem: "Clients need to display products with reviews and seller info in one screen.",
+      solution: "Define types Product, Review, Seller and nested query fields; use DataLoader to batch and cache database calls.",
+      challenges: "Prevent n+1 query problem, secure field-level access.",
+      learnings: "DataLoader is essential for performance; schema stitching helps modularize services."
     }
   ],
   flashcards: [
