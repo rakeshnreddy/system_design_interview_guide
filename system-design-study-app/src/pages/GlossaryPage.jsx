@@ -1,38 +1,44 @@
 // src/pages/GlossaryPage.jsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { topicsData } from '../data/topicsData';
-import { cachesAppData } from '../data/cachesAppData';
-import { databasesAppData } from '../data/databasesAppData';
-import { messagingQueuesAppData } from '../data/messagingQueuesAppData';
-import { loadBalancingAppData } from '../data/loadBalancingAppData';
-import { apiDesignAppData } from '../data/apiDesignAppData';
-import { scalabilityConceptsAppData } from '../data/scalabilityConceptsAppData';
-import { interviewApproachAppData } from '../data/interviewApproachAppData';
+// import { Link } from 'react-router-dom'; // Link is not used
+// import { topicsData } from '../data/topicsData'; // Not used directly for glossary terms
+// import { cachesAppData } from '../data/cachesAppData'; // Individual appData not needed if glossaryData is separate
+// import { databasesAppData } from '../data/databasesAppData';
+// import { messagingQueuesAppData } from '../data/messagingQueuesAppData';
+// import { loadBalancingAppData } from '../data/loadBalancingAppData';
+// import { apiDesignAppData } from '../data/apiDesignAppData';
+// import { scalabilityConceptsAppData } from '../data/scalabilityConceptsAppData';
+// import { interviewApproachAppData } from '../data/interviewApproachAppData';
+import { glossaryData as initialGlossaryTerms } from '../data/glossaryData'; // Import the new glossary data
 import SearchInput from '../components/common/SearchInput';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, Typography, Box } from '@mui/material';
+import * as Icons from 'lucide-react'; // Import all lucide-react icons
 
-const allData = {
-  ...cachesAppData,
-  ...databasesAppData,
-  ...messagingQueuesAppData,
-  ...loadBalancingAppData,
-  ...apiDesignAppData,
-  ...scalabilityConceptsAppData,
-  ...interviewApproachAppData,
-};
+// const allData = { // This can be removed if glossaryData.js is the sole source
+//   ...cachesAppData,
+//   ...databasesAppData,
+//   ...messagingQueuesAppData,
+//   ...loadBalancingAppData,
+//   ...apiDesignAppData,
+//   ...scalabilityConceptsAppData,
+//   ...interviewApproachAppData,
+// };
 
 const GlossaryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTerms, setFilteredTerms] = useState([]);
 
   useEffect(() => {
-    const terms = [];
-    Object.values(allData).forEach((topic) => {
-      if (topic.terminology) {
-        terms.push(...topic.terminology);
-      }
-    });
+    // Use initialGlossaryTerms directly
+    // const terms = [];
+    // Object.values(allData).forEach((topic) => { // This logic can be simplified
+    //   if (topic.terminology) {
+    //     terms.push(...topic.terminology);
+    //   }
+    // });
+    // Instead, directly use initialGlossaryTerms if it's an array
+    const terms = Array.isArray(initialGlossaryTerms) ? initialGlossaryTerms : [];
+
 
     const lowercasedFilter = searchTerm.toLowerCase();
     const filtered = terms.filter((term) => {
@@ -67,22 +73,30 @@ const GlossaryPage = () => {
 
       {filteredTerms.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTerms.map((term, index) => (
-            <Card key={index} className="flex flex-col hover:shadow-lg transition-shadow duration-300">
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  {term.term}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {term.definition}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {filteredTerms.map((term) => {
+            const IconComponent = term.icon && Icons[term.icon] ? Icons[term.icon] : Icons['HelpCircle']; // Default icon
+            return (
+              <Card key={term.id || term.term} className="flex flex-col hover:shadow-lg transition-shadow duration-300">
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <IconComponent className="inline-block w-5 h-5 mr-2 text-primary dark:text-primary-light" />
+                    <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                      {term.term}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {term.definition}
+                  </Typography>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-xl text-neutral-500 dark:text-neutral-400">No terms found matching your search criteria.</p>
+          <p className="text-xl text-neutral-500 dark:text-neutral-400">
+            {searchTerm ? "No terms found matching your search criteria." : "Loading terms..."}
+          </p>
         </div>
       )}
     </div>

@@ -148,5 +148,15 @@ export const interviewApproachAppData = {
             ]}
         ]
       }
-    ]
-  };
+    ],
+  mermaidDiagrams: {
+    frameworkFlow: `
+    flowchart TD
+      A[Clarify Requirements] --> B[Estimation]
+      B --> C[High-Level Design]
+      C --> D[Deep Dive]
+      D --> E[Trade-Offs]
+      E --> F[Wrap-Up]
+  `
+  }
+};
