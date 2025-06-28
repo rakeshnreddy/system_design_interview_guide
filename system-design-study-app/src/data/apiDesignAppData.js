@@ -459,7 +459,16 @@ APIs can be broadly categorized as synchronous or asynchronous. Synchronous APIs
       problem: "High read/write ratio and need to support millions of tweets per day.",
       solution: "RESTful endpoints: POST /tweets (idempotent with X-Idempotency-Key), GET /tweets/{id}, GET /users/{id}/tweets?limit=50. Use caching on GET endpoints and paginate with cursors.",
       challenges: "Handling pagination, rate-limiting abusive clients, securing write endpoints.",
-      learnings: "Idempotency keys simplify retries; cursor-based pagination scales better than offset pagination."
+      learnings: "Idempotency keys simplify retries; cursor-based pagination scales better than offset pagination.",
+      considerations: [ // Added considerations field
+        "Utilize RESTful endpoints for tweet operations.",
+        "Implement idempotency for POST /tweets using X-Idempotency-Key.",
+        "Employ caching for GET endpoints to improve read performance.",
+        "Use cursor-based pagination for fetching tweet lists (e.g., GET /users/{id}/tweets?limit=50).",
+        "Address challenges like pagination at scale, rate-limiting, and securing write operations.",
+        "Recognize that idempotency keys simplify client retry logic.",
+        "Understand that cursor-based pagination is generally more scalable than offset-based."
+      ]
     },
     {
       id: "ecommerceGraphQL", // Changed from key to id for consistency
@@ -468,7 +477,16 @@ APIs can be broadly categorized as synchronous or asynchronous. Synchronous APIs
       problem: "Clients need to display products with reviews and seller info in one screen.",
       solution: "Define types Product, Review, Seller and nested query fields; use DataLoader to batch and cache database calls.",
       challenges: "Prevent n+1 query problem, secure field-level access.",
-      learnings: "DataLoader is essential for performance; schema stitching helps modularize services."
+      learnings: "DataLoader is essential for performance; schema stitching helps modularize services.",
+      considerations: [ // Added considerations field
+        "Define GraphQL types for Product, Review, Seller.",
+        "Implement nested query fields to allow clients to fetch related data in a single request.",
+        "Use DataLoader to optimize database access by batching and caching calls.",
+        "Focus on preventing n+1 query problems in resolvers.",
+        "Implement robust field-level security/authorization.",
+        "Acknowledge DataLoader's importance for GraphQL performance.",
+        "Consider schema stitching for modularizing different data domains or microservices."
+      ]
     }
   ],
   flashcards: [
