@@ -1,9 +1,7 @@
 // src/components/caches/CachepediaView.jsx
 import React, { useState, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Card from '../common/Card';
-// For potential future actions (Button is currently unused)
-// import Button from '../common/Button';
-// Radar Chart related imports - these will cause errors if chart.js and react-chartjs-2 are not installed
 import { Radar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -14,12 +12,33 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing'; // Adjusted path
+import { glossaryData } from '../../../data/glossaryData'; // Adjusted path
 
-// Register Chart.js components
-// This registration should ideally happen once, e.g. in App.js or a chart specific setup file,
-// but for component modularity, it's sometimes placed here if the chart is only used in this component.
-// However, if this component rerenders often, it might lead to multiple registrations.
-// For now, placing it here for self-containment, assuming this view doesn't rapidly rerender.
+// Helper component to render processed text (strings and links)
+const RenderProcessedText = ({ textParts }) => {
+  if (!textParts) return null;
+  return (
+    <>
+      {textParts.map((part, index) => {
+        if (part.type === 'link') {
+          return (
+            <RouterLink
+              key={`${part.displayText}-${index}`}
+              to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
+              className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
+              title={getDefinitionSnippet(part.term.definition)}
+            >
+              {part.displayText}
+            </RouterLink>
+          );
+        }
+        return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
+      })}
+    </>
+  );
+};
+
 try {
     ChartJS.register(
         RadialLinearScale,
@@ -37,9 +56,12 @@ try {
 const CachepediaView = ({ appData }) => {
   const [selectedCache, setSelectedCache] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [chartKey, setChartKey] = useState(0); // To force re-render of chart
+  const [chartKey, setChartKey] = useState(0);
 
   const cacheTypes = appData.cachepedia ? Object.keys(appData.cachepedia) : [];
+  const overviewText = "An encyclopedia of cache types. Explore different categories of caches, their key characteristics, advantages, disadvantages, and common use cases. Use the selector to switch between types and see their details. Example: {{Client-Side Caching}} vs {{Distributed Caches}}.";
+  const multiLevelCacheText = "Complex systems often employ multiple layers of caching to optimize performance at different stages. For example, a request might first check a local {{In-Memory Caches (Local)}}, then a shared {{Distributed Cache}}, and finally the origin data store. This layered approach balances speed, capacity, and cost.";
+
 
   useEffect(() => {
     if (cacheTypes.length > 0 && !selectedCache) {
@@ -55,7 +77,7 @@ const CachepediaView = ({ appData }) => {
         labels: labels,
         datasets: [
           {
-            label: selectedCache.name || Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache), // Find name if not in object
+            label: selectedCache.name || Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache),
             data: [
               characteristics.latency,
               characteristics.consistency,
@@ -63,15 +85,15 @@ const CachepediaView = ({ appData }) => {
               characteristics.complexity,
               characteristics.cost,
             ],
-            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Example: primary-light with opacity
-            borderColor: 'rgba(54, 162, 235, 1)', // Example: primary
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'rgba(54, 162, 235, 1)',
           },
         ],
       };
       setChartData(data);
-      setChartKey(prevKey => prevKey + 1); // Update key to force re-render
+      setChartKey(prevKey => prevKey + 1);
     }
   }, [selectedCache, appData.cachepedia]);
 
@@ -79,7 +101,6 @@ const CachepediaView = ({ appData }) => {
     setSelectedCache(appData.cachepedia[cacheKey]);
   };
 
-  // Function to generate a slug from a title string
   const generateSlug = (title) => {
     if (!title) return '';
     return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
@@ -96,15 +117,15 @@ const CachepediaView = ({ appData }) => {
   const chartOptions = {
     scales: {
       r: {
-        angleLines: { display: true, color: 'rgba(150, 150, 150, 0.2)' }, // Neutral color for lines
+        angleLines: { display: true, color: 'rgba(150, 150, 150, 0.2)' },
         suggestedMin: 0,
-        suggestedMax: 5, // Assuming characteristics are rated 1-5
-        pointLabels: { font: { size: 10 } }, // Smaller font for point labels
-        grid: { color: 'rgba(150, 150, 150, 0.2)' }, // Neutral color for grid
+        suggestedMax: 5,
+        pointLabels: { font: { size: 10 } },
+        grid: { color: 'rgba(150, 150, 150, 0.2)' },
         ticks: {
             display: true,
             stepSize: 1,
-            backdropColor: 'rgba(0,0,0,0)', // Transparent backdrop for ticks
+            backdropColor: 'rgba(0,0,0,0)',
         }
       },
     },
@@ -112,17 +133,16 @@ const CachepediaView = ({ appData }) => {
       legend: { position: 'top', labels: { font: { size: 12 } } },
       tooltip: { enabled: true, titleFont: {size: 12}, bodyFont: {size: 10} }
     },
-    maintainAspectRatio: false, // Important for responsiveness
+    maintainAspectRatio: false,
   };
 
 
   return (
     <div className="p-1 md:p-4 space-y-6">
-      {/* Reminder: @tailwindcss/typography plugin is recommended for prose styling */}
       <div className="prose max-w-none dark:prose-invert">
         <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6">Cachepedia</h1>
         <p className="text-lg text-neutral-700 dark:text-neutral-300 leading-relaxed">
-          An encyclopedia of cache types. Explore different categories of caches, their key characteristics, advantages, disadvantages, and common use cases. Use the selector to switch between types and see their details.
+          <RenderProcessedText textParts={parseTextForGlossaryLinks(overviewText, glossaryData)} />
         </p>
       </div>
 
@@ -146,25 +166,35 @@ const CachepediaView = ({ appData }) => {
             id={generateSlug(Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache))}
             className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pt-4"
           >
-            <div className="space-y-4"> {/* Increased spacing */}
+            <div className="space-y-4">
               <h2 className="text-3xl font-bold text-secondary dark:text-secondary-light">
                 {Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache)}
               </h2>
-              <p className="text-base text-neutral-600 dark:text-neutral-400"><strong className="font-semibold text-neutral-700 dark:text-neutral-200">Category:</strong> {selectedCache.type}</p>
-              <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed">{selectedCache.description}</p>
+              <p className="text-base text-neutral-600 dark:text-neutral-400">
+                <strong className="font-semibold text-neutral-700 dark:text-neutral-200">Category:</strong> {selectedCache.type}
+              </p>
+              <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                <RenderProcessedText textParts={parseTextForGlossaryLinks(selectedCache.description, glossaryData)} />
+              </p>
               <div>
                 <h3 className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200 mb-2">Pros:</h3>
                 <ul className="list-disc list-inside text-base text-neutral-600 dark:text-neutral-400 space-y-1">
-                  {selectedCache.pros.map((pro, i) => <li key={i}>{pro}</li>)}
+                  {selectedCache.pros.map((pro, i) => (
+                    <li key={i}><RenderProcessedText textParts={parseTextForGlossaryLinks(pro, glossaryData)} /></li>
+                  ))}
                 </ul>
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200 mb-2">Cons:</h3>
                 <ul className="list-disc list-inside text-base text-neutral-600 dark:text-neutral-400 space-y-1">
-                  {selectedCache.cons.map((con, i) => <li key={i}>{con}</li>)}
+                  {selectedCache.cons.map((con, i) => (
+                    <li key={i}><RenderProcessedText textParts={parseTextForGlossaryLinks(con, glossaryData)} /></li>
+                  ))}
                 </ul>
               </div>
-              <p className="text-base text-neutral-600 dark:text-neutral-400"><strong className="font-semibold text-neutral-700 dark:text-neutral-200">Ideal Use Cases:</strong> {selectedCache.whenToUse}</p>
+              <p className="text-base text-neutral-600 dark:text-neutral-400">
+                <strong className="font-semibold text-neutral-700 dark:text-neutral-200">Ideal Use Cases:</strong> <RenderProcessedText textParts={parseTextForGlossaryLinks(selectedCache.whenToUse, glossaryData)} />
+              </p>
             </div>
 
             <Card
@@ -175,7 +205,6 @@ const CachepediaView = ({ appData }) => {
               className="h-80 md:h-96 lg:h-[400px]"
             >
               {chartData ? (
-                // Ensure chart.js and react-chartjs-2 are installed for this to work
                 <Radar key={chartKey} data={chartData} options={chartOptions} />
               ) : (
                 <p className="text-center text-neutral-500 dark:text-neutral-400 pt-10">
@@ -186,16 +215,12 @@ const CachepediaView = ({ appData }) => {
           </div>
         )}
       </Card>
-      {/* Reminder about typography and chartjs plugin */}
-      {/* <Card><p className="text-xs text-warning">Note: For charts, ensure 'chart.js' and 'react-chartjs-2' are installed.</p></Card> */}
 
       <Card className="mt-8" padding="p-6">
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Multi-Level Caches</h2>
         <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
             <p>
-                Complex systems often employ multiple layers of caching to optimize performance at different stages.
-                For example, a request might first check a local in-process cache, then a shared distributed cache,
-                and finally the origin data store. This layered approach balances speed, capacity, and cost.
+              <RenderProcessedText textParts={parseTextForGlossaryLinks(multiLevelCacheText, glossaryData)} />
             </p>
         </div>
         <div className="my-4 p-4 border border-neutral-300 dark:border-neutral-600 rounded-md bg-neutral-100 dark:bg-neutral-800/60 shadow-sm">
@@ -209,7 +234,6 @@ const CachepediaView = ({ appData }) => {
                  <div className="pl-10">V</div>
                  <div className="p-2 bg-white dark:bg-neutral-700 rounded shadow-sm">L2 Cache --&gt; Origin Database</div>
              </div>
-             {/* TODO: Add detailed diagram for multi-level cache architecture */}
          </div>
       </Card>
     </div>

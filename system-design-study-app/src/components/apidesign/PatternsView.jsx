@@ -1,10 +1,44 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
+import { glossaryData } from '../../../data/glossaryData';
+
+// Helper component to render processed text (strings and links)
+const RenderProcessedText = ({ textParts }) => {
+  if (typeof textParts === 'string') { // Handle plain string input for convenience
+    return <>{textParts}</>;
+  }
+  if (!Array.isArray(textParts)) {
+    return null;
+  }
+  return (
+    <>
+      {textParts.map((part, index) => {
+        if (part.type === 'link') {
+          return (
+            <RouterLink
+              key={`${part.displayText}-${index}`}
+              to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
+              className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
+              title={getDefinitionSnippet(part.term.definition)}
+            >
+              {part.displayText}
+            </RouterLink>
+          );
+        }
+        return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
+      })}
+    </>
+  );
+};
 
 function PatternsView({ appData }) {
   if (!appData || !appData.patterns) {
     return <Typography>Loading API design pattern data...</Typography>;
   }
+
+  const footerText = "Information about common API design patterns such as {{Pagination}}, {{Rate Limiting}}, {{API Versioning}}, etc., will be displayed here using data from apiDesignAppData.js. Consider how {{Idempotency}} plays a role in some patterns.";
 
   return (
     <Box sx={{ p: 2 }}>
@@ -20,7 +54,7 @@ function PatternsView({ appData }) {
                 <Typography variant="h6">{pattern.name}</Typography>
                 <ListItemText
                   primary={<strong>Description:</strong>}
-                  secondary={pattern.description}
+                  secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(pattern.description, glossaryData)} />}
                   sx={{ mb: 1 }}
                   secondaryTypographyProps={{ component: 'div' }}
                 />
@@ -30,7 +64,10 @@ function PatternsView({ appData }) {
                     <List dense disablePadding sx={{ pl: 2 }}>
                       {pattern.pros.map((pro, index) => (
                         <ListItem key={index} sx={{ display: 'list-item', listStyleType: 'disc', py: 0.2, pl: 0 }}>
-                          <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={pro} />
+                          <ListItemText
+                            primaryTypographyProps={{ variant: 'body2' }}
+                            primary={<RenderProcessedText textParts={parseTextForGlossaryLinks(pro, glossaryData)} />}
+                          />
                         </ListItem>
                       ))}
                     </List>
@@ -42,18 +79,23 @@ function PatternsView({ appData }) {
                     <List dense disablePadding sx={{ pl: 2 }}>
                       {pattern.cons.map((con, index) => (
                         <ListItem key={index} sx={{ display: 'list-item', listStyleType: 'disc', py: 0.2, pl: 0 }}>
-                          <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={con} />
+                          <ListItemText
+                            primaryTypographyProps={{ variant: 'body2' }}
+                            primary={<RenderProcessedText textParts={parseTextForGlossaryLinks(con, glossaryData)} />}
+                          />
                         </ListItem>
                       ))}
                     </List>
                   </>
                 )}
-                <ListItemText
-                  primary={<strong>Common Use Cases:</strong>}
-                  secondary={pattern.useCases}
-                  secondaryTypographyProps={{ component: 'div' }}
-                  sx={{ mt: 1 }}
-                />
+                 {pattern.useCases && (
+                  <ListItemText
+                    primary={<strong>Common Use Cases:</strong>}
+                    secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(pattern.useCases, glossaryData)} />}
+                    secondaryTypographyProps={{ component: 'div' }}
+                    sx={{ mt: 1 }}
+                  />
+                 )}
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
             </React.Fragment>
@@ -61,7 +103,7 @@ function PatternsView({ appData }) {
         </List>
       </Paper>
       <Typography sx={{ mt: 2 }} variant="body1">
-        Information about common API design patterns such as Pagination, Rate Limiting, Versioning, etc., will be displayed here using data from <code>apiDesignAppData.js</code>.
+         <RenderProcessedText textParts={parseTextForGlossaryLinks(footerText, glossaryData)} />
       </Typography>
     </Box>
   );

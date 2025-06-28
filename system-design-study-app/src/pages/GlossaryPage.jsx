@@ -1,12 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // Import useLocation
 import { glossaryData } from '../../data/glossaryData';
-import GlossaryTermDetail from '../../components/glossary/GlossaryTermDetail'; // Corrected path
-import Modal from '../../components/common/Modal'; // Corrected path
+import GlossaryTermDetail from '../../components/glossary/GlossaryTermDetail';
+import Modal from '../../components/common/Modal';
 
 const GlossaryPage = () => {
+  const location = useLocation(); // Get location object
   const [filterText, setFilterText] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchTerm = params.get('search');
+    if (searchTerm) {
+      setFilterText(searchTerm);
+    }
+  }, [location.search]); // Re-run if location.search changes
 
   const handleFilterChange = (event) => {
     setFilterText(event.target.value);
