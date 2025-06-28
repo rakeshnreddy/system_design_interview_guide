@@ -48,8 +48,47 @@ const PatternsView = ({ appData }) => {
                 />
               )}
             </Card>
-            ); // Semicolon restored
+            );
           })}
+
+          {/* Section for Cache Strategy Diagrams */}
+          {appData.mermaidDiagrams && (
+            <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700 space-y-6">
+              <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">
+                Common Caching Strategy Flows
+              </h2>
+
+              <Card className="shadow-lg" padding="p-6">
+                <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Cache-Aside Flow</h3>
+                {appData.mermaidDiagrams.cacheAside && (
+                  <MermaidDiagram
+                    diagramDefinition={appData.mermaidDiagrams.cacheAside}
+                    diagramId="cache-aside-flow-diagram"
+                  />
+                )}
+              </Card>
+
+              <Card className="shadow-lg" padding="p-6">
+                <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Write-Through Flow</h3>
+                {appData.mermaidDiagrams.writeThrough && (
+                  <MermaidDiagram
+                    diagramDefinition={appData.mermaidDiagrams.writeThrough}
+                    diagramId="write-through-flow-diagram"
+                  />
+                )}
+              </Card>
+
+              <Card className="shadow-lg" padding="p-6">
+                <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Write-Back Flow</h3>
+                {appData.mermaidDiagrams.writeBack && (
+                  <MermaidDiagram
+                    diagramDefinition={appData.mermaidDiagrams.writeBack}
+                    diagramId="write-back-flow-diagram"
+                  />
+                )}
+              </Card>
+            </div>
+          )}
         </div>
       );
     }

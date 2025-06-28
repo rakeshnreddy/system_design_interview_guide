@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 import Mermaid from '../common/Mermaid'; // Import Mermaid
 
+
 function CoreConceptsView({ appData }) {
   if (!appData || !appData.coreConcepts) {
     return <Typography>Loading core scalability concepts data...</Typography>;
@@ -27,15 +28,15 @@ function CoreConceptsView({ appData }) {
         return (
           <>
             <Typography variant="subtitle1" gutterBottom>Horizontal Scaling (Scaling Out)</Typography>
-            <ListItemText secondary={concept.horizontal.description} sx={{mb:1}}/>
+            <ListItemText secondary={concept.horizontal.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
             <Typography variant="body2"><strong>Pros:</strong> {concept.horizontal.pros.join(', ')}</Typography>
             <Typography variant="body2" sx={{mb:1}}><strong>Cons:</strong> {concept.horizontal.cons.join(', ')}</Typography>
 
             <Typography variant="subtitle1" gutterBottom sx={{mt:2}}>Vertical Scaling (Scaling Up)</Typography>
-            <ListItemText secondary={concept.vertical.description} sx={{mb:1}}/>
+            <ListItemText secondary={concept.vertical.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
             <Typography variant="body2"><strong>Pros:</strong> {concept.vertical.pros.join(', ')}</Typography>
             <Typography variant="body2" sx={{mb:1}}><strong>Cons:</strong> {concept.vertical.cons.join(', ')}</Typography>
-            <ListItemText primary="Common Use Cases" secondary={concept.useCases} />
+            <ListItemText primary="Common Use Cases" secondary={concept.useCases} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
             {concept.visualLink && <Typography variant="caption" display="block" sx={{mt:1}}><em>Visual: {concept.visualLink} (placeholder)</em></Typography>}
           </>
         );
@@ -48,14 +49,14 @@ function CoreConceptsView({ appData }) {
               </Box>
             )}
             <Typography variant="subtitle1" gutterBottom>Stateless Architecture</Typography>
-            <ListItemText secondary={concept.stateless.description} sx={{mb:1}}/>
-            <ListItemText primary="Implications" secondary={concept.stateless.implications} sx={{mb:1}}/>
-            <ListItemText primary="Session Management" secondary={concept.stateless.sessionManagement} sx={{mb:1}}/>
+            <ListItemText secondary={concept.stateless.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText primary="Implications" secondary={concept.stateless.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText primary="Session Management" secondary={concept.stateless.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
 
             <Typography variant="subtitle1" gutterBottom sx={{mt:2}}>Stateful Architecture</Typography>
-            <ListItemText secondary={concept.stateful.description} sx={{mb:1}}/>
-            <ListItemText primary="Implications" secondary={concept.stateful.implications} sx={{mb:1}}/>
-            <ListItemText primary="Session Management" secondary={concept.stateful.sessionManagement}/>
+            <ListItemText secondary={concept.stateful.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText primary="Implications" secondary={concept.stateful.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText primary="Session Management" secondary={concept.stateful.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
           </>
         );
       case 'consistency_models':
@@ -64,14 +65,14 @@ function CoreConceptsView({ appData }) {
             {concept.models.map(model => (
               <ListItem key={model.name} sx={{display:'block', mb:1}}>
                 <Typography variant="subtitle2">{model.name}</Typography>
-                <ListItemText secondary={model.description}/>
-                <ListItemText primary="Matters When" secondary={model.mattersWhen}/>
+                <ListItemText secondary={model.description} secondaryTypographyProps={{ component: 'div' }}/>
+                <ListItemText primary="Matters When" secondary={model.mattersWhen} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
               </ListItem>
             ))}
           </List>
         );
       default:
-        return <ListItemText secondary={concept.description || "Details not available."} />;
+        return <ListItemText secondary={concept.description || "Details not available."} secondaryTypographyProps={{ component: 'div' }} />;
     }
   };
 
@@ -98,15 +99,21 @@ function CoreConceptsView({ appData }) {
                 <ListItem id={elementId} sx={{ display: 'block', mb: 2 }}>
                   <Typography variant="h6" gutterBottom>{concept.name}</Typography>
                   {renderConcept(concept)}
+                  {concept.diagram && (
+                    <Box sx={{ my: 2, p: 1, border: '1px dashed grey', overflowX: 'auto' }}>
+                      <Typography variant="caption" display="block" sx={{mb: 1, fontStyle: 'italic'}}>Illustrative Diagram:</Typography>
+                      <MermaidDiagram diagramDefinition={concept.diagram} diagramId={`${concept.id}-diagram`} />
+                    </Box>
+                  )}
                 </ListItem>
                 <Divider component="li" sx={{ mb: 2 }} />
               </React.Fragment>
-            ); // Semicolon restored
+            );
           })}
         </List>
       </Paper>
       <Typography sx={{ mt: 2 }} variant="body1">
-        Detailed explanations of core scalability concepts like CAP Theorem, Horizontal vs. Vertical Scaling, Stateless vs. Stateful systems, and Consistency Models will be shown here, using data from <code>scalabilityConceptsAppData.js</code>.
+        Detailed explanations of core scalability concepts like CAP Theorem, Horizontal vs. Vertical Scaling, Stateless vs. Stateful systems, and Consistency Models will be shown here, using data from <code>scalabilityConceptsAppData.js</code>. Some concepts may include illustrative diagrams.
       </Typography>
     </Box>
   );

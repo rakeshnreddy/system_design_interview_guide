@@ -31,14 +31,6 @@ const EvictionSimulator = () => {
   };
 
   const handleSimulate = () => {
-    // Logic to be implemented in step 2
-    console.log("Simulating with:", { policy, capacity, sequence: sequenceString.split(',').map(s => s.trim()).filter(s => s) });
-    // Placeholder for now
-    const sequence = sequenceString.split(',').map(s => s.trim()).filter(s => s);
-    if (sequence.length === 0) {
-        setSimulation([]);
-        return;
-    }
     const sequence = sequenceString.split(',').map(s => s.trim()).filter(s => s);
     if (sequence.length === 0) {
       setSimulation([]); // Set to empty array to indicate simulation was "run" but had no input
