@@ -1,16 +1,58 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
+import { glossaryData } from '../../../data/glossaryData';
+
+// Helper component to render processed text (strings and links)
+const RenderProcessedText = ({ textParts }) => {
+  if (typeof textParts === 'string') {
+    return <>{textParts}</>;
+  }
+  if (!Array.isArray(textParts)) {
+    return null;
+  }
+  return (
+    <>
+      {textParts.map((part, index) => {
+        if (part.type === 'link') {
+          return (
+            <RouterLink
+              key={`${part.displayText}-${index}`}
+              to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
+              className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
+              title={getDefinitionSnippet(part.term.definition)}
+            >
+              {part.displayText}
+            </RouterLink>
+          );
+        }
+        return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
+      })}
+    </>
+  );
+};
 
 function FundamentalsView({ appData }) {
   if (!appData) {
     return <Typography className="p-4">Loading data...</Typography>;
   }
 
+  const overviewText = appData.overview || "Load balancing distributes traffic across servers to improve {{Availability}} and {{Scalability}}. It uses algorithms like {{Round Robin}} or {{Least Connections}} and operates at {{Layer 4 (L4) Load Balancing}} or {{Layer 7 (L7) Load Balancing}}.";
+  const footerText = "More content related to load balancing fundamentals, including {{Health Checks}} and {{Sticky Sessions (Session Affinity)}}, will be displayed here.";
+
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
         Load Balancing Fundamentals
       </Typography>
+
+      <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
+        <Typography variant="body1" paragraph>
+          <RenderProcessedText textParts={parseTextForGlossaryLinks(overviewText, glossaryData)} />
+        </Typography>
+      </Paper>
 
       <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
         <Typography variant="h5" gutterBottom>
@@ -20,19 +62,17 @@ function FundamentalsView({ appData }) {
           {!appData.metrics || appData.metrics.length === 0 ? (
             <ListItem><ListItemText primary="No metrics data available." /></ListItem>
           ) : (
-            appData.metrics.map((metric) => { // Changed to curly brace
-              return ( // Added explicit return
+            appData.metrics.map((metric) => (
                 <React.Fragment key={metric.id}>
                   <ListItem>
                   <ListItemText
-                  primary={metric.name}
-                  secondary={metric.description}
-                />
+                    primary={metric.name}
+                    secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(metric.description, glossaryData)} />}
+                  />
                 </ListItem>
                 <Divider component="li" />
               </React.Fragment>
-              ); // Added semicolon
-            }) // Closing parenthesis for map
+            ))
           )}
         </List>
       </Paper>
@@ -45,24 +85,22 @@ function FundamentalsView({ appData }) {
           {!appData.terminology || appData.terminology.length === 0 ? (
             <ListItem><ListItemText primary="No terminology data available." /></ListItem>
           ) : (
-            appData.terminology.map((term) => { // Changed to curly brace
-              return ( // Added explicit return
-                <React.Fragment key={term.term}>
+            appData.terminology.map((term) => (
+                <React.Fragment key={term.id || term.term }>
                   <ListItem>
                   <ListItemText
-                  primary={term.term}
-                  secondary={term.definition}
-                />
+                    primary={term.term}
+                    secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(term.definition, glossaryData)} />}
+                  />
                 </ListItem>
                 <Divider component="li" />
               </React.Fragment>
-              ); // Added semicolon
-            }) // Closing parenthesis for map
+            ))
           )}
         </List>
       </Paper>
        <Typography sx={{mt: 2}} variant="body1">
-        More content related to load balancing fundamentals will be displayed here, using data from <code>loadBalancingAppData.js</code>.
+        <RenderProcessedText textParts={parseTextForGlossaryLinks(footerText, glossaryData)} />
       </Typography>
     </Box>
   );
