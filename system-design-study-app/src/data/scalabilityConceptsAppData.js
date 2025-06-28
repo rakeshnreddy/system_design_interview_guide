@@ -501,5 +501,40 @@ graph TD
       url: "https://sre.google/sre-book/distributed-systems/",
       description: "Insights into how Google handles distributed systems and scalability."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    capTriangle: `
+    graph TD
+      A[Availability] --- C[Consistency]
+      C --- P[Partition Tolerance]
+      P --- A
+      classDef corner fill:#eef,stroke:#333,stroke-width:2px;
+      class A,C,P corner;
+  `,
+    archComparison: `
+    graph LR
+      subgraph Monolith
+        M1[UI] --> M2[Business Logic]
+        M2 --> M3[Data Layer]
+      end
+      subgraph Microservices
+        MS1[User Service] & MS2[Order Service] & MS3[Payment Service]
+      end
+      classDef monolith fill:#fdd,stroke:#333;
+      classDef microservices fill:#dfd,stroke:#333;
+      class M1,M2,M3 monolith;
+      class MS1,MS2,MS3 microservices;
+  `,
+    statelessStateful: `
+    flowchart LR
+      subgraph Stateless
+        LB1[Load Balancer] --> SrvA[Server A]
+        LB1 --> SrvB[Server B]
+      end
+      subgraph Stateful
+        LB2 --> SessSrv[(Session Server)]
+        SessSrv --> SrvC
+      end
+  `
+  }
 };

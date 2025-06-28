@@ -2,9 +2,12 @@
 import React from 'react';
 import Accordion from '../common/Accordion';
 import Glossary from '../common/Glossary';
+import Mermaid from '../common/Mermaid'; // Import Mermaid
+import { databasesAppData } from '../../data/databasesAppData'; // Import appData
 
 const FundamentalsView = ({ appData }) => {
   if (!appData) return null;
+  const { mermaidDiagrams } = databasesAppData; // Destructure mermaidDiagrams for convenience
 
   return (
     <div>
@@ -15,7 +18,14 @@ const FundamentalsView = ({ appData }) => {
       </Accordion>
       <h3>Terminology</h3>
       {appData.terminology.map((term, index) => (
-        <Glossary key={index} term={term.term} definition={term.definition} />
+        <div key={index}>
+          <Glossary term={term.title} definition={term.description} />
+          {term.id === 'sharding' && mermaidDiagrams && mermaidDiagrams.consistentHashing && (
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+              <Mermaid chart={mermaidDiagrams.consistentHashing} />
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );

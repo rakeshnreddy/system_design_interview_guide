@@ -1,10 +1,12 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Mermaid from '../common/Mermaid'; // Import Mermaid
 
 function ProtocolsView({ appData }) {
   if (!appData || !appData.protocols) {
     return <Typography>Loading API protocol data...</Typography>;
   }
+  const { mermaidDiagrams } = appData; // Destructure mermaidDiagrams for convenience
 
   return (
     <Box sx={{ p: 2 }}>
@@ -12,7 +14,25 @@ function ProtocolsView({ appData }) {
         API Protocols & Styles
       </Typography>
 
-      <Paper elevation={3} sx={{ p: 2 }}>
+      {mermaidDiagrams && mermaidDiagrams.restFlow && (
+        <Box sx={{ my: 3 }}>
+          <Typography variant="h5" gutterBottom>REST API Call Flow</Typography>
+          <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+            <Mermaid chart={mermaidDiagrams.restFlow} />
+          </Paper>
+        </Box>
+      )}
+
+      {mermaidDiagrams && mermaidDiagrams.graphQLFlow && (
+        <Box sx={{ my: 3 }}>
+          <Typography variant="h5" gutterBottom>GraphQL Query Flow</Typography>
+          <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+            <Mermaid chart={mermaidDiagrams.graphQLFlow} />
+          </Paper>
+        </Box>
+      )}
+
+      <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
         <List>
           {appData.protocols.map((protocol) => (
             <React.Fragment key={protocol.id}>

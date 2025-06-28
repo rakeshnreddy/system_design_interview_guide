@@ -1,5 +1,7 @@
 import React from 'react';
 import Card from '../common/Card'; // Using global Card component
+import Mermaid from '../common/Mermaid'; // Import Mermaid
+import { messagingQueuesAppData } from '../../data/messagingQueuesAppData'; // Import appData
 // import HighlightMQ from './common/HighlightMQ'; // If specific highlighting is needed
 // import CodeBlockMQ from './common/CodeBlockMQ'; // If specific code blocks are needed
 
@@ -19,6 +21,8 @@ const CodeBlockMQ = ({ code, language = 'javascript' }) => (
 
 
 const DeepDiveModuleMQ = () => {
+  const { mermaidDiagrams } = messagingQueuesAppData; // Destructure mermaidDiagrams
+
   return (
     <div className="p-4 sm:p-6 md:p-8">
       {/* Reminder: @tailwindcss/typography plugin is recommended for prose styling */}
@@ -30,6 +34,34 @@ const DeepDiveModuleMQ = () => {
           Explore the internal workings, advanced concepts, and specific features that differentiate various messaging queue technologies and patterns.
         </p>
       </div>
+
+      <Card className="mt-8 mb-6" padding="p-6">
+        <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Point-to-Point Queue</h2>
+        {mermaidDiagrams && mermaidDiagrams.pointToPoint && (
+          <div className="my-4 flex justify-center">
+            <Mermaid chart={mermaidDiagrams.pointToPoint} />
+          </div>
+        )}
+        <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
+          <p className="leading-relaxed mb-3">
+            In point-to-point messaging, a message is sent by a producer to a specific queue and is delivered to a single consumer. This ensures each message is processed by only one receiver.
+          </p>
+        </div>
+      </Card>
+
+      <Card className="mt-8 mb-6" padding="p-6">
+        <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Publish-Subscribe Pattern</h2>
+        {mermaidDiagrams && mermaidDiagrams.pubSub && (
+          <div className="my-4 flex justify-center">
+            <Mermaid chart={mermaidDiagrams.pubSub} />
+          </div>
+        )}
+        <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
+          <p className="leading-relaxed mb-3">
+            In the publish-subscribe pattern, a producer publishes messages to a topic. Multiple consumers can subscribe to this topic, and each subscriber receives a copy of every message published.
+          </p>
+        </div>
+      </Card>
 
       <Card className="mt-8 mb-6" padding="p-6">
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Message Structure & Serialization</h2>

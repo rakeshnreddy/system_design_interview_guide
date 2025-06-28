@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Mermaid from '../common/Mermaid'; // Import Mermaid
 
 function AlgorithmsView({ appData }) {
   if (!appData) {
@@ -80,6 +81,17 @@ function AlgorithmsView({ appData }) {
       <Typography sx={{mt: 2}} variant="body1">
         Detailed explanations of various load balancing algorithms will be displayed here, using data from <code>loadBalancingAppData.js</code>.
       </Typography>
+
+      {appData.mermaidDiagrams && appData.mermaidDiagrams.roundRobin && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Round-Robin Distribution
+          </Typography>
+          <Paper elevation={3} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+            <Mermaid chart={appData.mermaidDiagrams.roundRobin} />
+          </Paper>
+        </Box>
+      )}
     </Box>
   );
 }
