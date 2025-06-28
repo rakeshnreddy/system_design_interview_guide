@@ -12,6 +12,7 @@ const guides = [
   { path: '/load-balancing', title: 'Load Balancing', description: 'Understand various load balancing algorithms and their impact on system availability and performance.' },
   { path: '/api-design', title: 'API Design', description: 'Principles of designing robust, scalable, and maintainable APIs, including REST and GraphQL.' },
   { path: '/scalability-concepts', title: 'Scalability Concepts', description: 'Core concepts for scaling systems, including horizontal vs. vertical scaling, and statelessness.' },
+  { path: '/glossary', title: 'Interactive Glossary', description: 'Quickly look up key system design terms, concepts, and definitions.' },
   { path: '/interview-approach', title: 'Interview Approach', description: 'Strategies and frameworks for effectively navigating the system design interview.' },
 ];
 
