@@ -12,9 +12,9 @@ function CoreConceptsView({ appData }) {
       case 'cap_theorem_explained':
         return (
           <>
-            <ListItemText primary="Explanation" secondary={concept.explanation} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div', sx: { whiteSpace: 'pre-line' } }} sx={{ mb: 1 }} />
-            <ListItemText primary="Implications" secondary={concept.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{ mb: 1 }} />
-            <ListItemText primary="Choosing (CP vs AP)" secondary={concept.choosing} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
+            <ListItemText component="div" primary="Explanation" secondary={concept.explanation} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div', sx: { whiteSpace: 'pre-line' } }} sx={{ mb: 1 }} />
+            <ListItemText component="div" primary="Implications" secondary={concept.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{ mb: 1 }} />
+            <ListItemText component="div" primary="Choosing (CP vs AP)" secondary={concept.choosing} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
             {concept.visualLink && <Typography variant="caption" display="block" sx={{mt:1}}><em>Visual: {concept.visualLink} (placeholder)</em></Typography>}
           </>
         );
@@ -22,15 +22,15 @@ function CoreConceptsView({ appData }) {
         return (
           <>
             <Typography variant="subtitle1" gutterBottom>Horizontal Scaling (Scaling Out)</Typography>
-            <ListItemText secondary={concept.horizontal.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" secondary={concept.horizontal.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
             <Typography variant="body2"><strong>Pros:</strong> {concept.horizontal.pros.join(', ')}</Typography>
             <Typography variant="body2" sx={{mb:1}}><strong>Cons:</strong> {concept.horizontal.cons.join(', ')}</Typography>
 
             <Typography variant="subtitle1" gutterBottom sx={{mt:2}}>Vertical Scaling (Scaling Up)</Typography>
-            <ListItemText secondary={concept.vertical.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" secondary={concept.vertical.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
             <Typography variant="body2"><strong>Pros:</strong> {concept.vertical.pros.join(', ')}</Typography>
             <Typography variant="body2" sx={{mb:1}}><strong>Cons:</strong> {concept.vertical.cons.join(', ')}</Typography>
-            <ListItemText primary="Common Use Cases" secondary={concept.useCases} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
+            <ListItemText component="div" primary="Common Use Cases" secondary={concept.useCases} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
             {concept.visualLink && <Typography variant="caption" display="block" sx={{mt:1}}><em>Visual: {concept.visualLink} (placeholder)</em></Typography>}
           </>
         );
@@ -38,14 +38,14 @@ function CoreConceptsView({ appData }) {
         return (
           <>
             <Typography variant="subtitle1" gutterBottom>Stateless Architecture</Typography>
-            <ListItemText secondary={concept.stateless.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
-            <ListItemText primary="Implications" secondary={concept.stateless.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
-            <ListItemText primary="Session Management" secondary={concept.stateless.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" secondary={concept.stateless.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" primary="Implications" secondary={concept.stateless.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" primary="Session Management" secondary={concept.stateless.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
 
             <Typography variant="subtitle1" gutterBottom sx={{mt:2}}>Stateful Architecture</Typography>
-            <ListItemText secondary={concept.stateful.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
-            <ListItemText primary="Implications" secondary={concept.stateful.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
-            <ListItemText primary="Session Management" secondary={concept.stateful.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
+            <ListItemText component="div" secondary={concept.stateful.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" primary="Implications" secondary={concept.stateful.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
+            <ListItemText component="div" primary="Session Management" secondary={concept.stateful.sessionManagement} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
           </>
         );
       case 'consistency_models':
@@ -54,14 +54,14 @@ function CoreConceptsView({ appData }) {
             {concept.models.map(model => (
               <ListItem key={model.name} sx={{display:'block', mb:1}}>
                 <Typography variant="subtitle2">{model.name}</Typography>
-                <ListItemText secondary={model.description} secondaryTypographyProps={{ component: 'div' }}/>
-                <ListItemText primary="Matters When" secondary={model.mattersWhen} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
+                <ListItemText component="div" secondary={model.description} secondaryTypographyProps={{ component: 'div' }}/>
+                <ListItemText component="div" primary="Matters When" secondary={model.mattersWhen} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
               </ListItem>
             ))}
           </List>
         );
       default:
-        return <ListItemText secondary={concept.description || "Details not available."} secondaryTypographyProps={{ component: 'div' }} />;
+        return <ListItemText component="div" secondary={concept.description || "Details not available."} secondaryTypographyProps={{ component: 'div' }} />;
     }
   };
 

@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import Card from './Card'; // Import the Card component
 
 const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const containerRef = useRef(null);
   const timeoutIdRef = useRef(null);
-  const validDiagramId = `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
+
+  // Stabilize validDiagramId using useMemo
+  const validDiagramId = useMemo(() => {
+    return `mermaid-${diagramId || Math.random().toString(36).substring(7)}`;
+  }, [diagramId]); // Only recalculate if the input diagramId prop changes
 
   useEffect(() => {
     // Initial check: if no definition, clear and exit effect.
@@ -28,38 +32,31 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         return;
       }
 
-      let currentIsInitializedState = mermaidInstance.isInitialized;
+      // const mermaidInstance = window.mermaid; // Already defined above
 
-      if (typeof mermaidInstance.initialize === 'function' && !currentIsInitializedState) {
-        try {
-          console.log("MermaidDiagram: Initializing Mermaid...");
-          mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
-          mermaidInstance.isInitialized = true; // Set custom flag
-          currentIsInitializedState = true; // Update for current execution flow
-          console.log("MermaidDiagram: Mermaid initialized.");
-        } catch (e) {
-          console.error("MermaidDiagram: Error initializing Mermaid:", e);
-          if (containerRef.current) {
-            containerRef.current.innerHTML = `<p class="text-red-500">Failed to initialize Mermaid: ${e.message}</p>`;
-          }
-          return; // Stop if initialization fails
+      if (!mermaidInstance || typeof mermaidInstance.initialize !== 'function' || typeof mermaidInstance.render !== 'function') {
+        if (containerRef.current) {
+          containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not fully available yet. Retrying...</p>`;
         }
+        clearTimeout(timeoutIdRef.current);
+        timeoutIdRef.current = setTimeout(initializeAndRender, 500); // Retry initialization/render
+        return;
       }
 
-      // Proceed to render if initialized (either previously or just now) and other conditions are met
-      // We will ensure initialization happens right before rendering inside the timeout as well for robustness.
-      if (containerRef.current && diagramDefinition) { // Simplified condition here, main checks inside timeout
+      // Proceed to render
+      if (containerRef.current && diagramDefinition) {
         clearTimeout(timeoutIdRef.current);
         timeoutIdRef.current = setTimeout(() => {
-          if (!containerRef.current) { // Check again as component might have unmounted
+          if (!containerRef.current) {
             console.log("MermaidDiagram: Render deferred but component unmounted for ID:", validDiagramId);
             return;
           }
           containerRef.current.innerHTML = ''; // Clear just before rendering
 
-          const mermaidInstanceForRender = window.mermaid; // Re-fetch in case it changed, though unlikely in setTimeout(0)
-          if (!mermaidInstanceForRender) {
-            console.error("MermaidDiagram: Mermaid instance disappeared before deferred render for ID:", validDiagramId);
+          // Use the mermaidInstance captured at the start of initializeAndRender
+          // This assumes mermaidInstance itself doesn't become stale, which is typical for window globals.
+          if (!mermaidInstance) { // Should ideally not happen if we passed the checks above
+            console.error("MermaidDiagram: Mermaid instance lost before deferred render for ID:", validDiagramId);
             if (containerRef.current) {
                 containerRef.current.innerHTML = `<p class="text-red-500">Mermaid library instance lost.</p>`;
             }
@@ -67,10 +64,10 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
           }
 
           try {
-            // Ensure Mermaid is initialized right before rendering in this specific execution context
-            // This helps if the global/window.mermaid state was altered or if multiple instances interfere
-             mermaidInstanceForRender.initialize({ startOnLoad: false, theme: 'default' }); // Adjust theme as needed
-            // console.log(`MermaidDiagram: Re-initialized Mermaid for render ID: ${validDiagramId}`);
+            // Initialize Mermaid. Mermaid's initialize should be safe to call multiple times.
+            // It typically checks if it's already initialized or reconfigures.
+            mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
+            // console.log(`MermaidDiagram: Ensured Mermaid initialized for render ID: ${validDiagramId}`);
 
             console.log(`MermaidDiagram: Deferred rendering diagram for ID: ${validDiagramId}`);
             // Using a promise wrapper to better handle errors from the render callback itself
@@ -111,16 +108,10 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
             }
           }
         }, 0); // setTimeout delay
-      } else if (containerRef.current && window.mermaid && !window.mermaid.isInitialized && diagramDefinition) {
-        // This was the original retry logic if mermaid was present but not marked as initialized by our custom flag.
-        // The new approach calls initialize within the setTimeout before render, which might be more robust.
-        // Keeping a general retry if mermaid exists but something seems off.
-        console.warn("MermaidDiagram: Mermaid instance found, but custom isInitialized flag is false. Retrying full init/render for ID:", validDiagramId);
-        clearTimeout(timeoutIdRef.current);
-        if(window.mermaid) window.mermaid.isInitialized = false; // Reset custom flag to ensure re-attempt if initializeAndRender is called
-        timeoutIdRef.current = setTimeout(initializeAndRender, 250); // Shorter retry
       }
-      // If diagramDefinition is null/empty, it's handled by the initial check in useEffect.
+      // Removed the else-if block that relied on the custom `window.mermaid.isInitialized` flag.
+      // The main retry logic for when mermaidInstance is not available (at the top of initializeAndRender)
+      // and the direct call to initialize before render should cover initialization needs.
     };
 
     // Initial trigger for the rendering logic
