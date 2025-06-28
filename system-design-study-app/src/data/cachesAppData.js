@@ -1,6 +1,33 @@
 // src/data/cachesAppData.js
 export const cachesAppData = {
   overview: "Caching is a foundational performance optimization technique used to store copies of data in a temporary, high-speed storage layer (a cache) that is closer to the requesting client than the origin data source. The primary goal is to speed up data retrieval and reduce the load on the underlying, slower data store. When a client requests data, the system first checks the cache. If the data is found (a 'cache hit'), it is returned immediately, resulting in low latency. If the data is not found (a 'cache miss'), the system must fetch it from the origin store, which is slower, and then typically stores it in the cache for future requests. This process significantly improves application responsiveness and scalability by minimizing repetitive and expensive operations, such as database queries, API calls, or complex computations. Effective caching strategies are crucial for building fast, scalable, and cost-efficient systems, but they also introduce challenges like data consistency (cache invalidation) and determining what data is valuable enough to cache.",
+  mermaidDiagrams: {
+    cacheAside: `
+flowchart LR
+    A[Client] --> B{Cache?}
+    B -- Hit --> C[Return from Cache]
+    B -- Miss --> D[Fetch from DB]
+    D --> E[Populate Cache]
+    E --> C
+`,
+    writeThrough: `
+sequenceDiagram
+    participant App
+    participant Cache
+    participant DB
+    App->>Cache: write(data)
+    Cache->>DB: write(data)
+    DB-->>Cache: ack
+    Cache-->>App: ack
+`,
+    writeBack: `
+flowchart TD
+    App-->Cache: write(data)
+    Cache-- async -->DB: write(data)
+    style Cache fill:#f9f,stroke:#333,stroke-width:1px
+    note over Cache: Cache acknowledges immediately
+`
+  },
   metrics: [
     { id: "hit-rate", name: "Hit Rate / Hit Ratio", description: "Percentage of requests served from the cache vs. going to origin.", talk: "High hit rates are key to cache efficiency.",
       deepDive: { title: "Understanding Cache Hit Rate", questions: ["Q1?"], answers: ["A1."] } },
