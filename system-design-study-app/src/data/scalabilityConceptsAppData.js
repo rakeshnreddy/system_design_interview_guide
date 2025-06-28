@@ -118,6 +118,7 @@ export const scalabilityConceptsAppData = {
       defendingYourDecision: "For this system, which handles [e.g., user session data], we prioritized Availability and Partition Tolerance (AP) by choosing [e.g., DynamoDB]. This is because ensuring users can always [e.g., log in and use core features] even if some data is slightly stale is more critical than strict consistency across all nodes for this particular data. We handle potential staleness via [e.g., client-side refresh or eventual consistency mechanisms]."
 },
 {
+  id: "monolithVsMicroservices",
   name: "Monolith vs Microservices",
   definition:
     "Contrast between a single deployable unit vs multiple independent services.",
@@ -129,6 +130,7 @@ export const scalabilityConceptsAppData = {
     "Netflix moved from a Ruby monolith to hundreds of Java microservices for better fault isolation."
 },
 {
+  id: "cqrsEventSourcing",
   name: "CQRS & Event Sourcing",
   definition: "Command Query Responsibility Segregation (CQRS) separates read and write operations for a data store. Event Sourcing involves persisting the state of a business entity as a sequence of state-changing events. They are often used together.",
   pros: ["CQRS: Optimized data schemas for read/write, improved performance and scalability for each.", "Event Sourcing: Reliable audit log, ability to reconstruct past states, simplifies event-driven architecture."],
@@ -137,6 +139,7 @@ export const scalabilityConceptsAppData = {
   example: "An e-commerce platform might use CQRS for product catalog (high read, moderate write) and Event Sourcing for order management (reliable history of order state changes)."
 },
 {
+  id: "sagaPattern",
   name: "Saga Pattern",
   definition: "A way to manage data consistency across microservices in distributed transactions. A saga is a sequence of local transactions. If one transaction fails, compensating transactions are executed to undo preceding work.",
   pros: ["Maintains data consistency across services without distributed transactions (2PC).", "Services remain loosely coupled."],
@@ -145,6 +148,7 @@ export const scalabilityConceptsAppData = {
   example: "Saga used by an e-commerce checkout to coordinate inventory, payment, and shipping services. If payment fails, a compensating transaction might release the inventory."
 },
 {
+  id: "stranglerFigPatternCore", // Differentiating from the one in 'advanced'
   name: "Strangler Fig Pattern",
   definition: "Incrementally replace parts of a monolith by routing new features or updated functionality to new microservices, while the old system still handles other features. Over time, the new system 'strangles' the old one.",
   pros: ["Gradual migration with lower risk compared to a big-bang rewrite.", "Allows continuous delivery of new features during migration.", "Spreads out development effort."],
@@ -153,6 +157,7 @@ export const scalabilityConceptsAppData = {
   example: "A legacy banking system gradually moves customer account management to new microservices while core transaction processing remains on the monolith, with a proxy routing API calls."
 },
 {
+  id: "sidecarPattern",
   name: "Sidecar Pattern",
   definition: "Deploy components of an application into a separate process or container to provide isolation and encapsulation. The sidecar is attached to a parent application and shares its lifecycle.",
   pros: ["Reduces complexity in the main application by offloading cross-cutting concerns (e.g., logging, monitoring, networking).", "Allows use of different technologies for sidecar and main app.", "Reusable across multiple applications."],
@@ -372,7 +377,7 @@ export const scalabilityConceptsAppData = {
       ]
     },
     {
-      key: "eventDrivenDesign",
+      id: "eventDrivenDesign", // Changed key to id
       title: "Event-Driven Microservices",
       description:
         "Design a system where microservices communicate via events (e.g., user signup triggers email, analytics, and profile services).",
@@ -383,10 +388,11 @@ export const scalabilityConceptsAppData = {
       challenges:
         "Ensuring eventual consistency and handling out-of-order events.",
       learnings:
-        "Event-driven reduces coupling but requires careful schema versioning and error handling."
+        "Event-driven reduces coupling but requires careful schema versioning and error handling.",
+      considerations: [] // Added empty considerations array
     },
     {
-      key: "highScaleWebApp",
+      id: "highScaleWebApp", // Changed key to id
       title: "High-Scale Web Application",
       description:
         "Architect a web application to support 1M QPS with <200ms latency target.",
@@ -397,7 +403,8 @@ export const scalabilityConceptsAppData = {
       challenges:
         "Data consistency across regions, session stickiness, and increased networking complexity.",
       learnings:
-        "Geo-distributed architecture requires SLAs on cross-region replication latency and robust monitoring."
+        "Geo-distributed architecture requires SLAs on cross-region replication latency and robust monitoring.",
+      considerations: [] // Added empty considerations array
     }
   ],
   advanced: [
