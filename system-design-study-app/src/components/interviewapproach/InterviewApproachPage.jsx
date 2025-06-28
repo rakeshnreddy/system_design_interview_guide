@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, List, ListItem, ListItemText, Paper, Divider } from '@mui/material';
 import { interviewApproachAppData } from '../../data/interviewApproachAppData';
+import Mermaid from '../common/MermaidDiagram'; // Import Mermaid
 
 // Helper function to render content items
 const renderContentItem = (item, index) => {
@@ -29,7 +30,7 @@ const renderContentItem = (item, index) => {
 };
 
 function InterviewApproachPage() {
-  const { title, sections } = interviewApproachAppData;
+  const { title, sections, mermaidDiagrams } = interviewApproachAppData;
 
   // Temporary AppBar to avoid import errors if it's not defined elsewhere yet
   // In a real app, this would be part of a shared Layout component
@@ -63,6 +64,14 @@ function InterviewApproachPage() {
               {section.title}
             </Typography>
             {section.content.map(renderContentItem)}
+            {section.id === "framework" && mermaidDiagrams && mermaidDiagrams.frameworkFlow && (
+              <Box sx={{ my: 3, p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #ccc', borderRadius: '4px', overflowX: 'auto' }}>
+                <Typography variant="h6" component="h3" gutterBottom className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
+                  Interview Framework Overview
+                </Typography>
+                <Mermaid chart={mermaidDiagrams.frameworkFlow} />
+              </Box>
+            )}
             {sectionIndex < sections.length - 1 && <Divider className="my-8 border-neutral-300 dark:border-neutral-700" />}
           </Box>
         ))}

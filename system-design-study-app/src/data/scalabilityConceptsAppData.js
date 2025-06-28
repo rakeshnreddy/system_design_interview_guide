@@ -535,6 +535,17 @@ graph TD
         LB2 --> SessSrv[(Session Server)]
         SessSrv --> SrvC
       end
+  `,
+    consistencyTimeline: `
+    sequenceDiagram
+      participant Writer
+      participant NodeA
+      participant NodeB
+      Writer->>NodeA: write(X=1)
+      Note right of NodeA: Strong Consistency -> NodeB unavailable until synced
+      Writer->>NodeA: write(X=2)
+      NodeA->>NodeB: replicate(X=2)
+      Note right of NodeB: Eventual Consistency -> NodeB sees X=1 then X=2
   `
   }
 };

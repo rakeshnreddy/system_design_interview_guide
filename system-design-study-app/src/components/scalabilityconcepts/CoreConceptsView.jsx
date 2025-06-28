@@ -69,6 +69,12 @@ function CoreConceptsView({ appData }) {
                 <ListItemText component="div" primary="Matters When" secondary={model.mattersWhen} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }}/>
               </ListItem>
             ))}
+            {appData.mermaidDiagrams && appData.mermaidDiagrams.consistencyTimeline && (
+              <Box sx={{ my: 2, p: 1, border: '1px dashed grey', overflowX: 'auto' }}>
+                <Typography variant="h6" gutterBottom sx={{mt: 2}}>Consistency Models Timeline</Typography>
+                <Mermaid chart={appData.mermaidDiagrams.consistencyTimeline} />
+              </Box>
+            )}
           </List>
         );
       default:
