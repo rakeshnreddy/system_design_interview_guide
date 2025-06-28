@@ -16,18 +16,18 @@ export const interviewApproachAppData = {
         { type: "paragraph", text: "While there are many frameworks, here's one example to structure your approach. Adapt it as needed:" },
         { type: "heading", level: 3, text: "1. Requirements Clarification (R)" },
         { type: "list", items: [
-            "Ask clarifying questions to understand the scope: Who are the users? What are the main features (functional requirements)? What are the non-functional requirements (performance, availability, scalability, etc.)?",
+            "Ask clarifying questions to understand the scope: Who are the users? What are the main features ({{Functional Requirements}})? What are the {{Non-Functional Requirements}} ({{Performance}}, {{Availability}}, {{Scalability}}, etc.)?",
             "Identify constraints: Technical (e.g., specific tech stack if mentioned), business (e.g., time to market, cost).",
-            "Define success metrics: How will we know if the design is successful (e.g., X QPS, Y latency, Z availability)?",
+            "Define success metrics: How will we know if the design is successful (e.g., X {{QPS (Queries Per Second)}}, Y {{Latency}}, Z {{Availability}})?",
             "Don't make assumptions silently; state them clearly and get interviewer buy-in. E.g., 'Assuming we are designing for read-heavy workloads...'"
           ]
         },
         { type: "heading", level: 3, text: "2. Estimation of Scale & Constraints (E)" },
         { type: "list", items: [
-            "Estimate traffic: Queries Per Second (QPS), Daily Active Users (DAU), Monthly Active Users (MAU). Consider peak vs. average load.",
+            "Estimate traffic: {{Queries Per Second (QPS)}}, {{Daily Active Users (DAU)}}, {{Monthly Active Users (MAU)}}. Consider peak vs. average load.",
             "Estimate storage needs: How much data per user/item? Total data over time? Growth rate?",
             "Estimate bandwidth requirements: Ingress and egress traffic based on data types (text, image, video).",
-            "Discuss data characteristics: Durability needs (can we lose some data?), consistency requirements (strong vs. eventual)."
+            "Discuss data characteristics: {{Durability}} needs (can we lose some data?), {{Consistency}} requirements ({{Strong Consistency}} vs {{Eventual Consistency}})."
           ]
         },
         { type: "paragraph", text: "Example: For a Twitter-like service with 100M DAU, users posting 1 tweet/day, reading 20. Calculate QPS for reads/writes, storage for tweets/users." },
@@ -40,15 +40,15 @@ export const interviewApproachAppData = {
         },
         { type: "heading", level: 3, text: "4. Data Model Design (D)" },
         { type: "list", items: [
-            "Choose a database type (SQL vs. NoSQL) based on requirements (consistency, schema flexibility, query patterns, scale).",
+            "Choose a [database](#/databases) type ({{SQL}} vs. {{NoSQL}}) based on requirements ({{Consistency}}, {{Schema Flexibility}}, {{Query Patterns}}, {{Scale}}).",
             "Define main entities and their relationships.",
             "Sketch out table schemas or document structures.",
-            "Discuss indexing strategies for common query patterns."
+            "Discuss {{Indexing Strategies}} for common query patterns."
           ]
         },
         { type: "heading", level: 3, text: "5. Abstract / High-Level Design (A)" },
         { type: "list", items: [
-            "Draw a block diagram with the main components: Clients, Load Balancers, Application Servers, Databases, Caches, Message Queues, CDNs, etc.",
+            "Draw a block diagram with the main components: Clients, [Load Balancing](#/load-balancing), {{Application Servers}}, [Databases](#/databases), [Caches](#/caches), [Messaging Queues](#/messaging-queues), [CDNs](#/caches?section=CDN), etc.",
             "Illustrate the primary data flow and request paths.",
             "Start simple and then iterate. Don't dive too deep into one component initially."
           ]
@@ -56,21 +56,21 @@ export const interviewApproachAppData = {
         { type: "heading", level: 3, text: "6. Low-Level / Detailed Design (L)" },
         { type: "list", items: [
             "Flesh out specific components. For example, if you have multiple services, discuss their individual roles and APIs.",
-            "Discuss choices for specific technologies (e.g., Redis for caching, Kafka for message queues, specific database engine). Justify these choices.",
-            "Explain algorithms for key functionalities if relevant (e.g., news feed generation, sharding strategy)."
+            "Discuss choices for specific technologies (e.g., [Redis](#/databases?section=redis) for [caching](#/caches), [Kafka](#/messaging-queues?section=kafka) for [message queues](#/messaging-queues), specific [database engine](#/databases)). Justify these choices.",
+            "Explain algorithms for key functionalities if relevant (e.g., news feed generation, {{Sharding Strategy}})."
           ]
         },
         { type: "heading", level: 3, text: "7. Operational Considerations / Bottlenecks (O)" },
         { type: "list", items: [
-            "Identify potential bottlenecks: Single points of failure (SPOFs), scaling limitations of chosen components.",
-            "Discuss strategies for monitoring, logging, and alerting.",
-            "Consider deployment strategy, CI/CD.",
-            "How will the system handle failures? Redundancy, failover mechanisms."
+            "Identify potential bottlenecks: {{Single Points of Failure (SPOFs)}}, {{Scaling Limitations}} of chosen components.",
+            "Discuss strategies for {{Monitoring}}, {{Logging}}, and {{Alerting}}.",
+            "Consider deployment strategy, {{CI/CD}}.",
+            "How will the system handle failures? {{Redundancy}}, {{Failover Mechanisms}}."
           ]
         },
         { type: "heading", level: 3, text: "8. Trade-offs & Alternatives (T)" },
         { type: "list", items: [
-            "Revisit critical design choices and discuss the trade-offs made (e.g., consistency vs. availability, cost vs. performance).",
+            "Revisit critical design choices and discuss the trade-offs made (e.g., {{Consistency}} vs. {{Availability}} (see {{CAP Theorem}}), cost vs. {{Performance}}).",
             "Explain why certain alternative technologies or approaches were not chosen.",
             "Show that you understand there's no perfect solution, only solutions with different sets of compromises."
           ]
@@ -89,13 +89,13 @@ export const interviewApproachAppData = {
       content: [
         { type: "paragraph", text: "Throughout the interview, demonstrate your understanding of these crucial system characteristics:" },
         { type: "list", items: [
-            "**Scalability:** Ability to handle growing load (users, data, transactions). Horizontal vs. Vertical scaling.",
-            "**Reliability:** System operates correctly without failure. Measured by Mean Time Between Failures (MTBF). Achieved via redundancy, fault tolerance.",
-            "**Availability:** System is operational and accessible when needed. Measured by uptime (e.g., 99.999%). Related to fault tolerance and resilience.",
-            "**Maintainability:** Ease of operating, debugging, and updating the system. Modularity, clear APIs, good documentation, automation.",
-            "**Performance:** Speed and responsiveness of the system. Measured by latency (response time) and throughput (requests per second).",
-            "**Cost-Effectiveness:** Designing a system that meets requirements without unnecessary expense. Consider hardware, software, operational, and development costs.",
-            "**Security:** Protecting data and system resources from unauthorized access, use, disclosure, alteration, or destruction. Authentication, authorization, encryption, input validation."
+            "**{{Scalability}}:** Ability to handle growing load (users, data, transactions). {{Horizontal Scaling}} vs. {{Vertical Scaling}}.",
+            "**{{Reliability}}:** System operates correctly without failure. Measured by {{Mean Time Between Failures (MTBF)}}. Achieved via {{Redundancy}}, {{Fault Tolerance}}.",
+            "**{{Availability}}:** System is operational and accessible when needed. Measured by uptime (e.g., 99.999%). Related to {{Fault Tolerance}} and {{Resilience}}.",
+            "**{{Maintainability}}:** Ease of operating, debugging, and updating the system. {{Modularity}}, clear APIs, good documentation, automation.",
+            "**{{Performance}}:** Speed and responsiveness of the system. Measured by {{Latency}} (response time) and {{Throughput}} (requests per second).",
+            "**{{Cost-Effectiveness}}:** Designing a system that meets requirements without unnecessary expense. Consider hardware, software, operational, and development costs.",
+            "**{{Security}}:** Protecting data and system resources from unauthorized access, use, disclosure, alteration, or destruction. {{Authentication}}, {{Authorization}}, {{Encryption}}, {{Input Validation}}."
           ]
         }
       ]
@@ -112,7 +112,7 @@ export const interviewApproachAppData = {
             "**Not discussing trade-offs:** Presenting choices as if they are the only option, without acknowledging downsides or alternatives.",
             "**Poor communication:** Not thinking out loud, not explaining your reasoning, or not using the whiteboard/drawing tool effectively.",
             "**Getting stuck on minor details:** Losing sight of the big picture by focusing too much on one specific component too early.",
-            "**Not considering non-functional requirements:** Focusing only on features and ignoring scalability, availability, etc.",
+            "**Not considering non-functional requirements:** Focusing only on features and ignoring {{Scalability}}, {{Availability}}, etc.",
             "**Ignoring interviewer feedback:** Not adapting your design based on hints or concerns raised by the interviewer."
           ]
         }
@@ -140,7 +140,7 @@ export const interviewApproachAppData = {
         content: [
             { type: "paragraph", text: "Effective preparation involves several aspects:" },
             { type: "list", items: [
-                "**Understand core concepts:** Deeply understand topics like caching, load balancing, databases (SQL/NoSQL), messaging queues, CDNs, API design, CAP theorem, consistency models, etc.",
+                "**Understand core concepts:** Deeply understand topics like [caching](#/caches), [Load Balancing](#/load-balancing), [databases (SQL/NoSQL)](#/databases), [messaging queues](#/messaging-queues), [CDNs](#/caches?section=CDN), [API design](#/api-design), CAP theorem (see {{CAP Theorem}}), {{Consistency Models}}, etc.",
                 "**Study common system designs:** Learn how popular systems like Twitter, Instagram, Uber, Netflix, etc., are designed at a high level. Focus on the principles and patterns.",
                 "**Practice with mock interviews:** This is crucial. Get feedback from peers, mentors, or professional services. Practice articulating your thoughts.",
                 "**Develop a go-to framework:** Internalize a structured approach to tackle any design problem.",

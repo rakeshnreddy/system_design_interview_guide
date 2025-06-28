@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import Mermaid from '../common/Mermaid'; // Import Mermaid
+import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
 
 function ProtocolsView({ appData }) {
   if (!appData || !appData.protocols) {
@@ -18,7 +18,7 @@ function ProtocolsView({ appData }) {
         <Box sx={{ my: 3 }}>
           <Typography variant="h5" gutterBottom>REST API Call Flow</Typography>
           <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Mermaid chart={mermaidDiagrams.restFlow} />
+            <MermaidDiagram chart={mermaidDiagrams.restFlow} />
           </Paper>
         </Box>
       )}
@@ -27,7 +27,7 @@ function ProtocolsView({ appData }) {
         <Box sx={{ my: 3 }}>
           <Typography variant="h5" gutterBottom>GraphQL Query Flow</Typography>
           <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Mermaid chart={mermaidDiagrams.graphQLFlow} />
+            <MermaidDiagram chart={mermaidDiagrams.graphQLFlow} />
           </Paper>
         </Box>
       )}

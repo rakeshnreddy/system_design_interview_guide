@@ -32,13 +32,13 @@ export const glossaryData = [
   {
     id: "sql",
     term: "SQL (Structured Query Language)",
-    definition: "A domain-specific language used in programming and designed for managing data held in a relational database management system (RDBMS), or for stream processing in a relational data stream management system (RDSMS).",
+    definition: "A domain-specific language used in programming and designed for managing data held in a {{Relational Database Management System (RDBMS)}}, or for stream processing in a relational data stream management system (RDSMS).",
     icon: "DatabaseZap" // Lucide icon: DatabaseZap, FileText, Rows
   },
   {
     id: "nosql",
     term: "NoSQL Database",
-    definition: "A database that provides a mechanism for storage and retrieval of data that is modeled in means other than the tabular relations used in relational databases. NoSQL databases are often used in big data and real-time web applications.",
+    definition: "A database that provides a mechanism for storage and retrieval of data that is modeled in means other than the tabular relations used in [relational databases](#/databases?section=relational). NoSQL databases are often used in big data and real-time web applications.",
     icon: "DatabaseBackup" // Lucide icon: DatabaseBackup, Files, Container
   },
   {
@@ -62,7 +62,7 @@ export const glossaryData = [
   {
     id: "scalability",
     term: "Scalability",
-    definition: "The property of a system to handle a growing amount of work by adding resources to the system. This can be achieved by scaling up (increasing resources of existing nodes) or scaling out (adding more nodes).",
+    definition: "The property of a system to handle a growing amount of work by adding resources to the system. This can be achieved by scaling up ({{Vertical Scaling}}) or scaling out ({{Horizontal Scaling}}).",
     icon: "TrendingUp" // Lucide icon: TrendingUp, BarChartBig, AreaChart
   },
   {
@@ -92,13 +92,13 @@ export const glossaryData = [
   {
     id: "acid",
     term: "ACID Properties",
-    definition: "A set of properties (Atomicity, Consistency, Isolation, Durability) that guarantee database transactions are processed reliably. Typically associated with relational databases.",
+    definition: "A set of properties ({{Atomicity}}, {{Consistency}}, {{Isolation}}, {{Durability}}) that guarantee {{Database Transaction|database transactions}} are processed reliably. Typically associated with [relational databases](#/databases?section=relational).",
     icon: "Lock" // Lucide icon: Lock, Shield, Gem
   },
   {
     id: "base",
     term: "BASE Properties",
-    definition: "An alternative to ACID (Basically Available, Soft state, Eventual consistency) often used by NoSQL databases, prioritizing availability and scalability over strict consistency.",
+    definition: "An alternative to {{ACID Properties|ACID}} ({{Basically Available}}, {{Soft state}}, {{Eventual consistency}}) often used by [NoSQL databases](#/databases?section=nosql), prioritizing {{Availability}} and {{Scalability}} over strict {{Consistency}}.",
     icon: "Unlock" // Lucide icon: Unlock, Waves, CloudDrizzle
   },
   {
@@ -116,13 +116,13 @@ export const glossaryData = [
   {
     id: "sharding",
     term: "Sharding (Database)",
-    definition: "A type of database partitioning that separates very large databases into smaller, faster, more easily managed parts called data shards. Each shard is often hosted on a separate server.",
+    definition: "A type of [database](#/databases) partitioning that separates very large [databases](#/databases) into smaller, faster, more easily managed parts called data shards. Each shard is often hosted on a separate server.",
     icon: "Spline" // Lucide icon: Spline, Ungroup, Columns
   },
   {
     id: "replication",
     term: "Replication (Database)",
-    definition: "The process of creating and maintaining multiple copies of data on different database servers. Replication can improve availability, fault tolerance, and read scalability.",
+    definition: "The process of creating and maintaining multiple copies of data on different [database](#/databases) servers. Replication can improve {{Availability}}, {{Fault Tolerance}}, and read {{Scalability}}.",
     icon: "Copy" // Lucide icon: Copy, Library, ServerCrash
   },
   {
@@ -140,7 +140,7 @@ export const glossaryData = [
   {
     id: "dns",
     term: "DNS (Domain Name System)",
-    definition: "A hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network. It translates human-readable domain names (e.g., www.example.com) into machine-readable IP addresses.",
+    definition: "A hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network. It translates human-readable domain names (e.g., www.example.com) into machine-readable {{IP Addresses}}.",
     icon: "BookMarked" // Lucide icon: BookMarked, LocateFixed, Compass
   },
   {
@@ -152,31 +152,31 @@ export const glossaryData = [
   {
     id: "rest",
     term: "REST (Representational State Transfer)",
-    definition: "An architectural style for designing networked applications. It relies on a stateless, client-server, cacheable communications protocol—and in virtually all cases, the HTTP protocol is used.",
+    definition: "An architectural style for designing networked applications. It relies on a stateless, client-server, cacheable communications protocol—and in virtually all cases, the {{HTTP}} protocol is used.",
     icon: "Globe2" // Lucide icon: Globe2, HttpGet, Share2
   },
   {
     id: "grpc",
     term: "gRPC (Google Remote Procedure Call)",
-    definition: "A high-performance, open-source universal RPC framework. gRPC typically uses Protocol Buffers as its interface definition language and message interchange format.",
+    definition: "A high-performance, open-source universal RPC framework. gRPC typically uses {{Protocol Buffers}} as its interface definition language and message interchange format.",
     icon: "Cog" // Lucide icon: Cog, Binary, Settings2
   },
   {
     id: "websocket",
     term: "WebSocket",
-    definition: "A communication protocol that provides full-duplex communication channels over a single TCP connection. It enables interaction between a client and a web server with lower overheads, facilitating real-time data transfer.",
+    definition: "A communication protocol that provides full-duplex communication channels over a single {{TCP}} connection. It enables interaction between a client and a web server with lower overheads, facilitating real-time data transfer.",
     icon: "ArrowRightLeft" // Lucide icon: ArrowRightLeft, MessageCircle, RadioTower
   },
   {
     id: "docker",
     term: "Docker",
-    definition: "A platform that uses OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files.",
+    definition: "A platform that uses OS-level virtualization to deliver software in packages called {{Containers}}. Containers are isolated from one another and bundle their own software, libraries and configuration files.",
     icon: "Container" // Lucide icon: Container, Box, PackageSearch
   },
   {
     id: "kubernetes",
     term: "Kubernetes (K8s)",
-    definition: "An open-source container orchestration system for automating software deployment, scaling, and management. It groups containers that make up an application into logical units for easy management and discovery.",
+    definition: "An open-source {{Container Orchestration}} system for automating software deployment, scaling, and management. It groups {{Containers}} that make up an application into logical units for easy management and discovery.",
     icon: "Ship" // Lucide icon: Ship, Anchor, Workflow
   }
 ];
