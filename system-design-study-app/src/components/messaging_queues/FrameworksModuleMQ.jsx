@@ -116,8 +116,8 @@ const FrameworksModuleMQ = () => {
                 </div>
               )}
             </div>
-          </Card>
-        ))}
+          </Card> // Removed semicolon here
+        })}
       </div>
     </div>
   );

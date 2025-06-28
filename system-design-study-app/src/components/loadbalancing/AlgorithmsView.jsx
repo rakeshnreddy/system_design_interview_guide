@@ -73,7 +73,8 @@ function AlgorithmsView({ appData }) {
               </ListItem>
               <Divider component="li" sx={{mb:2}}/>
             </React.Fragment>
-          ))}
+            );
+          })}
         </List>
       </Paper>
       <Typography sx={{mt: 2}} variant="body1">

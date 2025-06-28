@@ -88,9 +88,10 @@ function CoreConceptsView({ appData }) {
                   <Typography variant="h6" gutterBottom>{concept.name}</Typography>
                   {renderConcept(concept)}
                 </ListItem>
-              <Divider component="li" sx={{ mb: 2 }} />
-            </React.Fragment>
-          ))}
+                <Divider component="li" sx={{ mb: 2 }} />
+              </React.Fragment>
+            );
+          })}
         </List>
       </Paper>
       <Typography sx={{ mt: 2 }} variant="body1">
