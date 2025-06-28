@@ -97,6 +97,27 @@ export const scalabilityConceptsAppData = {
       id: "cap_theorem_explained",
       name: "CAP Theorem (Consistency, Availability, Partition Tolerance)",
       // visualLink: "diagram-cap-theorem.svg"
+      diagram: `
+graph TD
+    subgraph CAP Theorem
+        C[C - Consistency]
+        A[A - Availability]
+        P[P - Partition Tolerance]
+    end
+    C --- A
+    A --- P
+    P --- C
+
+    subgraph Legend
+      direction LR
+      legend_text["In a network partition (P), a choice must be made between C and A."]
+    end
+
+    style C fill:#B0E0E6,stroke:#333,stroke-width:2px
+    style A fill:#98FB98,stroke:#333,stroke-width:2px
+    style P fill:#FFDAB9,stroke:#333,stroke-width:2px
+    style legend_text fill:#fff,stroke:#d3d3d3,stroke-dasharray: 5 5
+`,
       explanation: "The CAP theorem, also known as Brewer's theorem, states that it is impossible for a distributed data store to simultaneously provide more than two out of the following three guarantees:\n\n1.  **Consistency (C)**: Every read receives the most recent write or an error. All nodes in the system see the same data at the same time. (Note: This 'C' is stricter than the 'C' in ACID's consistency).\n2.  **Availability (A)**: Every request receives a (non-error) response, without the guarantee that it contains the most recent write. The system is available for operations.\n3.  **Partition Tolerance (P)**: The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes (i.e., a network partition). This means the system can sustain communication breakdowns between nodes and still function.\n\nIn the presence of a network partition (which is a given in most distributed systems), a system must choose between stronger Consistency (CP) or higher Availability (AP).",
       implications: "System designers must understand this trade-off. Forcing all three is not possible. Since network partitions are a reality in distributed systems, the choice is effectively between CP and AP systems. For example, a system prioritizing consistency might return an error or timeout if it cannot guarantee the data is up-to-date during a partition, thus sacrificing availability. An AP system might return older data to ensure it always responds.",
       choosing: "If strict data correctness is paramount (e.g., banking systems, financial transactions), choose CP. If uninterrupted service and responsiveness are more critical, and some data staleness is acceptable (e.g., social media feeds, product availability in e-commerce), choose AP. 'P' (Partition Tolerance) is generally considered a non-negotiable characteristic of any practical distributed system.",

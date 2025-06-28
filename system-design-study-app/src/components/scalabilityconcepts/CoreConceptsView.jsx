@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
 
 function CoreConceptsView({ appData }) {
   if (!appData || !appData.coreConcepts) {
@@ -87,15 +88,21 @@ function CoreConceptsView({ appData }) {
                 <ListItem id={elementId} sx={{ display: 'block', mb: 2 }}>
                   <Typography variant="h6" gutterBottom>{concept.name}</Typography>
                   {renderConcept(concept)}
+                  {concept.diagram && (
+                    <Box sx={{ my: 2, p: 1, border: '1px dashed grey', overflowX: 'auto' }}>
+                      <Typography variant="caption" display="block" sx={{mb: 1, fontStyle: 'italic'}}>Illustrative Diagram:</Typography>
+                      <MermaidDiagram diagramDefinition={concept.diagram} diagramId={`${concept.id}-diagram`} />
+                    </Box>
+                  )}
                 </ListItem>
                 <Divider component="li" sx={{ mb: 2 }} />
               </React.Fragment>
-            ); // Semicolon restored
+            );
           })}
         </List>
       </Paper>
       <Typography sx={{ mt: 2 }} variant="body1">
-        Detailed explanations of core scalability concepts like CAP Theorem, Horizontal vs. Vertical Scaling, Stateless vs. Stateful systems, and Consistency Models will be shown here, using data from <code>scalabilityConceptsAppData.js</code>.
+        Detailed explanations of core scalability concepts like CAP Theorem, Horizontal vs. Vertical Scaling, Stateless vs. Stateful systems, and Consistency Models will be shown here, using data from <code>scalabilityConceptsAppData.js</code>. Some concepts may include illustrative diagrams.
       </Typography>
     </Box>
   );
