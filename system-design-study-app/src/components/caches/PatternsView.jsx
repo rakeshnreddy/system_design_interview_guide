@@ -47,7 +47,8 @@ const PatternsView = ({ appData }) => {
                 />
               )}
             </Card>
-          ))}
+            ); // Semicolon restored
+          })}
         </div>
       );
     }

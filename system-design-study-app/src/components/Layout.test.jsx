@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles'; // Renamed to MuiThemeProvider
 import { CustomThemeProvider } from '../contexts/ThemeContext'; // Import CustomThemeProvider
 import Layout from './Layout';
+import { topicsData } from '../data/topicsData'; // Corrected path for topicsData
 
 // Mocking localStorage for ThemeContext
 const localStorageMock = (() => {
@@ -23,26 +24,78 @@ const localStorageMock = (() => {
 })();
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-
 const muiTheme = createTheme(); // For MuiThemeProvider
 
-describe('Layout Component', () => {
-  const TestChild = () => <div>Test Child Content</div>;
+// Helper component to display current location for navigation testing
+const LocationDisplay = () => {
+  const location = useLocation();
+  return <div data-testid="location-display">{location.pathname}{location.hash}</div>;
+};
 
-  beforeEach(() => {
-    // Clear localStorage before each test to ensure a consistent starting theme state
-    window.localStorage.clear();
-    render(
-      <Router>
-        <CustomThemeProvider> {/* Added CustomThemeProvider */}
-          <MuiThemeProvider theme={muiTheme}> {/* MUI's ThemeProvider */}
-            <Layout>
-              <TestChild />
-            </Layout>
-          </MuiThemeProvider>
-        </CustomThemeProvider>
-      </Router>
+// Mock CachesPage to avoid rendering its actual complex content
+// We only care that navigation reaches a route that *would* render it.
+import CachesPage from '../pages/CachesPage'; // Corrected Import the mock
+import DatabasesPage from '../pages/DatabasesPage'; // Corrected Import the mock
+import { vi } from 'vitest'; // Import vi for mocking
+
+vi.mock('../pages/CachesPage', () => ({ // Corrected path in mock and use vi.mock
+  default: () => { // Ensure the mock returns a default export if that's how it's imported
+    const location = useLocation();
+    // When navigating to /caches#some-id, CachesPage mock should indicate the fragment
+    // For this test, we'll just have it render its path and hash too.
+    return (
+      <div data-testid="caches-page-content">
+        Caches Page Mock
+        <div data-testid="mock-caches-location">{location.pathname}{location.hash}</div>
+      </div>
     );
+  }
+}));
+vi.mock('../pages/DatabasesPage', () => ({ // Corrected path in mock and use vi.mock
+  default: () => <div>Databases Page Mock</div> // Ensure mock returns a default export
+}));
+
+const TestChild = () => <div>Test Child Content</div>;
+
+const renderLayoutWithRouter = (initialEntries = ['/']) => {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <CustomThemeProvider>
+        <MuiThemeProvider theme={muiTheme}>
+          <Routes>
+            <Route path="/*" element={
+              <Layout>
+                <LocationDisplay />
+                <TestChild />
+              </Layout>
+            } />
+            {/* Define routes that our nav links point to, using mocks */}
+            <Route path="/caches" element={
+              <Layout>
+                <CachesPage /> {/* Use the imported mock directly */}
+                <LocationDisplay />
+              </Layout>
+            } />
+             <Route path="/databases" element={
+              <Layout>
+                <DatabasesPage /> {/* Use the imported mock directly */}
+                <LocationDisplay />
+              </Layout>
+            } />
+            {/* Add more routes as needed for comprehensive nav testing */}
+          </Routes>
+        </MuiThemeProvider>
+      </CustomThemeProvider>
+    </MemoryRouter>
+  );
+};
+
+
+describe('Layout Component - Basic Rendering', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    // For basic rendering tests, initial route doesn't matter as much
+    renderLayoutWithRouter();
   });
 
   test('renders the header with site title', () => {
@@ -50,12 +103,10 @@ describe('Layout Component', () => {
   });
 
   test('renders navigation links in the header for desktop', () => {
-    // This test might fail if window width is too small for RTL's default JSDOM environment
-    // We might need to mock useMediaQuery
-    // For now, assuming it renders desktop view or elements are present but hidden.
-    expect(screen.getByRole('button', { name: /Topics/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /All Topics/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Featured Study Guides/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Study Resources/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /About/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /About Us/i })).toBeInTheDocument();
   });
 
   test('renders children content', () => {
@@ -72,40 +123,59 @@ describe('Layout Component', () => {
   });
 
   test('renders theme toggle button', () => {
-    // The IconButton for theme toggle might not have a direct text label.
-    // We can look for it by its role and potential aria-label if added, or by the icon.
-    // For now, let's check if there are two Brightness icons (one for light, one for dark, though only one is visible)
-    // This is a bit brittle; a specific aria-label on the IconButton would be better.
-    // const toggleButtons = screen.getAllByRole('button', { name: /brightness/i });
-    // expect(toggleButtons.length).toBeGreaterThanOrEqual(1); // At least one for desktop
-    // Updated to look for the aria-label
     expect(screen.getByRole('button', { name: /toggle site theme/i })).toBeInTheDocument();
   });
 
-  // Basic test for mobile menu button presence (might need to mock useMediaQuery for proper testing)
-  test('renders mobile menu button when isMobile is true (requires mocking useMediaQuery)', () => {
-    // This test as-is will likely show desktop view.
-    // To properly test mobile:
-    // 1. Mock useMediaQuery:
-    //    jest.mock('@mui/material', () => ({
-    //      ...jest.requireActual('@mui/material'),
-    //      useMediaQuery: jest.fn().mockReturnValue(true), // Mock mobile
-    //    }));
-    // 2. Then check for MenuIcon
-    // For now, we acknowledge this limitation. If the menu icon is always rendered (even if hidden by CSS), it might be found.
+  test('mobile menu button is not present in default desktop view', () => {
     const menuButton = screen.queryByRole('button', { name: /open drawer/i });
-    // Depending on default jsdom width, this might be null or present.
-    // If present, it means the mobile button is rendered (even if not visible).
-    // If we want to strictly test visibility, we'd need more setup.
-    // For this exercise, we'll assume it's okay if it's in the DOM.
-    // If not, this test will fail and we'll adjust.
-    // If useMediaQuery defaults to false (desktop), this button won't be there.
-    // Let's assume for now it's not there by default in test env.
-    // The test 'renders navigation links in the header for desktop' implies desktop view.
-    // So, the mobile menu button should NOT be there unless we mock useMediaQuery to return true.
-    expect(menuButton).not.toBeInTheDocument(); // In a default desktop JSDOM environment
+    expect(menuButton).not.toBeInTheDocument();
+  });
+});
+
+
+describe('Layout Component - Navigation', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
   });
 
-  // A more complex test would involve mocking useMediaQuery to simulate mobile view
-  // and then clicking the menu button to check if the drawer opens.
+  test('navigates to a Featured Study Guide page (Caching Strategies)', async () => {
+    renderLayoutWithRouter(['/']); // Start at home
+
+    const featuredGuidesButton = screen.getByRole('button', { name: /Featured Study Guides/i });
+    fireEvent.click(featuredGuidesButton);
+
+    const cachingLink = await screen.findByRole('menuitem', { name: /Caching Strategies/i });
+    fireEvent.click(cachingLink);
+
+    // Check if the location display (rendered inside Layout, now part of the /caches route's Layout) reflects the new path
+    // This relies on CachesPage mock or actual page to render LocationDisplay or unique text
+    await waitFor(() => {
+      // We expect to be on the /caches path. LocationDisplay within that route's Layout will show it.
+      expect(screen.getByTestId('location-display')).toHaveTextContent('/caches');
+    });
+  });
+
+  test('navigates to an All Topics link with fragment (Client-Side Caching)', async () => {
+    renderLayoutWithRouter(['/']); // Start at home
+
+    const allTopicsButton = screen.getByRole('button', { name: /All Topics/i });
+    fireEvent.click(allTopicsButton);
+
+    // Find the specific topic from topicsData to ensure we click a valid one
+    const clientSideCachingTopic = topicsData.find(topic => topic.id === 'cache-client-side');
+    expect(clientSideCachingTopic).toBeDefined(); // Ensure the topic exists
+
+    const topicLink = await screen.findByRole('menuitem', { name: clientSideCachingTopic.title });
+    fireEvent.click(topicLink);
+
+    // Check if the location display reflects the new path and hash
+    // Link should be /caches#cache-client-side
+    await waitFor(() => {
+      expect(screen.getByTestId('location-display')).toHaveTextContent('/caches#cache-client-side');
+    });
+    // Additionally, if CachesPage mock is sophisticated enough, you could check for its content
+    // For now, checking location-display is the primary goal.
+  });
+
+  // TODO: Add a test for mobile navigation if time permits and useMediaQuery can be mocked.
 });
