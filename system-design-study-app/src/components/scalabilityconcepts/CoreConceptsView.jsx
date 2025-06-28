@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
+import Mermaid from '../common/Mermaid'; // Import Mermaid
+
 
 function CoreConceptsView({ appData }) {
   if (!appData || !appData.coreConcepts) {
@@ -12,6 +13,11 @@ function CoreConceptsView({ appData }) {
       case 'cap_theorem_explained':
         return (
           <>
+            {appData.mermaidDiagrams && appData.mermaidDiagrams.capTriangle && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <Mermaid chart={appData.mermaidDiagrams.capTriangle} />
+              </Box>
+            )}
             <ListItemText component="div" primary="Explanation" secondary={concept.explanation} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div', sx: { whiteSpace: 'pre-line' } }} sx={{ mb: 1 }} />
             <ListItemText component="div" primary="Implications" secondary={concept.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{ mb: 1 }} />
             <ListItemText component="div" primary="Choosing (CP vs AP)" secondary={concept.choosing} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} />
@@ -37,6 +43,11 @@ function CoreConceptsView({ appData }) {
       case 'stateless_vs_stateful':
         return (
           <>
+            {appData.mermaidDiagrams && appData.mermaidDiagrams.statelessStateful && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <Mermaid chart={appData.mermaidDiagrams.statelessStateful} />
+              </Box>
+            )}
             <Typography variant="subtitle1" gutterBottom>Stateless Architecture</Typography>
             <ListItemText component="div" secondary={concept.stateless.description} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>
             <ListItemText component="div" primary="Implications" secondary={concept.stateless.implications} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div' }} sx={{mb:1}}/>

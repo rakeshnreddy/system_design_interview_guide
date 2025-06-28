@@ -1,5 +1,6 @@
 export const scalabilityConceptsAppData = {
-  title: "Scalability Concepts",
+  title: "Scalability & Architecture",
+  overview: "Scalability in system design aims to ensure a system can handle growth in users, data volume, and transaction rates efficiently. This involves making trade-offs between different scaling strategies, such as vertical scaling (increasing resources of a single server) versus horizontal scaling (adding more servers). Key considerations include maintaining fault tolerance (the system's ability to operate despite failures) and managing the increased complexity that often accompanies more distributed architectures. The goal is to achieve performance, availability, and cost-effectiveness at scale.",
   metrics: [
     {
       id: "scalability_factor",
@@ -90,6 +91,12 @@ export const scalabilityConceptsAppData = {
     {
       term: "Fault Tolerance",
       definition: "The ability of a system to continue operating, possibly at a reduced level, rather than failing completely when some part of the system fails."
+    },
+    { id: "eventDriven", term: "Event-Driven Architecture", definition:
+    "A design paradigm where services emit and react to events, enabling loose coupling and asynchronous workflows."
+    },
+    { id: "serviceMesh", term: "Service Mesh", definition:
+    "An infrastructure layer for managing service-to-service communication (e.g., Istio, Linkerd), offering traffic control, security, and observability."
     }
   ],
   coreConcepts: [
@@ -130,6 +137,54 @@ graph TD
         "Discuss how the choice depends on business requirements (e.g., financial vs. social media)."
       ],
       defendingYourDecision: "For this system, which handles [e.g., user session data], we prioritized Availability and Partition Tolerance (AP) by choosing [e.g., DynamoDB]. This is because ensuring users can always [e.g., log in and use core features] even if some data is slightly stale is more critical than strict consistency across all nodes for this particular data. We handle potential staleness via [e.g., client-side refresh or eventual consistency mechanisms]."
+},
+{
+  id: "monolithVsMicroservices",
+  name: "Monolith vs Microservices",
+  definition:
+    "Contrast between a single deployable unit vs multiple independent services.",
+  pros: ["Monolith: simpler deploy, easier local debugging", "Microservices: independent scaling, team autonomy"],
+  cons: ["Monolith: limited scale, slower release cycle", "Microservices: increased operational overhead, network latency"],
+  whenToUse:
+    "Monolith for small teams/apps; Microservices for large, complex domains requiring independent scaling.",
+  example:
+    "Netflix moved from a Ruby monolith to hundreds of Java microservices for better fault isolation."
+},
+{
+  id: "cqrsEventSourcing",
+  name: "CQRS & Event Sourcing",
+  definition: "Command Query Responsibility Segregation (CQRS) separates read and write operations for a data store. Event Sourcing involves persisting the state of a business entity as a sequence of state-changing events. They are often used together.",
+  pros: ["CQRS: Optimized data schemas for read/write, improved performance and scalability for each.", "Event Sourcing: Reliable audit log, ability to reconstruct past states, simplifies event-driven architecture."],
+  cons: ["CQRS: Increased complexity, potential for eventual consistency between read and write models.", "Event Sourcing: Learning curve, querying event store directly can be complex (often necessitating CQRS)."],
+  whenToUse: "Complex domains where read and write workloads differ significantly, systems requiring strong auditing capabilities, or applications built on event-driven architectures.",
+  example: "An e-commerce platform might use CQRS for product catalog (high read, moderate write) and Event Sourcing for order management (reliable history of order state changes)."
+},
+{
+  id: "sagaPattern",
+  name: "Saga Pattern",
+  definition: "A way to manage data consistency across microservices in distributed transactions. A saga is a sequence of local transactions. If one transaction fails, compensating transactions are executed to undo preceding work.",
+  pros: ["Maintains data consistency across services without distributed transactions (2PC).", "Services remain loosely coupled."],
+  cons: ["Complex to design and debug, especially compensating transactions.", "Can lead to eventual consistency issues if not carefully managed.", "Lack of atomicity for the overall transaction can be a challenge."],
+  whenToUse: "Long-lived transactions spanning multiple services where eventual consistency is acceptable, and direct distributed transactions are not feasible or desired.",
+  example: "Saga used by an e-commerce checkout to coordinate inventory, payment, and shipping services. If payment fails, a compensating transaction might release the inventory."
+},
+{
+  id: "stranglerFigPatternCore", // Differentiating from the one in 'advanced'
+  name: "Strangler Fig Pattern",
+  definition: "Incrementally replace parts of a monolith by routing new features or updated functionality to new microservices, while the old system still handles other features. Over time, the new system 'strangles' the old one.",
+  pros: ["Gradual migration with lower risk compared to a big-bang rewrite.", "Allows continuous delivery of new features during migration.", "Spreads out development effort."],
+  cons: ["Can be complex to manage the routing layer (facade/proxy).", "Maintaining two systems simultaneously can be costly.", "Integration between old and new systems can be challenging."],
+  whenToUse: "Migrating large, complex legacy monolithic applications to a microservices architecture where a complete rewrite is too risky or time-consuming.",
+  example: "A legacy banking system gradually moves customer account management to new microservices while core transaction processing remains on the monolith, with a proxy routing API calls."
+},
+{
+  id: "sidecarPattern",
+  name: "Sidecar Pattern",
+  definition: "Deploy components of an application into a separate process or container to provide isolation and encapsulation. The sidecar is attached to a parent application and shares its lifecycle.",
+  pros: ["Reduces complexity in the main application by offloading cross-cutting concerns (e.g., logging, monitoring, networking).", "Allows use of different technologies for sidecar and main app.", "Reusable across multiple applications."],
+  cons: ["Can increase overall resource consumption due to multiple processes/containers.", "Inter-process communication overhead.", "Adds deployment complexity if not managed with orchestrators like Kubernetes."],
+  whenToUse: "To add common functionalities like logging, monitoring, configuration, or network proxies to an application without modifying its core code, especially in containerized environments.",
+  example: "A service mesh like Istio uses sidecar proxies (e.g., Envoy) deployed alongside each microservice instance to manage traffic, security, and observability."
     },
     {
       id: "horizontal_vs_vertical_scaling",
@@ -341,6 +396,58 @@ graph TD
         "Use of message queues for presence updates or asynchronous tasks.",
         "Efficient data structures for managing online users and group chats."
       ]
+    },
+    {
+      id: "eventDrivenDesign", // Changed key to id
+      title: "Event-Driven Microservices",
+      description:
+        "Design a system where microservices communicate via events (e.g., user signup triggers email, analytics, and profile services).",
+      problem:
+        "Synchronous HTTP calls between services create tight coupling and brittle interdependencies.",
+      solution:
+        "Use Kafka topics for user events; each service subscribes and processes its own logic asynchronously.",
+      challenges:
+        "Ensuring eventual consistency and handling out-of-order events.",
+      learnings:
+        "Event-driven reduces coupling but requires careful schema versioning and error handling.",
+      considerations: [] // Added empty considerations array
+    },
+    {
+      id: "highScaleWebApp", // Changed key to id
+      title: "High-Scale Web Application",
+      description:
+        "Architect a web application to support 1M QPS with <200ms latency target.",
+      problem:
+        "Single data center cannot handle global traffic with low latency.",
+      solution:
+        "Deploy across multiple regions with geo-DNS, use CDNs for static assets, shard databases by user id, and autoscale stateless services behind load balancers.",
+      challenges:
+        "Data consistency across regions, session stickiness, and increased networking complexity.",
+      learnings:
+        "Geo-distributed architecture requires SLAs on cross-region replication latency and robust monitoring.",
+      considerations: [] // Added empty considerations array
+    }
+  ],
+  advanced: [
+    {
+      id: "raft",
+      name: "Raft Consensus Algorithm",
+      definition:
+        "A leader-based consensus protocol for replicated state machines, easier to understand than Paxos.",
+      pros: ["Simpler to reason about", "Strong consistency across replicas"],
+      cons: ["Leader can become a bottleneck", "Complex leader election edge cases"],
+      useCase:
+        "Used in etcd and Consul for service discovery and configuration management."
+    },
+    {
+      id: "stranglerFig",
+      name: "Strangler Fig Pattern",
+      definition:
+        "Incrementally replace parts of a monolith by routing new features to microservices until the monolith is ‘strangled.’",
+      pros: ["Gradual migration with less risk"],
+      cons: ["Complex routing layer required"],
+      useCase:
+        "Used by teams migrating legacy applications to cloud-native microservices."
     }
   ],
   flashcards: [
@@ -394,5 +501,40 @@ graph TD
       url: "https://sre.google/sre-book/distributed-systems/",
       description: "Insights into how Google handles distributed systems and scalability."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    capTriangle: `
+    graph TD
+      A[Availability] --- C[Consistency]
+      C --- P[Partition Tolerance]
+      P --- A
+      classDef corner fill:#eef,stroke:#333,stroke-width:2px;
+      class A,C,P corner;
+  `,
+    archComparison: `
+    graph LR
+      subgraph Monolith
+        M1[UI] --> M2[Business Logic]
+        M2 --> M3[Data Layer]
+      end
+      subgraph Microservices
+        MS1[User Service] & MS2[Order Service] & MS3[Payment Service]
+      end
+      classDef monolith fill:#fdd,stroke:#333;
+      classDef microservices fill:#dfd,stroke:#333;
+      class M1,M2,M3 monolith;
+      class MS1,MS2,MS3 microservices;
+  `,
+    statelessStateful: `
+    flowchart LR
+      subgraph Stateless
+        LB1[Load Balancer] --> SrvA[Server A]
+        LB1 --> SrvB[Server B]
+      end
+      subgraph Stateful
+        LB2 --> SessSrv[(Session Server)]
+        SessSrv --> SrvC
+      end
+  `
+  }
 };

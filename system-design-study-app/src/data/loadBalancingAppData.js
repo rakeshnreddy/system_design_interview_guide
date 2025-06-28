@@ -385,5 +385,16 @@ export const loadBalancingAppData = {
       url: "https://cloud.google.com/load-balancing/docs",
       description: "Documentation for Google Cloud Load Balancing services."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    roundRobin: `
+    graph LR
+      Client1 --> LB[Load Balancer]
+      Client2 --> LB
+      LB --> S1[Server 1]
+      LB --> S2[Server 2]
+      LB --> S3[Server 3]
+      click S1 "https://example.com/servers/1"
+  `
+  }
 };
