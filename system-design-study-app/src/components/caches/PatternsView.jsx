@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Card from '../common/Card';
 import Button from '../common/Button'; // For tab controls
 import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
+import EvictionSimulator from './EvictionSimulator'; // Import the simulator
 
 const PatternsView = ({ appData }) => {
   const [activeTab, setActiveTab] = useState('writePatterns'); // 'writePatterns' or 'evictionPolicies'
@@ -58,15 +59,23 @@ const PatternsView = ({ appData }) => {
         return <p className="text-neutral-500 dark:text-neutral-400 py-4">No eviction policy data available.</p>;
       }
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          {appData.evictionPolicies.map(policy => (
-            <Card key={policy.name} className="shadow-md" padding="p-6">
-              <h3 className="text-2xl font-semibold text-teal-600 dark:text-teal-400 mb-2">{policy.name}</h3>
-              <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed">{policy.description}</p>
-              {policy.useWhen && <p className="text-sm italic text-neutral-500 dark:text-neutral-400 mt-3"><strong>Best for:</strong> {policy.useWhen}</p>}
-            </Card>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            {appData.evictionPolicies.map(policy => (
+              <Card key={policy.name} className="shadow-md" padding="p-6">
+                <h3 className="text-2xl font-semibold text-teal-600 dark:text-teal-400 mb-2">{policy.name}</h3>
+                <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed">{policy.description}</p>
+                {policy.useWhen && <p className="text-sm italic text-neutral-500 dark:text-neutral-400 mt-3"><strong>Best for:</strong> {policy.useWhen}</p>}
+              </Card>
+            ))}
+          </div>
+          <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+            <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">
+              Try it: Eviction Policy Simulator
+            </h2>
+            <EvictionSimulator />
+          </div>
+        </>
       );
     }
     return null;
