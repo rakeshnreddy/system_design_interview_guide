@@ -18,11 +18,13 @@ const PatternsView = ({ appData }) => {
       }
       return (
         <div className="space-y-6 pt-4">
-          {appData.writePatterns.map(pattern => (
-            <Card key={pattern.name} className="shadow-lg" padding="p-6">
-              <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">{pattern.name}</h3>
-              <p className="text-base text-neutral-700 dark:text-neutral-300 mb-3 leading-relaxed">{pattern.description}</p>
-              {pattern.pros && (
+          {appData.writePatterns.map(pattern => {
+            const patternId = pattern.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+            return (
+              <Card key={pattern.name} id={patternId} className="shadow-lg" padding="p-6">
+                <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">{pattern.name}</h3>
+                <p className="text-base text-neutral-700 dark:text-neutral-300 mb-3 leading-relaxed">{pattern.description}</p>
+                {pattern.pros && (
                 <div className="mb-2">
                   <h4 className="text-xl font-semibold text-neutral-700 dark:text-neutral-200">Pros:</h4>
                   <ul className="list-disc list-inside text-base text-neutral-600 dark:text-neutral-400 space-y-1 mt-1">

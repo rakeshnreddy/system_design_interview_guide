@@ -79,6 +79,12 @@ const CachepediaView = ({ appData }) => {
     setSelectedCache(appData.cachepedia[cacheKey]);
   };
 
+  // Function to generate a slug from a title string
+  const generateSlug = (title) => {
+    if (!title) return '';
+    return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+  };
+
   if (!appData) {
     return <p className="p-4 text-neutral-600 dark:text-neutral-400">Loading Cachepedia data...</p>;
   }
@@ -136,7 +142,10 @@ const CachepediaView = ({ appData }) => {
         </div>
 
         {selectedCache && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div
+            id={generateSlug(Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache))}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pt-4"
+          >
             <div className="space-y-4"> {/* Increased spacing */}
               <h2 className="text-3xl font-bold text-secondary dark:text-secondary-light">
                 {Object.keys(appData.cachepedia).find(key => appData.cachepedia[key] === selectedCache)}

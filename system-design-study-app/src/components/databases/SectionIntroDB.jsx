@@ -6,7 +6,8 @@ const SectionIntroDB = () => {
   return (
     // The Card component itself will be the main container for this section's content.
     // The id for scroll-spy is on the wrapper div in DatabasesPage.jsx
-    <Card padding="p-6 md:p-8" shadow="shadow-xl">
+    // Adding id for direct linking from "All Topics" menu
+    <Card id="db-cap-theorem" padding="p-6 md:p-8" shadow="shadow-xl">
       {/* Main section title using h1 as it's the primary heading for this loaded section */}
       <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6 text-center md:text-left">
         The First Question: CAP Theorem

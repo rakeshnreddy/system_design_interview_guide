@@ -66,11 +66,20 @@ const FrameworksModuleMQ = () => {
       </div>
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8"> {/* Adjusted gap for xl */}
-        {frameworks.map(fw => (
-          <Card key={fw.name} className="flex flex-col h-full hover:shadow-2xl transition-shadow duration-300" padding="p-0"> {/* Removed base padding, handled internally */}
-            <div className="p-5 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 rounded-t-lg">
-              <h2 className="text-2xl font-bold text-secondary dark:text-secondary-light">{fw.name}</h2>
-            </div>
+        {frameworks.map(fw => {
+          let cardId = '';
+          if (fw.name === "RabbitMQ") {
+            cardId = "mq-rabbitmq";
+          } else if (fw.name === "Apache Kafka") {
+            cardId = "mq-kafka";
+          }
+          // else if (fw.name.toLowerCase().includes("redis")) cardId = "mq-redis"; // Example if Redis was a specific topic
+
+          return (
+            <Card key={fw.name} id={cardId || undefined} className="flex flex-col h-full hover:shadow-2xl transition-shadow duration-300" padding="p-0"> {/* Removed base padding, handled internally */}
+              <div className="p-5 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 rounded-t-lg">
+                <h2 className="text-2xl font-bold text-secondary dark:text-secondary-light">{fw.name}</h2>
+              </div>
             <div className="p-5 flex-grow flex flex-col">
               <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4 flex-grow">{fw.description}</p>
 
