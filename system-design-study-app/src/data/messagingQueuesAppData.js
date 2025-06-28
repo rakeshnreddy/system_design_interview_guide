@@ -1,4 +1,7 @@
 export const messagingQueuesAppData = {
+  overview: `Asynchronous messaging is a communication method where senders (producers) and receivers (consumers) of messages do not need to interact at the same time. Producers place messages into a queue, and consumers retrieve them when ready, allowing components to be decoupled and operate independently. This decoupling is fundamental to building resilient and scalable distributed systems.
+
+Queues enhance distributed systems by improving reliability, throughput, and durability. Reliability is increased because messages persist in the queue even if consumers are temporarily unavailable, ensuring eventual processing. Throughput benefits as producers can offload tasks quickly without waiting for immediate processing, and multiple consumers can process messages in parallel. Durability is achieved by persisting messages, protecting against data loss in case of system failures, ensuring that critical information is not lost before it can be acted upon.`,
   title: "Messaging Queues",
   metrics: [
     {
@@ -89,9 +92,8 @@ export const messagingQueuesAppData = {
     },
     {
       id: "backpressure",
-      title: "Backpressure",
-      description: "A mechanism by which a consumer or broker can signal to a producer to slow down message production rate when the system is overloaded.",
-      importance: "Prevents system overload and message loss."
+      term: "Backpressure",
+      definition: "A mechanism to signal producers to slow down when consumers cannot keep up, preventing system overload."
     },
     {
       id: "message_acknowledgement",
@@ -99,110 +101,107 @@ export const messagingQueuesAppData = {
       description: "A signal sent by a consumer to the broker indicating that a message has been successfully processed (Ack) or failed processing (Nack). The broker uses this to decide whether to redeliver the message or remove it from the queue.",
     },
     {
-      id: "offset_kafka",
-      title: "Offset (Kafka specific)",
-      description: "A unique, sequential ID assigned to each message within a partition of a Kafka topic. Consumers track their progress by storing the offset of the last consumed message.",
+      id: "offset",
+      term: "Offset",
+      definition: "In Kafka, a sequential ID assigned to each message in a partition, used by consumers to track read position."
     },
     {
       id: "consumer_group_kafka",
       title: "Consumer Group (Kafka specific)",
       description: "One or more consumers that jointly consume messages from one or more Kafka topic partitions. Each partition is consumed by only one consumer within a group, allowing for parallel processing.",
+    },
+    {
+      id: "publishSubscribe",
+      term: "Publish–Subscribe",
+      definition: "A messaging pattern where messages are broadcast to multiple subscribers based on topics or channels."
+    }
+  ],
+  deliverySemantics: [
+    {
+      term: "At-Least-Once",
+      definition: "Guarantees that each message will be delivered one or more times. If an acknowledgment is not received, the message may be redelivered, potentially leading to duplicates.",
+      pros: "Ensures no message loss, suitable for critical tasks where processing a message multiple times is acceptable or can be handled (idempotency).",
+      cons: "Requires consumers to be idempotent to handle potential duplicate messages correctly.",
+      exampleScenario: "Order processing systems where duplicate orders can be detected and handled, ensuring every order is eventually processed."
+    },
+    {
+      term: "At-Most-Once",
+      definition: "Guarantees that each message will be delivered zero or one time. Messages might be lost if an acknowledgment fails or a system crashes before delivery confirmation.",
+      pros: "Simple to implement, avoids duplicate messages. Suitable for non-critical data where occasional message loss is tolerable.",
+      cons: "Potential for message loss; not suitable for critical data or tasks.",
+      exampleScenario: "Real-time telemetry updates where losing a single data point is acceptable and out-of-sequence or duplicate data is problematic."
+    },
+    {
+      term: "Exactly-Once",
+      definition: "Guarantees that each message is delivered and processed exactly one time. This is the most complex to achieve and often involves coordination between the broker and the consumer application (e.g., transactional processing, deduplication mechanisms).",
+      pros: "Ideal for critical applications where message loss and duplicate processing are unacceptable, like financial transactions.",
+      cons: "Often incurs higher latency and complexity in implementation. May require specialized broker features or careful application design.",
+      exampleScenario: "Financial payment processing where each transaction must be processed once and only once to avoid incorrect fund transfers."
     }
   ],
   brokerpedia: [
     {
       id: "rabbitmq",
-      title: "RabbitMQ",
-      type: "Traditional Message Broker (AMQP)",
-      architecture: "Implements AMQP (Advanced Message Queuing Protocol). Features exchanges (direct, topic, fanout, headers), queues, and bindings for powerful and flexible message routing. Supports clustering for high availability and persistence for message durability.",
+      name: "RabbitMQ",
+      description: "An open-source message broker that implements the Advanced Message Queuing Protocol (AMQP). Known for flexible routing, reliability features, and support for multiple messaging protocols and plugins.",
       pros: [
-        "Extremely flexible routing capabilities using exchanges and bindings, catering to complex messaging scenarios.",
-        "Supports multiple messaging protocols (AMQP 0-9-1, AMQP 1.0, MQTT, STOMP), making it versatile for diverse clients.",
-        "Mature platform with a comprehensive management UI, good client libraries, and strong community support.",
-        "Offers message acknowledgements, persistence, and publisher confirms for reliable message delivery.",
-        "Supports features like TTL, priority queues, and dead-letter exchanges for advanced message handling."
+        "Extremely flexible routing capabilities (topic, direct, fanout, headers exchanges).",
+        "Supports multiple messaging protocols (AMQP, MQTT, STOMP).",
+        "Mature platform with good management UI and client libraries.",
+        "Message acknowledgements, persistence, and publisher confirms for reliability.",
+        "Advanced features like TTL, priority queues, and dead-letter exchanges."
       ],
       cons: [
-        "Can have lower raw throughput compared to log-based systems like Kafka, especially for very high-volume event streams not requiring complex routing.",
-        "Clustering and achieving high availability can be complex to configure and manage correctly.",
-        "Message ordering is guaranteed per queue, but achieving strict global ordering across distributed consumers or complex routing can be challenging.",
-        "Performance can degrade if queues become very long or if there are many bindings/exchanges."
+        "Lower raw throughput compared to Kafka for simple streaming.",
+        "Clustering and high availability can be complex to manage.",
+        "Message ordering guaranteed per queue; global ordering is challenging.",
+        "Performance can degrade with very long queues or many bindings."
       ],
-      whenToUse: [
-        "Complex routing scenarios where messages need to be delivered to different queues based on content or attributes.",
-        "Traditional task queues for web applications (e.g., sending emails, processing images asynchronously).",
-        "RPC-style (request/reply) communication patterns over messaging.",
-        "Systems requiring strong transactional behavior with messages or integration with diverse protocols.",
-        "When fine-grained control over message delivery, acknowledgements, and dead-lettering is crucial."
-      ],
-      whenNotToUse: [
-        "Extremely high-throughput event streaming where message replayability and strict ordering within partitions are key (Kafka is often preferred).",
-        "Simple point-to-point or pub/sub scenarios where the overhead of AMQP's flexibility isn't needed.",
-        "If operational simplicity is paramount and a managed cloud service like SQS or Pub/Sub can meet the needs without RabbitMQ's advanced features."
-      ],
+      whenToUse: "Use for complex routing needs, traditional task queues (e.g., image processing, email sending), RPC-style messaging, or when AMQP features are essential.",
+      whenNotToUse: "Avoid for very high-throughput event streaming where replayability is key (Kafka is better), or if operational simplicity of a managed service (like SQS) is preferred for simpler queueing needs.",
       interviewTalkingPoints: [
-        "Highlight its AMQP protocol foundation and the flexibility of exchanges (topic, direct, fanout).",
-        "Mention its support for various protocols (MQTT, STOMP) beyond AMQP.",
-        "Discuss reliability features: persistence, acknowledgements, publisher confirms, DLQs.",
-        "Contrast its routing capabilities with Kafka's log-based approach.",
-        "Acknowledge potential throughput differences with Kafka and complexity in clustering."
+        "Explain AMQP and exchange types (direct, topic, fanout).",
+        "Discuss reliability features: persistence, acknowledgements, DLQs.",
+        "Contrast its routing flexibility with Kafka's partition model.",
+        "Mention support for various protocols beyond AMQP."
       ],
-      defendingYourDecision: "RabbitMQ was chosen for its robust and flexible routing capabilities, essential for our [specific application's complex workflow, e.g., order processing with multiple conditional steps]. Its support for AMQP, message acknowledgements, and dead-letter exchanges ensures reliable task distribution. While other systems might offer higher raw throughput, RabbitMQ's feature set and mature ecosystem provide the reliability and control needed for this service.",
+      defendingYourDecision: "We chose RabbitMQ for its robust routing capabilities needed for our order processing workflow, which requires messages to be conditionally routed to different services. Its support for acknowledgements and dead-letter queues ensures task reliability.",
       useCases: [
-        "Task queues for web applications.",
-        "RPC-style communication.",
-        "Complex routing scenarios.",
-        "Systems requiring strong transactional behavior with messages."
-      ],
-      deliveryGuarantees: "At-most-once, At-least-once. Exactly-once semantics can be achieved with careful application design (e.g., idempotent consumers, transactional operations)."
+        "Task distribution in web applications.",
+        "RPC (Request/Reply) patterns.",
+        "Event-driven systems with complex routing logic.",
+        "Integrating polyglot systems with its multi-protocol support."
+      ]
     },
     {
       id: "apache_kafka",
-      title: "Apache Kafka",
-      type: "Distributed Streaming Platform (Log-based)",
-      architecture: "A distributed, partitioned, replicated commit log service. Producers append messages (records) to topics (logs), which are divided into partitions. Consumers read from partitions at their own pace, tracking their position with offsets. Data is stored durably for a configurable retention period.",
+      name: "Apache Kafka",
+      description: "A distributed streaming platform built around a publish–subscribe log. Offers high-throughput, fault-tolerant messaging and event streaming.",
       pros: [
-        "Extremely high throughput and scalability, capable of handling trillions of messages per day.",
-        "Durable message storage with fault tolerance through replication of topic partitions across brokers.",
-        "Excellent for stream processing applications (often used with Kafka Streams, ksqlDB, Flink, or Spark Streaming).",
-        "Rich ecosystem, wide adoption, and strong community support. Good for building event-driven architectures.",
-        "Supports message replayability as consumers can re-read messages from a specific offset."
+        "Durable message storage with configurable retention",
+        "High throughput for both publishing and subscribing",
+        "Partitioned consumer model for parallelism",
+        "Exactly-once semantics with transactions"
       ],
       cons: [
-        "Can be more complex to set up, manage, and tune compared to simpler message queues (requires Zookeeper/KRaft, careful capacity planning).",
-        "Does not offer the same fine-grained, flexible routing options as AMQP brokers like RabbitMQ out-of-the-box. Routing is primarily topic and partition-based.",
-        "Features like per-message TTL or delayed messages are not natively supported (though workarounds exist).",
-        "Achieving true exactly-once semantics for end-to-end processing requires careful configuration of transactional producers/consumers or Kafka Streams.",
-        "Can have higher end-to-end latency for individual messages compared to some traditional MQs if not optimized for low-latency use cases."
+        "Operational complexity (Zookeeper/KRaft, cluster management)",
+        "Steep learning curve for tuning performance",
+        "Not ideal for very small deployments or simple task queues"
       ],
-      whenToUse: [
-        "High-throughput event streaming platforms (e.g., collecting telemetry, clickstream data, application logs).",
-        "Real-time analytics and stream processing pipelines.",
-        "Building event-driven architectures and for event sourcing.",
-        "Data integration pipelines (ETL) between various systems.",
-        "Commit logs for distributed systems."
-      ],
-      whenNotToUse: [
-        "Simple task queues where the overhead of Kafka's infrastructure (Zookeeper/KRaft, brokers) is excessive.",
-        "Applications requiring complex, fine-grained message routing based on headers or content without significant custom consumer logic.",
-        "When very low latency for individual, critical messages is paramount and simpler brokers might suffice.",
-        "If you need built-in support for RPC-style request/reply patterns (though possible, it's not a primary use case)."
-      ],
+      whenToUse: "Use when you need a durable, high-volume event streaming backbone (e.g., activity logs, metrics pipelines, real-time analytics).",
+      whenNotToUse: "Avoid for simple task queues with low throughput or when you need built-in complex routing or retry/backoff logic without custom implementation.",
       interviewTalkingPoints: [
-        "Emphasize its distributed commit log architecture and high throughput.",
-        "Discuss its use for streaming, event-driven architectures, and log aggregation.",
-        "Mention partitions for parallelism and replication for fault tolerance.",
-        "Contrast its message consumption model (pull-based, offsets) with traditional MQs.",
-        "Acknowledge operational complexity and Zookeeper/KRaft dependency."
+        "Explain Kafka’s append-only log and partition consumer groups.",
+        "Discuss how Kafka achieves durability and high throughput.",
+        "Mention exactly-once semantics with Kafka transactions."
       ],
-      defendingYourDecision: "Kafka was chosen for its ability to handle extremely high-throughput event streams from our [specific source, e.g., IoT devices] and its robust support for building a scalable, real-time analytics pipeline. The message replayability and durable storage are key for our data processing needs. While operationally more complex, its performance and ecosystem benefits for streaming make it the right choice.",
+      defendingYourDecision: "We chose Kafka for its ability to handle millions of events per second with fault tolerance and replay semantics, crucial for our real-time analytics platform.",
       useCases: [
-        "Real-time analytics and stream processing.",
-        "Log aggregation and event sourcing.",
-        "Data pipelines and ETL.",
-        "High-volume messaging systems."
-      ],
-      deliveryGuarantees: "At-most-once, At-least-once. Exactly-once semantics are possible with Kafka Streams API or by using transactional producers and idempotent consumers."
+        "Website clickstream analysis",
+        "Real-time analytics pipelines",
+        "Event sourcing in microservices architectures",
+        "Log aggregation from distributed systems"
+      ]
     },
     {
       id: "redis_streams",
@@ -252,50 +251,36 @@ export const messagingQueuesAppData = {
     },
     {
       id: "aws_sqs",
-      title: "AWS SQS (Simple Queue Service)",
-      type: "Managed Queue Service",
-      architecture: "Fully managed message queuing service by AWS. Offers Standard queues (at-least-once delivery, best-effort ordering) and FIFO queues (exactly-once processing, strict ordering within a message group).",
+      name: "Amazon SQS",
+      description: "A fully managed message queuing service offered by Amazon Web Services (AWS). Provides highly scalable and reliable queues for decoupling and scaling microservices, distributed systems, and serverless applications.",
       pros: [
-        "Fully managed by AWS, highly scalable, and durable with minimal operational overhead.",
-        "Simple to use with a straightforward API and pay-as-you-go pricing.",
-        "Excellent integration with other AWS services (Lambda, EC2, S3, SNS).",
-        "Supports dead-letter queues (DLQs) for error handling, delay queues for postponed message delivery, and message timers.",
-        "FIFO queues provide exactly-once processing and deduplication within a 5-minute interval."
+        "Fully managed, highly scalable, and durable with minimal operational overhead.",
+        "Simple API and pay-as-you-go pricing.",
+        "Excellent integration with other AWS services (Lambda, EC2, S3).",
+        "Supports Standard (at-least-once) and FIFO (exactly-once, ordered) queues.",
+        "Features like dead-letter queues (DLQs) and delay queues."
       ],
       cons: [
         "Strong vendor lock-in with AWS.",
-        "Standard queues might deliver messages out of order or, rarely, more than once (requires idempotent consumers).",
-        "FIFO queues have throughput limits (though high, e.g., 3000 messages/sec per API action by default in some regions, can be increased) compared to standard queues.",
-        "Maximum message size is 256KB (larger messages require workarounds like S3 integration).",
-        "Visibility timeout mechanism needs careful handling to prevent messages from being processed multiple times unintentionally or getting stuck."
+        "Standard queues can have out-of-order delivery and duplicates (requires idempotent consumers).",
+        "FIFO queues have throughput limits compared to Standard queues.",
+        "Maximum message size is 256KB (larger messages need S3 workarounds)."
       ],
-      whenToUse: [
-        "Decoupling microservices and serverless functions within the AWS ecosystem.",
-        "Asynchronous task processing (e.g., image processing, email sending, report generation).",
-        "Buffering requests to protect downstream services from load spikes.",
-        "Workflows requiring strictly ordered processing (using FIFO queues).",
-        "When a simple, reliable, and highly scalable managed queue is needed without managing infrastructure."
-      ],
-      whenNotToUse: [
-        "Applications outside the AWS ecosystem or requiring multi-cloud/on-premise deployment.",
-        "When you need features of a full message broker like complex routing (RabbitMQ) or stream replay (Kafka).",
-        "If message sizes frequently exceed 256KB without wanting to implement custom S3 integration logic.",
-        "Extremely high throughput scenarios where FIFO queue limits might be a concern and standard queue's best-effort ordering isn't acceptable."
-      ],
+      whenToUse: "Use for decoupling microservices and serverless functions in AWS, asynchronous task processing (e.g., image processing), or buffering requests to downstream services.",
+      whenNotToUse: "Avoid if outside the AWS ecosystem, or if you need features like complex client-side routing, message replay (Kafka-style), or very large messages without S3 integration.",
       interviewTalkingPoints: [
-        "Distinguish between Standard and FIFO queues (ordering, delivery guarantees, throughput).",
-        "Highlight its serverless nature, scalability, and ease of integration with other AWS services.",
-        "Mention features like DLQs, delay queues, and visibility timeout.",
-        "Acknowledge message size limits and potential for out-of-order/duplicate messages in Standard queues."
+        "Differentiate Standard vs. FIFO queues (ordering, delivery, throughput).",
+        "Highlight its serverless nature and AWS integration.",
+        "Mention DLQs, delay queues, and visibility timeout.",
+        "Acknowledge message size limits and Standard queue characteristics."
       ],
-      defendingYourDecision: "AWS SQS was chosen for its simplicity, reliability, and seamless integration with our existing AWS Lambda functions for asynchronous task processing. The managed nature of SQS significantly reduces our operational burden. For [specific task], [Standard/FIFO] queues provide the right balance of [throughput/ordering/delivery guarantee] we need.",
+      defendingYourDecision: "We chose Amazon SQS for its simplicity and seamless integration with AWS Lambda for our asynchronous task processing. The managed nature of SQS significantly reduces operational burden, and FIFO queues provide the exactly-once processing we need for financial transactions.",
       useCases: [
-        "Decoupling microservices.",
-        "Asynchronous task processing (e.g., image processing, email sending).",
-        "Buffering requests to protect downstream services.",
-        "Workflows requiring ordered processing (FIFO queues)."
-      ],
-      deliveryGuarantees: "Standard: At-least-once. FIFO: Exactly-once processing (within a message group ID, with deduplication)."
+        "Decoupling microservices in AWS.",
+        "Background job processing with Lambda.",
+        "Buffering requests to protect databases.",
+        "Reliable task offloading for web applications."
+      ]
     },
     {
       id: "google_cloud_pubsub",
@@ -489,6 +474,34 @@ export const messagingQueuesAppData = {
         "Retry mechanisms for failed tasks (DLQs)."
       ],
       solutionRationale: "RabbitMQ or AWS SQS are excellent for traditional task queues. Redis can be used for simpler, faster tasks."
+    },
+    {
+      key: "taskQueueProcessing",
+      title: "Task Queue Processing",
+      description:
+        "A web application offloads image resizing jobs to a queue. Workers consume jobs and process images asynchronously, improving user latency.",
+      problem:
+        "Synchronous image resizing blocks web requests and slows down user experience.",
+      solution:
+        "Use RabbitMQ with a work-queue pattern: web server publishes tasks; a pool of worker services subscribes and processes in parallel. Implement acknowledgments and retries for failures.",
+      challenges:
+        "Ensuring idempotent task handlers to avoid duplicate processing on redelivery.",
+      learnings:
+        "Decoupling producers/consumers greatly improved throughput; idempotency is critical for reliability."
+    },
+    {
+      key: "eventStreaming",
+      title: "Event Streaming for Analytics",
+      description:
+        "A retail platform streams customer click events to Kafka, which then feeds multiple downstream consumers for real-time dashboards and long-term data lakes.",
+      problem:
+        "Multiple analytics services competing for direct database reads create load spikes.",
+      solution:
+        "Centralize events in Kafka topics. Downstream services subscribe independently without impacting primary database.",
+      challenges:
+        "Schema evolution management as event formats change.",
+      learnings:
+        "Event logs provide replayability and decoupling of analytics from production systems."
     }
   ],
   flashcards: [
