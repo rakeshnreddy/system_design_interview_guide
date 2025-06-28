@@ -1,60 +1,25 @@
-import { createTheme, alpha } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
-// Fallback color values (from your CSS variables)
-const FALLBACK_ACCENT_PRIMARY = '#4FD1C5';
-// Light theme fallbacks
-const FALLBACK_BACKGROUND_LIGHT = '#ffffff';
-const FALLBACK_TEXT_PRIMARY_LIGHT = '#1a202c';
-const FALLBACK_TEXT_SECONDARY_LIGHT = '#4a5568';
-const FALLBACK_SURFACE_BG_LIGHT = '#f7fafc';
-const FALLBACK_BORDER_COLOR_LIGHT = '#e2e8f0';
-// Dark theme fallbacks
-const FALLBACK_BACKGROUND_DARK = '#1a202c';
-const FALLBACK_TEXT_PRIMARY_DARK = '#edf2f7';
-const FALLBACK_TEXT_SECONDARY_DARK = '#a0aec0';
-const FALLBACK_SURFACE_BG_DARK = '#2d3748';
-const FALLBACK_BORDER_COLOR_DARK = '#4a5568';
-
-const FALLBACK_SECONDARY_ACCENT_LIGHT = FALLBACK_TEXT_SECONDARY_LIGHT; // Example, adjust if needed
-const FALLBACK_SECONDARY_ACCENT_DARK = FALLBACK_TEXT_SECONDARY_DARK; // Example, adjust if needed
-
-
+// Common typography and component overrides can be defined here
 const commonThemeOptions = {
   typography: {
-    fontFamily: 'var(--font-body)',
-    h1: { fontFamily: 'var(--font-heading)' },
-    h2: { fontFamily: 'var(--font-heading)' },
-    h3: { fontFamily: 'var(--font-heading)' },
-    h4: { fontFamily: 'var(--font-heading)' },
-    h5: { fontFamily: 'var(--font-heading)' },
-    h6: { fontFamily: 'var(--font-heading)' },
+    fontFamily: 'Roboto, sans-serif', // from :root --font-body
+    // Example: Define h1-h6 styles if needed, or keep MUI defaults
+    // h1: { fontSize: '2.5rem', fontWeight: 700 },
   },
   shape: {
-    borderRadius: 4,
+    borderRadius: 8, // Slightly more rounded than default MUI
   },
-  spacing: (factor) => `${factor * 8}px`,
-
-  components: {
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'var(--surface-bg)',
-          color: 'var(--text-primary)',
-          boxShadow: '0 2px 4px -1px var(--border-color)',
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'var(--surface-bg)',
-          border: '1px solid var(--border-color)',
-          color: 'var(--text-primary)',
-        },
-      },
-    },
-    // MuiButton is overridden per-theme (light/dark) below to set correct contrastText
-  },
+  // You can override component defaults here too
+  // components: {
+  //   MuiButton: {
+  //     styleOverrides: {
+  //       root: {
+  //         textTransform: 'none', // Example: disable uppercase buttons
+  //       },
+  //     },
+  //   },
+  // },
 };
 
 // Light Theme
@@ -63,57 +28,33 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: FALLBACK_ACCENT_PRIMARY,
-      light: alpha(FALLBACK_ACCENT_PRIMARY, 0.8),
-      dark: alpha(FALLBACK_ACCENT_PRIMARY, 0.7), // Darken more for better contrast potential
-      contrastText: FALLBACK_TEXT_PRIMARY_LIGHT, // Text that contrasts with main
+      main: '#4FD1C5', // --accent-primary
+      light: '#67e8f9', // --color-primary-light (from @theme, a reasonable guess)
+      dark: '#0e7490', // --color-primary-dark (from @theme, a reasonable guess)
     },
     secondary: {
-      main: FALLBACK_SECONDARY_ACCENT_LIGHT,
-      contrastText: FALLBACK_TEXT_PRIMARY_LIGHT,
+      main: '#8b5cf6', // --color-secondary
+      light: '#ede9fe', // --color-secondary-light
+      dark: '#6d28d9', // --color-secondary-dark
+    },
+    error: {
+      main: '#ef4444', // --color-error
+    },
+    warning: {
+      main: '#f97316', // --color-warning
+    },
+    success: {
+      main: '#22c55e', // --color-success
     },
     background: {
-      default: FALLBACK_BACKGROUND_LIGHT, // Fallback for MUI internals
-      paper: FALLBACK_SURFACE_BG_LIGHT,   // Fallback for MUI internals
+      default: '#ffffff', // --background
+      paper: '#f7fafc',   // --surface-bg
     },
     text: {
-      primary: FALLBACK_TEXT_PRIMARY_LIGHT, // Fallback for MUI internals
-      secondary: FALLBACK_TEXT_SECONDARY_LIGHT, // Fallback for MUI internals
+      primary: '#1a202c',   // --text-primary
+      secondary: '#4a5568', // --text-secondary
     },
-    divider: FALLBACK_BORDER_COLOR_LIGHT, // Fallback for MUI internals
   },
-  components: {
-    ...commonThemeOptions.components,
-    MuiButton: {
-      styleOverrides: {
-        containedPrimary: {
-          backgroundColor: 'var(--accent-primary)',
-          color: FALLBACK_TEXT_PRIMARY_LIGHT, // Ensure this contrasts with --accent-primary
-          '&:hover': {
-            backgroundColor: 'var(--accent-primary)', // CSS var for runtime
-            filter: 'brightness(90%)',
-          },
-        },
-        textPrimary: {
-          color: 'var(--accent-primary)', // CSS var for runtime
-          '&:hover': {
-            backgroundColor: alpha(FALLBACK_ACCENT_PRIMARY, 0.08),
-          },
-        },
-      },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          color: 'var(--accent-primary)', // CSS var for runtime
-          '&:hover': {
-            color: 'var(--accent-primary)', // CSS var for runtime
-            filter: 'brightness(80%)',
-          }
-        }
-      }
-    }
-  }
 });
 
 // Dark Theme
@@ -122,64 +63,31 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: FALLBACK_ACCENT_PRIMARY,
-      light: alpha(FALLBACK_ACCENT_PRIMARY, 0.8), // May need adjustment for dark theme
-      dark: alpha(FALLBACK_ACCENT_PRIMARY, 0.7),  // May need adjustment for dark theme
-      contrastText: FALLBACK_TEXT_PRIMARY_DARK, // Text that contrasts with main on dark background
+      main: '#4FD1C5', // --accent-primary
+      light: '#67e8f9', // Lighter shade for dark mode
+      dark: '#06b6d4', // A darker shade
     },
     secondary: {
-      main: FALLBACK_SECONDARY_ACCENT_DARK,
-      contrastText: FALLBACK_TEXT_PRIMARY_DARK,
+      main: '#8b5cf6',
+      light: '#ede9fe',
+      dark: '#6d28d9',
+    },
+    error: {
+      main: '#ef4444',
+    },
+    warning: {
+      main: '#f97316',
+    },
+    success: {
+      main: '#22c55e',
     },
     background: {
-      default: FALLBACK_BACKGROUND_DARK, // Fallback for MUI internals
-      paper: FALLBACK_SURFACE_BG_DARK,   // Fallback for MUI internals
+      default: '#1a202c', // --background
+      paper: '#2d3748',   // --surface-bg
     },
     text: {
-      primary: FALLBACK_TEXT_PRIMARY_DARK,   // Fallback for MUI internals
-      secondary: FALLBACK_TEXT_SECONDARY_DARK, // Fallback for MUI internals
+      primary: '#edf2f7',   // --text-primary
+      secondary: '#a0aec0', // --text-secondary
     },
-    divider: FALLBACK_BORDER_COLOR_DARK, // Fallback for MUI internals
-  },
-  components: {
-    ...commonThemeOptions.components,
-    MuiButton: {
-      styleOverrides: {
-        containedPrimary: {
-          backgroundColor: 'var(--accent-primary)', // CSS var for runtime
-          color: FALLBACK_TEXT_PRIMARY_DARK, // Ensure this contrasts
-          '&:hover': {
-            backgroundColor: 'var(--accent-primary)', // CSS var for runtime
-            filter: 'brightness(110%)',
-          },
-        },
-        textPrimary: {
-          color: 'var(--accent-primary)', // CSS var for runtime
-          '&:hover': {
-            backgroundColor: alpha(FALLBACK_ACCENT_PRIMARY, 0.12),
-          },
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'var(--surface-bg)', // CSS var for runtime (dark)
-          color: 'var(--text-primary)',       // CSS var for runtime (dark)
-          boxShadow: '0 2px 4px -1px var(--border-color)', // CSS var for runtime (dark)
-        },
-      },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          color: 'var(--accent-primary)', // CSS var for runtime
-          '&:hover': {
-            color: 'var(--accent-primary)', // CSS var for runtime
-            filter: 'brightness(120%)',
-          }
-        }
-      }
-    }
   },
 });

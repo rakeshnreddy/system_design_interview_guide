@@ -80,6 +80,6 @@ describe('App', () => {
     // The new Layout has "Home", "Topics", "About", "Contact" in the header.
     // We also need to wait for HomePage to load before checking layout elements around it.
     expect(await screen.findByText('Mocked HomePage')).toBeInTheDocument(); // Ensure page content is loaded
-    expect(screen.getByRole('link', { name: /Topics/i })).toBeInTheDocument(); // Check for new header link
+    expect(screen.getByRole('button', { name: /Topics/i })).toBeInTheDocument(); // Check for new header link
   });
 });

@@ -1,5 +1,6 @@
 // src/data/cachesAppData.js
 export const cachesAppData = {
+  overview: "Caching is a foundational performance optimization technique used to store copies of data in a temporary, high-speed storage layer (a cache) that is closer to the requesting client than the origin data source. The primary goal is to speed up data retrieval and reduce the load on the underlying, slower data store. When a client requests data, the system first checks the cache. If the data is found (a 'cache hit'), it is returned immediately, resulting in low latency. If the data is not found (a 'cache miss'), the system must fetch it from the origin store, which is slower, and then typically stores it in the cache for future requests. This process significantly improves application responsiveness and scalability by minimizing repetitive and expensive operations, such as database queries, API calls, or complex computations. Effective caching strategies are crucial for building fast, scalable, and cost-efficient systems, but they also introduce challenges like data consistency (cache invalidation) and determining what data is valuable enough to cache.",
   metrics: [
     { id: "hit-rate", name: "Hit Rate / Hit Ratio", description: "Percentage of requests served from the cache vs. going to origin.", talk: "High hit rates are key to cache efficiency.",
       deepDive: { title: "Understanding Cache Hit Rate", questions: ["Q1?"], answers: ["A1."] } },
@@ -17,6 +18,7 @@ export const cachesAppData = {
     { term: "Time To Live (TTL)", definition: "A duration for which a cache entry is considered valid. After TTL expires, the entry may be removed or refreshed." },
     { term: "Stale Data", definition: "Cached data that no longer matches the origin data because the origin data has changed and the cache hasn't been updated." },
     { term: "Cache Invalidation", definition: "The process of removing or marking a cache entry as invalid, forcing a refresh from the origin on the next request." },
+    { term: "Thundering Herd", definition: "A burst of traffic to the origin caused when a cache entry expires and many clients fetch from the database at once. Mitigated by techniques like request coalescing." }
   ],
   cachepedia: {
     "Client-Side Caching": {
@@ -103,15 +105,7 @@ export const cachesAppData = {
       name: "Write-Through",
       description: "Data is written to the cache and the primary data store (origin) simultaneously, in a single transaction. The operation completes only after both writes are successful.",
       // visualLink: "diagram-for-write-through.svg"
-      diagram: `
-graph LR
-    Client --> CacheWrite[Cache Write];
-    CacheWrite -- Data --> OriginDBWrite[Origin DB Write];
-    OriginDBWrite -- Ack --> CacheWrite;
-    CacheWrite -- Ack --> Client;
-    ClientRead --> CacheRead[Cache Read];
-    CacheRead -- Data --> ClientRead;
-`,
+      diagram: "\ngraph LR\n    Client --> CacheWrite[Cache Write];\n    CacheWrite -- Data --> OriginDBWrite[Origin DB Write];\n    OriginDBWrite -- Ack --> CacheWrite;\n    CacheWrite -- Ack --> Client;\n    ClientRead --> CacheRead[Cache Read];\n    CacheRead -- Data --> ClientRead;\n",
       pros: [
         "High data consistency: Cache and origin are always synchronized after a write.",
         "Reads are always fast as data is readily available in the cache after being written.",
@@ -129,16 +123,7 @@ graph LR
       name: "Write-Around",
       description: "Data is written directly to the primary data store, bypassing the cache entirely. Only on a cache miss during a read operation is the data loaded into the cache.",
       // visualLink: "diagram-for-write-around.svg"
-      diagram: `
-graph LR
-    ClientWrite --> OriginDBWrite[Origin DB Write];
-    OriginDBWrite -- Ack --> ClientWrite;
-    ClientRead --> CacheRead[Cache Read Miss];
-    CacheRead -- Fetch --> OriginDBRead[Origin DB Read];
-    OriginDBRead -- Data --> CachePopulate[Cache Populate];
-    CachePopulate -- Data --> CacheRead;
-    CacheRead -- Data --> ClientRead;
-`,
+      diagram: "\ngraph LR\n    ClientWrite --> OriginDBWrite[Origin DB Write];\n    OriginDBWrite -- Ack --> ClientWrite;\n    ClientRead --> CacheRead[Cache Read Miss];\n    CacheRead -- Fetch --> OriginDBRead[Origin DB Read];\n    OriginDBRead -- Data --> CachePopulate[Cache Populate];\n    CachePopulate -- Data --> CacheRead;\n    CacheRead -- Data --> ClientRead;\n",
       pros: [
         "Lower write latency as writes go directly to the origin, avoiding the cache write step.",
         "Cache is not filled with data that is written but never (or rarely) read, improving cache efficiency for read-heavy data.",
@@ -155,7 +140,13 @@ graph LR
     {
       name: "Write-Back (Write-Behind)",
       description: "Data is written directly to the cache, and the cache acknowledges the write immediately. The cache then asynchronously writes the data to the primary data store after a delay or in batches.",
-      // visualLink: "diagram-for-write-back.svg"
+      // visualLink: "diagram-for-write-back.svg",
+      diagram: `
+graph LR
+    ClientWrite --> CacheWrite[Cache Write];
+    CacheWrite -- Ack --> ClientWrite;
+    CacheWrite -.-> OriginDBWrite[Origin DB Write];
+`,
       pros: [
         "Lowest write latency and highest write throughput as writes are only to fast cache memory.",
         "Reduces load on the primary data store by batching writes or writing during off-peak hours.",
@@ -176,28 +167,36 @@ graph LR
       description: "Discards the least recently accessed items first. Assumes that data accessed recently will be accessed again soon.",
       // interactiveLink: "eviction-policy-simulator-lru"
       pros: ["Generally good performance for many common access patterns.", "Relatively simple to understand."],
-      cons: ["Can perform poorly with scan-like access patterns where old data is accessed once and not needed again, evicting potentially useful items.", "Higher overhead to maintain access order compared to FIFO."]
+      cons: ["Can perform poorly with scan-like access patterns where old data is accessed once and not needed again, evicting potentially useful items.", "Higher overhead to maintain access order compared to FIFO."],
+      whenToUse: "Ideal for general-purpose caching where recently accessed items are likely to be needed again.",
+      whenNotToUse: "Problematic for workloads with large, sequential scans of data that won't be accessed again soon."
     },
     {
       name: "LFU (Least Frequently Used)",
       description: "Discards the least frequently accessed items first. Assumes that data accessed often will be accessed again.",
       // interactiveLink: "eviction-policy-simulator-lfu"
       pros: ["Can be more effective than LRU if some items are consistently popular over time, even if not recently accessed."],
-      cons: ["More complex to implement and higher overhead due to frequency tracking.", "Can suffer from 'cache pollution' if an item is accessed frequently in a short burst but then not needed again (new items struggle to get in)."]
+      cons: ["More complex to implement and higher overhead due to frequency tracking.", "Can suffer from 'cache pollution' if an item is accessed frequently in a short burst but then not needed again (new items struggle to get in)."],
+      whenToUse: "Best for caches where some items are significantly more popular than others over the long term.",
+      whenNotToUse: "May perform poorly if access patterns change frequently, as it adapts slowly to new popular items."
     },
     {
       name: "FIFO (First-In, First-Out)",
       description: "Discards items in the order they were added, regardless of how often or recently they were accessed.",
       // interactiveLink: "eviction-policy-simulator-fifo"
       pros: ["Simplest to implement with very low overhead.", "Fair to all cache entries."],
-      cons: ["Often performs poorly as it doesn't consider access patterns; frequently used items can be evicted if they were added early."]
+      cons: ["Often performs poorly as it doesn't consider access patterns; frequently used items can be evicted if they were added early."],
+      whenToUse: "Suitable for simple, queue-like caching needs where the age of the data is the primary concern.",
+      whenNotToUse: "Inefficient for most application caches as it often evicts popular items that were loaded long ago."
     },
     {
       name: "Random Replacement (RR)",
       description: "Randomly selects an item to discard when the cache is full.",
       // interactiveLink: "eviction-policy-simulator-rr"
       pros: ["Very simple to implement, low overhead.", "Avoids complex tracking logic."],
-      cons: ["Performance is unpredictable and generally not optimal as it might evict important data.", "No intelligence based on access patterns."]
+      cons: ["Performance is unpredictable and generally not optimal as it might evict important data.", "No intelligence based on access patterns."],
+      whenToUse: "Can be a simple baseline but is rarely the optimal choice in production systems.",
+      whenNotToUse: "Not recommended for performance-critical systems where cache hit ratio is important."
     },
   ],
   scenarios: {
@@ -206,6 +205,24 @@ graph LR
       description: "Users browse product pages frequently. Pricing and stock levels change, but less often than views.",
       solution: { strategy: "Multi-level cache: CDN for static assets (images, CSS), distributed cache for product details (read-through), local in-memory for hot products. TTLs for pricing/stock.", components: ["CDN", "Redis/Memcached", "Local In-Memory Cache"] }
     },
+    "News Feed Cache": {
+      title: "Social Media Feed Caching",
+      description: "Social networks like Twitter or Facebook need to deliver personalized timeline feeds to millions of users with low latency. The challenge is that feeds are constantly updated with new posts from connections.",
+      problem: "Real-time updates are difficult to reconcile with caching, as feeds must be fresh. A purely dynamic approach would overload databases.",
+      solution: {
+        strategy: "A per-user cache (e.g., in Redis) stores a precomputed list of post IDs for their timeline. When a user posts, their followers' cached timelines are invalidated or updated. For active users, the feed is kept hot; for inactive users, the cache can expire and be recomputed on next login.",
+        components: ["Redis", "Fan-out on write service", "Application Logic"]
+      }
+    },
+    "CDN Video Cache": {
+      title: "Video Streaming CDN Cache",
+      description: "Video platforms like YouTube or Netflix stream large video files to a global audience. Using a Content Delivery Network (CDN) is essential to cache video segments at regional edge servers, close to the viewers.",
+      problem: "Video files are large, and streaming requires consistent, high-bandwidth delivery. Latency or interruptions can ruin the user experience.",
+      solution: {
+        strategy: "The video is broken into small chunks (e.g., MPEG-DASH or HLS segments). When a user starts streaming, the video player requests these chunks from the nearest CDN edge server. The CDN caches these chunks from the origin server, so subsequent viewers in the same region get a fast, reliable stream directly from the cache.",
+        components: ["CDN", "Regional Cache", "Origin Server"]
+      }
+    }
   },
   flashcards: [
     { front: "What is Cache Coherency?", back: "Ensuring that any client reading from a cache has a consistent view of the data, especially in distributed systems." },

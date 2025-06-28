@@ -7,13 +7,45 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
+import NavMenu from './common/NavMenu';
 
-const navItems = [
-  { label: 'Home', path: '/' },
-  { label: 'Topics', path: '/topics' },
-  { label: 'About', path: '/about' },
-  { label: 'Contact', path: '/contact' },
-];
+const navItems = {
+  home: { label: 'Home', path: '/' },
+  glossary: { label: 'Glossary', path: '/glossary' },
+  topics: {
+    label: 'Topics',
+    items: [
+      { label: 'Caching', path: '/topics/caches' },
+      { label: 'Databases', path: '/topics/databases' },
+      { label: 'Load Balancing', path: '/topics/load-balancing' },
+      { label: 'Messaging Queues', path: '/topics/messaging-queues' },
+    ],
+  },
+  studyResources: {
+    label: 'Study Resources',
+    items: [
+      { label: 'Case Studies', path: '/case-studies' },
+      { label: 'Interview Frameworks', path: '/interview-frameworks' },
+      { label: 'Trade-off Analysis', path: '/trade-off-analysis' },
+    ],
+  },
+  featuredStudyGuides: {
+    label: 'Featured Study Guides',
+    items: [
+      { label: 'Caching', path: '/topics/caches' },
+      { label: 'Databases', path: '/topics/databases' },
+      { label: 'Load Balancing', path: '/topics/load-balancing' },
+      { label: 'Messaging Queues', path: '/topics/messaging-queues' },
+    ],
+  },
+  about: {
+    label: 'About',
+    items: [
+      { label: 'About', path: '/about' },
+      { label: 'Contact', path: '/contact' },
+    ],
+  },
+};
 
 const Layout = ({ children }) => {
   const muiMaterialTheme = useTheme();
@@ -33,15 +65,19 @@ const Layout = ({ children }) => {
           SysDesign
         </RouterLink>
       </Typography>
-      {navItems.map((item) => (
-        <Button
-          key={item.label}
-          component={RouterLink}
-          to={item.path}
-          sx={{ display: 'block', width: '100%', my: 1, color: 'text.primary' }}
-        >
-          {item.label}
-        </Button>
+      {Object.values(navItems).map((item) => (
+        item.items ? (
+          <NavMenu key={item.label} menuTitle={item.label} menuItems={item.items} />
+        ) : (
+          <Button
+            key={item.label}
+            component={RouterLink}
+            to={item.path}
+            sx={{ display: 'block', width: '100%', my: 1, color: 'text.primary' }}
+          >
+            {item.label}
+          </Button>
+        )
       ))}
       <IconButton sx={{ mt: 1 }} onClick={toggleTheme} color="inherit" aria-label="toggle theme">
         {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
@@ -100,16 +136,23 @@ const Layout = ({ children }) => {
               </>
             ) : (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    component={RouterLink}
-                    to={item.path}
-                    sx={{ color: 'primary.contrastText', mx: 1 }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+                <Button
+                  component={RouterLink}
+                  to={navItems.home.path}
+                  sx={{ color: 'primary.contrastText', mx: 1 }}
+                >
+                  {navItems.home.label}
+                </Button>
+                <NavMenu menuTitle={navItems.topics.label} menuItems={navItems.topics.items} />
+                <NavMenu menuTitle={navItems.studyResources.label} menuItems={navItems.studyResources.items} />
+                <Button
+                  component={RouterLink}
+                  to={navItems.glossary.path}
+                  sx={{ color: 'primary.contrastText', mx: 1 }}
+                >
+                  {navItems.glossary.label}
+                </Button>
+                <NavMenu menuTitle={navItems.about.label} menuItems={navItems.about.items} />
                 <IconButton
                   sx={{ ml: 1, color: 'primary.contrastText' }}
                   onClick={toggleTheme}

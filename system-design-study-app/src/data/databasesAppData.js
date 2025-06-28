@@ -103,6 +103,11 @@ export const databasesAppData = {
       id: "transaction",
       title: "Database Transaction",
       description: "A sequence of one or more database operations (reads, writes, updates) that are executed as a single, atomic unit of work.",
+    },
+    {
+      id: "newsql",
+      title: "NewSQL",
+      description: "A class of modern relational databases that aim to provide the scalability of NoSQL systems while maintaining ACID guarantees of SQL systems. Examples include Google Spanner, CockroachDB."
     }
   ],
   databasepedia: [
@@ -701,6 +706,20 @@ except Exception as e:
       `
     }
   ],
+  comparisonData: {
+    "sql-vs-nosql": {
+      title: "Relational vs NoSQL Trade-offs",
+      item1Name: "Relational DB (SQL)",
+      item2Name: "NoSQL Database",
+      features: [
+        { "featureName": "Schema Flexibility", "item1Detail": "Fixed schema, tables with predefined columns.", "item2Detail": "Schema-less or flexible schema (JSON, etc.), can evolve without downtime." },
+        { "featureName": "Scaling", "item1Detail": "Vertical scaling or sharding with significant effort (joins become complex). Typically requires master-slave replication for read scale.", "item2Detail": "Designed for horizontal scaling; partitioning built-in (e.g., auto-sharding in Cassandra/MongoDB clusters)." },
+        { "featureName": "Consistency", "item1Detail": "ACID transactions ensure strong consistency within a node (and across cluster with distributed transactions if supported).", "item2Detail": "Many NoSQL sacrifice strict ACID for availability; often eventual consistency (though some, like Mongo with replica sets, can do strong consistency reads)." },
+        { "featureName": "Use Cases", "item1Detail": "Great for structured data and relationships (financial systems, inventory, where transactions are key).", "item2Detail": "Great for large-scale, unstructured or rapidly evolving data (social media feeds, IoT data, analytics). Often specific to type: document DB for JSON, wide-column for time-series, etc." },
+        { "featureName": "Examples", "item1Detail": "MySQL, PostgreSQL, Oracle.", "item2Detail": "MongoDB (Document), Cassandra (Wide-Column), Redis (Key-Value), Neo4j (Graph)." }
+      ]
+    }
+  },
   decisionTree: {
     title: "Database Decision Tree (Placeholder)",
     description: "This section will feature an interactive decision tree to help guide the selection of a database based on various criteria like data model, consistency needs, scalability requirements, etc. (Coming Soon)"

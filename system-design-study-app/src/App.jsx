@@ -21,6 +21,11 @@ const ScalabilityConceptsPage = lazy(() => import('./components/scalabilityconce
 const InterviewApproachPage = lazy(() => import('./components/interviewapproach/InterviewApproachPage'));
 const TopicsListPage = lazy(() => import('./pages/TopicsListPage')); // Added new Topics List Page
 const TopicDetailPage = lazy(() => import('./pages/TopicDetailPage'));
+const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
+const CaseStudiesPage = lazy(() => import('./pages/CaseStudiesPage'));
+const CaseStudyDetailPage = lazy(() => import('./pages/CaseStudyDetailPage'));
+const InterviewFrameworksPage = lazy(() => import('./pages/InterviewFrameworksPage'));
+const TradeOffAnalysisPage = lazy(() => import('./pages/TradeOffAnalysisPage'));
 
 // Inner component to access both Auth and CustomTheme contexts
 function AppContent() {
@@ -46,6 +51,11 @@ function AppContent() {
               <Route path="/interview-approach" element={<InterviewApproachPage />} />
               <Route path="/topics" element={<TopicsListPage />} /> {/* Added route for Topics List Page */}
               <Route path="/topic/:topicId" element={<TopicDetailPage />} />
+              <Route path="/glossary" element={<GlossaryPage />} />
+              <Route path="/case-studies" element={<CaseStudiesPage />} />
+              <Route path="/case-studies/:caseStudyId" element={<CaseStudyDetailPage />} />
+              <Route path="/interview-frameworks" element={<InterviewFrameworksPage />} />
+              <Route path="/trade-off-analysis" element={<TradeOffAnalysisPage />} />
             </Routes>
           </Suspense>
         </Layout>

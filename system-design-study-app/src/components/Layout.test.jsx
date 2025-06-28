@@ -53,10 +53,9 @@ describe('Layout Component', () => {
     // This test might fail if window width is too small for RTL's default JSDOM environment
     // We might need to mock useMediaQuery
     // For now, assuming it renders desktop view or elements are present but hidden.
-    expect(screen.getByRole('link', { name: /Home/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Topics/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /About/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Contact/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Topics/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Study Resources/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /About/i })).toBeInTheDocument();
   });
 
   test('renders children content', () => {

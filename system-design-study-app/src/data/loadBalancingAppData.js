@@ -1,5 +1,6 @@
 export const loadBalancingAppData = {
   title: "Load Balancing",
+  overview: "Load balancing is the process of distributing network traffic evenly across a pool of backend servers. This ensures that no single server becomes overwhelmed, which could lead to slow performance or even service failure. By spreading the load, a load balancer improves application responsiveness, availability, and scalability. It acts as a traffic cop, sitting in front of your servers and routing client requests across all servers capable of fulfilling those requests in a manner that maximizes speed and capacity utilization and ensures that no one server is overworked, which could degrade performance. If a single server goes down, the load balancer redirects traffic to the remaining online servers, and when a new server is added to the server group, the load balancer automatically starts to send requests to it. In this way, a load balancer performs the following functions: distributes client requests or network load efficiently across multiple servers; ensures high availability and reliability by sending requests only to servers that are online; provides the flexibility to add or subtract servers as demand dictates.",
   metrics: [
     {
       id: "rps",
@@ -30,6 +31,11 @@ export const loadBalancingAppData = {
       id: "throughput_lb",
       name: "Throughput",
       description: "The overall data transfer rate (e.g., in Mbps or Gbps) handled by the load balancer."
+    },
+    {
+      id: "ttfb",
+      name: "Time to First Byte (TTFB)",
+      description: "The time it takes for a user to receive the first byte of the response after the browser sends a request. A high TTFB can indicate a slow load balancer or backend server."
     }
   ],
   terminology: [
@@ -76,6 +82,14 @@ export const loadBalancingAppData = {
     {
       term: "Failover",
       definition: "The process of automatically redirecting traffic away from a failed server or data center to a healthy one."
+    },
+    {
+      term: "Anycast",
+      definition: "A network addressing technique where the same IP is advertised from multiple nodes. In load balancing, allows traffic to automatically route to the nearest or healthiest node (used in global DNS load balancing)."
+    },
+    {
+      term: "Health Check",
+      definition: "A regular probe (HTTP ping, TCP connect, etc.) that a load balancer performs to determine if a backend server is alive and responsive. Unhealthy servers are taken out of rotation until they recover."
     }
   ],
   lbTypes: [
@@ -156,40 +170,15 @@ export const loadBalancingAppData = {
     },
     {
       id: "cloud_lb",
-      name: "Cloud Load Balancers",
-      description: "Managed load balancing services offered by cloud providers (e.g., AWS Application Load Balancer (ALB), Network Load Balancer (NLB), Classic Load Balancer (CLB); Azure Load Balancer, Application Gateway; Google Cloud Load Balancing).",
-      pros: [
-        "Easy to set up, configure, and manage through cloud provider consoles or APIs, significantly reducing operational overhead.",
-        "Pay-as-you-go pricing model, often more cost-effective for variable workloads than upfront hardware purchases.",
-        "Automatic scaling of capacity and built-in high availability managed by the cloud provider.",
-        "Seamless integration with other cloud services like auto-scaling groups, managed SSL/TLS certificates, WAF services, and global distribution capabilities."
-      ],
-      cons: [
-        "Strong vendor lock-in with the specific cloud provider's ecosystem.",
-        "Can sometimes be a 'black box' with less granular control over specific configurations or underlying infrastructure compared to self-managed software LBs.",
-        "Costs can escalate with very high traffic volumes or if not properly configured and monitored (e.g., data processing charges).",
-        "Feature sets, capabilities (L4 vs. L7), and performance characteristics vary significantly between different types of load balancers within a single cloud provider and across different providers."
-      ],
-      whenToUse: [
-        "Applications hosted entirely within a specific cloud provider's ecosystem.",
-        "Services requiring dynamic auto-scaling of both the load balancer and backend resources.",
-        "Teams preferring to offload infrastructure management and focus on application development.",
-        "Utilizing global load balancing features offered by cloud providers for multi-region deployments."
-      ],
-      whenNotToUse: [
-        "Multi-cloud or hybrid cloud strategies where a cloud-agnostic solution is preferred.",
-        "When extremely specific or custom load balancing logic is required that isn't supported by the managed service's feature set.",
-        "If there are strict regulations requiring on-premise hardware/software for all components.",
-        "Very tight budgets where self-hosting an open-source software LB on minimal hardware might be cheaper (though operational costs must be factored in)."
-      ],
-      interviewTalkingPoints: [
-        "Emphasize the benefits of managed services: ease of use, auto-scaling, HA, and integration with other cloud services.",
-        "Distinguish between different types (e.g., AWS ALB for L7, NLB for L4 performance).",
-        "Mention vendor lock-in and potential cost concerns as trade-offs.",
-        "Discuss their role in cloud-native architectures."
-      ],
-      defendingYourDecision: "We opted for [specific cloud LB, e.g., AWS Application Load Balancer] because our application is fully hosted on [cloud provider, e.g., AWS], and it provides seamless integration with our auto-scaling groups and certificate management. This significantly reduces our operational overhead and allows us to benefit from managed scalability and availability without managing the LB infrastructure ourselves.",
-      useCases: "Applications hosted in cloud environments, services requiring auto-scaling and managed HA, users who prefer to offload infrastructure management."
+      name: "Cloud Load Balancers (Managed LBaaS)",
+      description: "Managed load balancing services provided by cloud platforms (e.g., AWS ELB/ALB, Google Cloud Load Balancing). They abstract away infrastructure and offer auto-scaling, high availability out of the box.",
+      pros: ["No maintenance overhead, integrated with cloud auto-scaling, pay-as-you-go, easy to configure"],
+      cons: ["Less customizable than self-managed, dependent on provider, potential cost at high scale"],
+      whenToUse: "When you're in the cloud and want quick setup without managing hardware/VMs; when auto-scaling and global routing are needed with minimal effort.",
+      whenNotToUse: "On-prem deployments, or scenarios requiring custom load-balancing logic not supported by provider.",
+      interviewTalkingPoints: ["mention built-in high availability", "discuss how they simplify ops but can be a black box"],
+      defendingYourDecision: "We chose a managed cloud LB to leverage out-of-the-box scalability and health checks, avoiding reinventing the wheel for our web tier.",
+      useCases: "Startups or teams using AWS/GCP/Azure for quick traffic distribution, services that need global routing (Cloud CDN+LB combos)."
     }
   ],
   algorithms: [
@@ -325,6 +314,18 @@ export const loadBalancingAppData = {
         components: ["DNS Load Balancing", "Specialized GSLB services/appliances", "Anycast IP"],
         strategy: "Use DNS-based load balancing (e.g., AWS Route 53 Geolocation/Latency-based routing) or a dedicated GSLB solution. Route users to the nearest/healthiest data center. Health checks are critical for each data center. Failover strategies to redirect traffic if one region fails."
       }
+    },
+    {
+      id: "global_lb",
+      title: "Global Load Balancing for Multi-Region",
+      description: "Users are worldwide; we deploy load balancers in multiple regions. The case covers using DNS-based load balancing (anycast DNS) to route users to the closest region, and regional LBs for local distribution. Ensures low latency and failover across continents.",
+      problem: "Need to direct users to nearest data center and handle region failover.",
+      solution: {
+        strategy: "Use Anycast DNS for global traffic routing, and within each region use L7 load balancers with health-checks and auto-scaling. If a region fails, DNS shifts traffic to healthy regions (with possible degraded latency).",
+        components: ["Anycast DNS", "L7 Load Balancer", "Health Checks"]
+      },
+      challenges: "DNS TTL trade-off between responsiveness to failures vs DNS caching, stateful user sessions when switching regions.",
+      learnings: "Demonstrated importance of low TTL, and having backup capacity in each region to handle failover traffic."
     }
   ],
   flashcards: [
@@ -342,7 +343,7 @@ export const loadBalancingAppData = {
     },
     {
       front: "What is 'sticky sessions' or session affinity?",
-      back: "A mechanism ensuring requests from a specific client are consistently routed to the same backend server."
+      back: "A mechanism ensuring that requests from a specific client are consistently routed to the same backend server."
     },
     {
       front: "How does the 'Least Connections' algorithm work?",

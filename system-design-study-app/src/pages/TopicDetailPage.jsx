@@ -1,63 +1,97 @@
-import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Box, Typography, Container } from '@mui/material';
-import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
+import React, { useState, useEffect, lazy } from 'react';
+import { useParams } from 'react-router-dom';
 import { topicsData } from '../data/topicsData';
+import { cachesAppData } from '../data/cachesAppData';
+import { databasesAppData } from '../data/databasesAppData';
+import { messagingQueuesAppData } from '../data/messagingQueuesAppData';
+import { loadBalancingAppData } from '../data/loadBalancingAppData';
+import { apiDesignAppData } from '../data/apiDesignAppData';
+import { scalabilityConceptsAppData } from '../data/scalabilityConceptsAppData';
+import { interviewApproachAppData } from '../data/interviewApproachAppData';
+import TopicPageLayout from '../components/common/TopicPageLayout';
+import TopicSidebar from '../components/common/TopicSidebar';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { Typography } from '@mui/material';
+
+const dataMap = {
+  caching: cachesAppData,
+  databases: databasesAppData,
+  'messaging-queues': messagingQueuesAppData,
+  'load-balancing': loadBalancingAppData,
+  'api-design': apiDesignAppData,
+  'scalability-concepts': scalabilityConceptsAppData,
+  'interview-approach': interviewApproachAppData,
+};
+
+const viewMap = {
+  caching: lazy(() => import('../components/caches/FundamentalsView')),
+  databases: lazy(() => import('../components/databases/FundamentalsView')),
+  // Add other topic views here
+};
+
+const renderView = (currentView, appData) => {
+  const ViewComponent = viewMap[appData.id];
+  return ViewComponent ? <ViewComponent appData={appData} /> : null;
+};
 
 const TopicDetailPage = () => {
   const { topicId } = useParams();
-  const topic = topicsData.find(t => t.id === topicId);
+  const [topicData, setTopicData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!topic) return;
-    const originalTitle = document.title;
-    const pageTitle = `${topic.title} | System Design Guide`;
-    const pageDescription = topic.description;
+    const currentTopic = topicsData.find((t) => t.id === topicId);
+    if (currentTopic) {
+      const appData = dataMap[topicId];
+      if (appData) {
+        setTopicData({ ...currentTopic, ...appData });
+      } else {
+        setTopicData(currentTopic);
+      }
+    }
+    setLoading(false);
+  }, [topicId]);
 
-    document.title = pageTitle;
-    const metaTags = [
-      { name: 'description', content: pageDescription },
-      { name: 'og:title', content: pageTitle, isProperty: true },
-      { name: 'og:description', content: pageDescription, isProperty: true }
-    ];
-    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-    return () => {
-      document.title = originalTitle;
-      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
-    };
-  }, [topic]);
-
-  if (!topic) {
+  if (!topicData) {
     return (
-      <Container sx={{ py: 6 }}>
-        <Typography variant="h4" gutterBottom>
-          Topic Not Found
+      <div className="text-center py-12">
+        <Typography variant="h4" color="error">
+          404 - Topic Not Found
         </Typography>
-        <Typography paragraph>
-          We couldn't find the topic you're looking for.
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          The topic you are looking for does not exist.
         </Typography>
-        <Link to="/topics">Back to Topics</Link>
-      </Container>
+      </div>
     );
   }
 
+  const sidebarSections = [
+    { id: 'fundamentals', title: 'Fundamentals' },
+    { id: 'scenarios', title: 'Scenarios' },
+  ];
+
+  const SidebarComponentWithProps = (props) => (
+    <TopicSidebar
+      topicTitle={topicData.title}
+      sections={sidebarSections}
+      currentView={props.currentView}
+      setCurrentView={props.setCurrentView}
+    />
+  );
+
   return (
-    <Container sx={{ py: 6 }}>
-      <Typography variant="h3" gutterBottom>
-        {topic.title}
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom color="text.secondary">
-        Category: {topic.category}
-      </Typography>
-      <Typography paragraph>{topic.description}</Typography>
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="body1">{topic.content}</Typography>
-      </Box>
-      <Box sx={{ mt: 4 }}>
-        <Link to="/topics">Back to Topics</Link>
-      </Box>
-    </Container>
+    <TopicPageLayout
+      pageTitle={topicData.title}
+      SidebarComponent={SidebarComponentWithProps}
+      renderViewFunction={renderView}
+      initialView="fundamentals"
+      appData={topicData}
+      topicId={topicId}
+    />
   );
 };
 

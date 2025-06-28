@@ -50,7 +50,7 @@ describe('TopicPageLayout', () => {
     expect(screen.getAllByText('Sidebar Content').length).toBeGreaterThan(0);
     expect(screen.getByTestId('rendered-view')).toBeInTheDocument();
     expect(screen.getByText('Rendered View Content')).toBeInTheDocument();
-    expect(screen.getByText('Test Topic Page')).toBeInTheDocument(); // Checks AppBar title
+    expect(screen.getByLabelText('Test Topic Page sections sidebar')).toBeInTheDocument();
     expect(mockRenderViewFunction).toHaveBeenCalledWith('testView', mockAppData);
   });
 

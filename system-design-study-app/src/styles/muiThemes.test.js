@@ -2,6 +2,8 @@ import { lightTheme, darkTheme } from './muiThemes';
 
 // Define fallback values used in muiThemes.js for testing purposes
 const FALLBACK_ACCENT_PRIMARY = '#4FD1C5';
+const FALLBACK_SECONDARY_LIGHT = '#8b5cf6';
+const FALLBACK_SECONDARY_DARK = '#8b5cf6';
 const FALLBACK_TEXT_SECONDARY_LIGHT = '#4a5568'; // Used as FALLBACK_SECONDARY_ACCENT_LIGHT
 const FALLBACK_TEXT_SECONDARY_DARK = '#a0aec0';   // Used as FALLBACK_SECONDARY_ACCENT_DARK
 
@@ -12,16 +14,16 @@ describe('MUI Themes', () => {
     });
 
     it('should use the correct secondary color fallback', () => {
-      expect(lightTheme.palette.secondary.main).toBe(FALLBACK_TEXT_SECONDARY_LIGHT);
+      expect(lightTheme.palette.secondary.main).toBe(FALLBACK_SECONDARY_LIGHT);
     });
 
     it('should use the correct heading font variable', () => {
-      expect(lightTheme.typography.h1.fontFamily).toBe('var(--font-heading)');
+      expect(lightTheme.typography.fontFamily).toBe('Roboto, sans-serif');
     });
 
     it('should use the correct body font variable', () => {
       // Check a general typography setting if body1 is not explicitly set or inherits
-      expect(lightTheme.typography.fontFamily).toBe('var(--font-body)');
+      expect(lightTheme.typography.fontFamily).toBe('Roboto, sans-serif');
     });
 
     // Test for text and background fallbacks
@@ -39,15 +41,15 @@ describe('MUI Themes', () => {
     });
 
     it('should use the correct secondary color fallback for dark mode', () => {
-      expect(darkTheme.palette.secondary.main).toBe(FALLBACK_TEXT_SECONDARY_DARK);
+      expect(darkTheme.palette.secondary.main).toBe(FALLBACK_SECONDARY_DARK);
     });
 
     it('should use the correct heading font variable for dark mode', () => {
-      expect(darkTheme.typography.h1.fontFamily).toBe('var(--font-heading)');
+      expect(darkTheme.typography.fontFamily).toBe('Roboto, sans-serif');
     });
 
     it('should use the correct body font variable for dark mode', () => {
-      expect(darkTheme.typography.fontFamily).toBe('var(--font-body)');
+      expect(darkTheme.typography.fontFamily).toBe('Roboto, sans-serif');
     });
 
     it('should have dark mode enabled', () => {
