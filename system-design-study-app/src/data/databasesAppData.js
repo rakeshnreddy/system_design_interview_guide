@@ -756,5 +756,33 @@ except Exception as e:
       url: "https://azure.microsoft.com/en-us/products/category/databases/",
       description: "Overview of database offerings on Microsoft Azure."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    masterSlave: `
+    graph LR
+      Master[(Master DB)] -- replicate --> Slave1[(Slave DB)]
+      Master -- replicate --> Slave2[(Slave DB)]
+      ClientRead --> Slave1
+      ClientWrite --> Master
+  `,
+    masterMaster: `
+    graph LR
+      A[(Master A)] <--> B[(Master B)]
+      A -- write --> B
+      B -- write --> A
+      Clients-->A
+      Clients-->B
+  `,
+    consistentHashing: `
+    graph TB
+      subgraph Hash Ring
+        direction LR
+        N1(Node1) --- K1(Key1)
+        N2(Node2)
+        N3(Node3)
+        K1 -- clockwise --> N2
+      end
+      click N1 "https://docs.example.com/node1"
+  `
+  }
 };

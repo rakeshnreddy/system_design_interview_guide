@@ -546,5 +546,21 @@ APIs can be broadly categorized as synchronous or asynchronous. Synchronous APIs
       url: "https://owasp.org/www-project-api-security/",
       description: "Resources and best practices for API security from OWASP."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    restFlow: `
+    sequenceDiagram
+      participant Client
+      participant Server
+      Client->>Server: GET /users/123
+      Server-->>Client: 200 OK {userData}
+  `,
+    graphQLFlow: `
+    sequenceDiagram
+      participant Client
+      participant GraphQLServer
+      Client->>GraphQLServer: query { user(id:123){ name } }
+      GraphQLServer-->>Client: { "data":{ "user":{ "name":"Alice" } } }
+  `
+  }
 };

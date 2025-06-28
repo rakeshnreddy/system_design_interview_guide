@@ -684,5 +684,26 @@ run().catch(e => console.error('[example/kafkajs] e.message', e));
       url: "https://www.enterpriseintegrationpatterns.com/patterns/messaging/",
       description: "A catalog of patterns for enterprise application integration, many related to messaging."
     }
-  ]
+  ],
+  mermaidDiagrams: {
+    pointToPoint: `
+    sequenceDiagram
+      participant Producer
+      participant Queue
+      participant Consumer
+      Producer->>Queue: send(message)
+      Queue->>Consumer: deliver(message)
+      Consumer-->>Queue: ack
+  `,
+    pubSub: `
+    sequenceDiagram
+      participant Pub
+      participant Broker
+      participant Sub1
+      participant Sub2
+      Pub->>Broker: publish(topic,msg)
+      Broker->>Sub1: deliver(msg)
+      Broker->>Sub2: deliver(msg)
+  `
+  }
 };

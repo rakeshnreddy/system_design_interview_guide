@@ -1,8 +1,12 @@
 // src/components/databases/SectionReplicationDB.jsx
 import React from 'react';
 import Card from '../common/Card';
+import Mermaid from '../common/Mermaid'; // Import Mermaid
+import { databasesAppData } from '../../data/databasesAppData'; // Import appData
 
 const SectionReplicationDB = () => {
+  const { mermaidDiagrams } = databasesAppData; // Destructure mermaidDiagrams
+
   return (
     <Card padding="p-6 md:p-8" shadow="shadow-xl">
       <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6">
@@ -18,6 +22,11 @@ const SectionReplicationDB = () => {
           <p>
             Writes go to a single primary (leader/master) node. The primary then replicates changes to one or more secondary (follower/replica/slave) nodes. Reads can often be served by secondaries to reduce load on the primary.
           </p>
+          {mermaidDiagrams && mermaidDiagrams.masterSlave && (
+            <div className="my-4 flex justify-center">
+              <Mermaid chart={mermaidDiagrams.masterSlave} />
+            </div>
+          )}
           <ul className="list-disc pl-5 space-y-1 mt-2">
             <li><strong>Synchronous Replication:</strong> Primary waits for acknowledgment from at least one secondary before confirming the write. Ensures higher consistency but increases write latency.</li>
             <li><strong>Asynchronous Replication:</strong> Primary confirms write immediately and replicates to secondaries in the background. Lower write latency but potential for data loss on primary failure if changes haven't replicated.</li>
@@ -31,6 +40,11 @@ const SectionReplicationDB = () => {
           <p>
             Multiple nodes can accept writes. Changes are then replicated to other primary nodes and any secondary nodes.
           </p>
+          {mermaidDiagrams && mermaidDiagrams.masterMaster && (
+            <div className="my-4 flex justify-center">
+              <Mermaid chart={mermaidDiagrams.masterMaster} />
+            </div>
+          )}
           <p className="mt-2"><strong>Pros:</strong> Improved write availability (writes can occur even if some primaries fail), lower write latency for geographically distributed applications (write to local primary).</p>
           <p><strong>Cons:</strong> Significantly more complex to manage, especially conflict resolution when the same data is modified concurrently on different primaries. Requires careful design to avoid data divergence.</p>
         </div>
@@ -43,7 +57,7 @@ const SectionReplicationDB = () => {
           <p className="mt-2"><strong>Pros:</strong> Balances consistency, availability, and partition tolerance (often used in systems like Cassandra or Dynamo-style databases).</p>
           <p><strong>Cons:</strong> Can have higher latency for reads and writes due to coordination. Requires careful tuning of W, R, and N values.</p>
         </div>
-        {/* TODO: Add diagrams for primary-secondary vs. multi-primary replication */}
+        {/* Diagrams added above */}
       </div>
     </Card>
   );

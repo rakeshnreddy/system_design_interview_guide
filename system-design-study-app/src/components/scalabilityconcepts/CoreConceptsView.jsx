@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Mermaid from '../common/Mermaid'; // Import Mermaid
 
 function CoreConceptsView({ appData }) {
   if (!appData || !appData.coreConcepts) {
@@ -11,6 +12,11 @@ function CoreConceptsView({ appData }) {
       case 'cap_theorem_explained':
         return (
           <>
+            {appData.mermaidDiagrams && appData.mermaidDiagrams.capTriangle && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <Mermaid chart={appData.mermaidDiagrams.capTriangle} />
+              </Box>
+            )}
             <ListItemText primary="Explanation" secondary={concept.explanation} sx={{ whiteSpace: 'pre-line', mb: 1 }} />
             <ListItemText primary="Implications" secondary={concept.implications} sx={{ mb: 1 }} />
             <ListItemText primary="Choosing (CP vs AP)" secondary={concept.choosing} />
@@ -36,6 +42,11 @@ function CoreConceptsView({ appData }) {
       case 'stateless_vs_stateful':
         return (
           <>
+            {appData.mermaidDiagrams && appData.mermaidDiagrams.statelessStateful && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <Mermaid chart={appData.mermaidDiagrams.statelessStateful} />
+              </Box>
+            )}
             <Typography variant="subtitle1" gutterBottom>Stateless Architecture</Typography>
             <ListItemText secondary={concept.stateless.description} sx={{mb:1}}/>
             <ListItemText primary="Implications" secondary={concept.stateless.implications} sx={{mb:1}}/>
