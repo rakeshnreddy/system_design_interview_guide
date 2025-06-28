@@ -4,7 +4,6 @@ export const apiDesignAppData = {
 
 APIs can be broadly categorized as synchronous or asynchronous. Synchronous APIs require the client to send a request and wait for an immediate response from the server. This blocking nature is suitable for operations where the client needs a quick confirmation or data to proceed, like retrieving user details. In contrast, asynchronous APIs allow the client to send a request and continue processing without waiting for an immediate response; the server processes the request in the background and notifies the client upon completion, often via webhooks or message queues. The choice between synchronous and asynchronous design significantly impacts system responsiveness, resource utilization, and fault tolerance. For example, long-running tasks like video processing are better suited for asynchronous APIs to avoid tying up client resources, while quick data lookups benefit from synchronous interaction. Design choices here are crucial for user experience and system efficiency.`,
   metrics: [
-  metrics: [
     {
       id: "rps_api",
       name: "Requests Per Second (RPS)",
