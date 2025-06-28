@@ -8,38 +8,47 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
 import NavMenu from './common/NavMenu';
+import { topicsData } from '../data/topicsData'; // Import topicsData
+
+// Helper function to generate topic menu items
+const generateTopicMenuItems = () => {
+  return topicsData.map(topic => ({
+    label: topic.title,
+    path: `/topics/${topic.id}`, // Link to specific topic detail page
+  }));
+};
 
 const navItems = {
   home: { label: 'Home', path: '/' },
-  glossary: { label: 'Glossary', path: '/glossary' },
   topics: {
-    label: 'Topics',
+    label: 'All Topics', // Renamed for clarity
+    items: generateTopicMenuItems(),
+  },
+  featuredStudyGuides: {
+    label: 'Featured Study Guides',
     items: [
-      { label: 'Caching', path: '/topics/caches' },
-      { label: 'Databases', path: '/topics/databases' },
+      // These paths link to overview pages for each category.
+      // Actual linking to sections within these guides would require specific IDs on those pages.
+      { label: 'Caching', path: '/topics/caches' }, // Assuming this is the overview page for Caching study guide
+      { label: 'Databases', path: '/topics/databases' }, // Assuming this is the overview page for Databases study guide
       { label: 'Load Balancing', path: '/topics/load-balancing' },
       { label: 'Messaging Queues', path: '/topics/messaging-queues' },
+      // We can add more specific study guide links here if available
+      // For example, if API Design has a dedicated study guide page:
+      // { label: 'API Design', path: '/study-guides/api-design' },
     ],
   },
   studyResources: {
     label: 'Study Resources',
     items: [
+      { label: 'Glossary', path: '/glossary' },
       { label: 'Case Studies', path: '/case-studies' },
       { label: 'Interview Frameworks', path: '/interview-frameworks' },
       { label: 'Trade-off Analysis', path: '/trade-off-analysis' },
     ],
   },
-  featuredStudyGuides: {
-    label: 'Featured Study Guides',
-    items: [
-      { label: 'Caching', path: '/topics/caches' },
-      { label: 'Databases', path: '/topics/databases' },
-      { label: 'Load Balancing', path: '/topics/load-balancing' },
-      { label: 'Messaging Queues', path: '/topics/messaging-queues' },
-    ],
-  },
   about: {
-    label: 'About',
+    label: 'About Us', // Renamed for clarity
     items: [
       { label: 'About', path: '/about' },
       { label: 'Contact', path: '/contact' },
@@ -65,20 +74,42 @@ const Layout = ({ children }) => {
           SysDesign
         </RouterLink>
       </Typography>
-      {Object.values(navItems).map((item) => (
-        item.items ? (
-          <NavMenu key={item.label} menuTitle={item.label} menuItems={item.items} />
-        ) : (
-          <Button
-            key={item.label}
-            component={RouterLink}
-            to={item.path}
-            sx={{ display: 'block', width: '100%', my: 1, color: 'text.primary' }}
-          >
-            {item.label}
-          </Button>
-        )
-      ))}
+      {/* Mobile Drawer Navigation */}
+      {Object.values(navItems).map((item) => {
+        // For mobile, we render NavMenu differently or use Buttons for direct links
+        // The current NavMenu is designed for desktop hover; for mobile, it's better to list items directly or use a different approach.
+        // For simplicity here, we'll expand all items. A more sophisticated mobile NavMenu might be needed for true dropdowns.
+        if (item.items) {
+          return (
+            <Box key={item.label} sx={{ width: '100%', my: 1 }}>
+              <Typography variant="subtitle1" sx={{ color: 'text.secondary', textAlign: 'left', pl: 2, pt:1, pb:0.5 }}>{item.label}</Typography>
+              {item.items.map(subItem => (
+                <Button
+                  key={subItem.label}
+                  component={RouterLink}
+                  to={subItem.path}
+                  onClick={handleDrawerToggle} // Close drawer on item click
+                  sx={{ display: 'block', width: '100%', my: 0.5, color: 'text.primary', justifyContent: 'flex-start', pl: 3 }}
+                >
+                  {subItem.label}
+                </Button>
+              ))}
+            </Box>
+          );
+        } else {
+          return (
+            <Button
+              key={item.label}
+              component={RouterLink}
+              to={item.path}
+              onClick={handleDrawerToggle} // Close drawer on item click
+              sx={{ display: 'block', width: '100%', my: 1, color: 'text.primary' }}
+            >
+              {item.label}
+            </Button>
+          );
+        }
+      })}
       <IconButton sx={{ mt: 1 }} onClick={toggleTheme} color="inherit" aria-label="toggle theme">
         {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>
@@ -136,6 +167,7 @@ const Layout = ({ children }) => {
               </>
             ) : (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {/* Home Button always visible */}
                 <Button
                   component={RouterLink}
                   to={navItems.home.path}
@@ -143,16 +175,23 @@ const Layout = ({ children }) => {
                 >
                   {navItems.home.label}
                 </Button>
-                <NavMenu menuTitle={navItems.topics.label} menuItems={navItems.topics.items} />
-                <NavMenu menuTitle={navItems.studyResources.label} menuItems={navItems.studyResources.items} />
-                <Button
-                  component={RouterLink}
-                  to={navItems.glossary.path}
-                  sx={{ color: 'primary.contrastText', mx: 1 }}
-                >
-                  {navItems.glossary.label}
-                </Button>
-                <NavMenu menuTitle={navItems.about.label} menuItems={navItems.about.items} />
+                {/* Dynamically render NavMenu for items with sub-items, and Button for direct links */}
+                {Object.values(navItems).map((item) => {
+                  if (item.label === navItems.home.label) return null; // Skip home, it's already rendered
+
+                  return item.items ? (
+                    <NavMenu key={item.label} menuTitle={item.label} menuItems={item.items} />
+                  ) : (
+                    <Button
+                      key={item.label}
+                      component={RouterLink}
+                      to={item.path}
+                      sx={{ color: 'primary.contrastText', mx: 1 }}
+                    >
+                      {item.label}
+                    </Button>
+                  );
+                })}
                 <IconButton
                   sx={{ ml: 1, color: 'primary.contrastText' }}
                   onClick={toggleTheme}
