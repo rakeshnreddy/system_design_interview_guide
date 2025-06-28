@@ -73,7 +73,7 @@ function AlgorithmsView({ appData }) {
               </ListItem>
               <Divider component="li" sx={{mb:2}}/>
             </React.Fragment>
-            );
+            ); // Semicolon restored
           })}
         </List>
       </Paper>
