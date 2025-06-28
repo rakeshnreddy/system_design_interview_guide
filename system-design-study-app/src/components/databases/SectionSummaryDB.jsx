@@ -13,7 +13,7 @@ const summaryData = [
 
 const SectionSummaryDB = () => {
   return (
-    <Card padding="p-6 md:p-8" shadow="shadow-xl">
+    <Card id="db-sql-vs-nosql" padding="p-6 md:p-8" shadow="shadow-xl">
       <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6">
         Database Comparison Summary
       </h1>

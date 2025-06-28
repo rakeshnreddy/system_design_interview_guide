@@ -7,7 +7,7 @@ function SecurityView({ appData }) {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box id="api-security" sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
         API Security Considerations
       </Typography>

@@ -72,12 +72,22 @@ function CoreConceptsView({ appData }) {
 
       <Paper elevation={3} sx={{ p: 2 }}>
         <List>
-          {appData.coreConcepts.map((concept) => (
-            <React.Fragment key={concept.id}>
-              <ListItem sx={{ display: 'block', mb: 2 }}>
-                <Typography variant="h6" gutterBottom>{concept.name}</Typography>
-                {renderConcept(concept)}
-              </ListItem>
+          {appData.coreConcepts.map((concept) => {
+            let elementId = concept.id; // Default to appData's id
+            if (concept.id === 'horizontal_vs_vertical_scaling') {
+              elementId = 'scaling-horizontal'; // Match topicsData.js id
+            }
+            // Add other mappings here if needed, e.g.
+            // if (concept.id === 'cap_theorem_explained') {
+            //   elementId = 'cap-theorem';
+            // }
+
+            return (
+              <React.Fragment key={concept.id}>
+                <ListItem id={elementId} sx={{ display: 'block', mb: 2 }}>
+                  <Typography variant="h6" gutterBottom>{concept.name}</Typography>
+                  {renderConcept(concept)}
+                </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
             </React.Fragment>
           ))}

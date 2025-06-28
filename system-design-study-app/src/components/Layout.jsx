@@ -11,11 +11,37 @@ import NavMenu from './common/NavMenu';
 import { topicsData } from '../data/topicsData'; // Import topicsData
 
 // Helper function to generate topic menu items
+const categoryToPathMapping = {
+  'Caching': '/caches',
+  'Caching Patterns': '/caches', // Assuming Caching Patterns are part of the Caching guide
+  'Databases': '/databases',
+  'Messaging Queues': '/messaging-queues',
+  'API Design': '/api-design',
+  'Load Balancing': '/load-balancing',
+  'Scalability Concepts': '/scalability-concepts',
+  // Note: 'Interview Approach' topics might not fit this pattern if they don't have sub-topic IDs
+  // and are just sections of a single page. For now, we assume topicsData has relevant categories.
+};
+
 const generateTopicMenuItems = () => {
-  return topicsData.map(topic => ({
-    label: topic.title,
-    path: `/topics/${topic.id}`, // Link to specific topic detail page
-  }));
+  return topicsData.map(topic => {
+    const basePath = categoryToPathMapping[topic.category];
+    if (basePath) {
+      return {
+        label: topic.title,
+        path: `${basePath}#${topic.id}`, // Link to specific section within a study guide page
+      };
+    }
+    // Fallback or default path if category not mapped, though ideally all should be.
+    // This could link to a generic topic detail page if those still exist, or log an error.
+    // For now, let's assume all relevant categories are in the mapping.
+    // If not, these items might not render correctly or lead to broken links.
+    console.warn(`Topic category "${topic.category}" not found in categoryToPathMapping for topic "${topic.title}".`);
+    return {
+      label: topic.title,
+      path: `/topics/${topic.id}`, // Fallback, might be a dead link if /topics/:id routes are removed
+    };
+  }).filter(item => item.path.includes('#')); // Ensure only valid mapped items are included for now
 };
 
 const navItems = {
@@ -27,15 +53,13 @@ const navItems = {
   featuredStudyGuides: {
     label: 'Featured Study Guides',
     items: [
-      // These paths link to overview pages for each category.
-      // Actual linking to sections within these guides would require specific IDs on those pages.
-      { label: 'Caching', path: '/topics/caches' }, // Assuming this is the overview page for Caching study guide
-      { label: 'Databases', path: '/topics/databases' }, // Assuming this is the overview page for Databases study guide
-      { label: 'Load Balancing', path: '/topics/load-balancing' },
-      { label: 'Messaging Queues', path: '/topics/messaging-queues' },
-      // We can add more specific study guide links here if available
-      // For example, if API Design has a dedicated study guide page:
-      // { label: 'API Design', path: '/study-guides/api-design' },
+      { label: 'Caching Strategies', path: '/caches' },
+      { label: 'Database Selection', path: '/databases' },
+      { label: 'Messaging Queues', path: '/messaging-queues' },
+      { label: 'Load Balancing', path: '/load-balancing' },
+      { label: 'API Design', path: '/api-design' },
+      { label: 'Scalability Concepts', path: '/scalability-concepts' },
+      { label: 'Interview Approach', path: '/interview-approach' },
     ],
   },
   studyResources: {

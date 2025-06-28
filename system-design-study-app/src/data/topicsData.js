@@ -56,8 +56,8 @@ export const topicsData = [
     content: 'Secure APIs with TLS, token based authentication (OAuth, JWT), proper authorization checks, and input validation to prevent common vulnerabilities.'
   },
   {
-    id: 'lb-round-robin',
-    title: 'Load Balancing Algorithms',
+    id: 'round-robin', // Changed from lb-round-robin to match element ID in AlgorithmsView.jsx
+    title: 'Load Balancing Algorithms', // Title can remain broad
     category: 'Load Balancing',
     description: 'Strategies like round-robin and least-connections to distribute traffic.',
     content: 'Load balancers spread requests across servers using algorithms. Round-robin is simple, while least-connections sends traffic to the least busy server.'
