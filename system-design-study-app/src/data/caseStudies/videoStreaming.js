@@ -1,13 +1,13 @@
 export const videoStreaming = {
   id: "video-streaming-platform",
   title: "Video Streaming Platform (Netflix-like)",
-  description: "Design a video streaming service like Netflix or YouTube.",
+  description: "Design a {{Video Streaming}} service like Netflix or YouTube.",
   mermaidDiagram: `
   graph LR
-    Viewer --> CDN[(Edge)]
-    CDN -- miss --> Origin[(Origin Server)]
-    Origin --> Storage[(Blob Store)]
+    Viewer --> CDN_Edge([CDN](#/caches?section=CDN)[({{Edge Server}})])
+    CDN_Edge -- miss --> Origin[{{Origin Server}}]
+    Origin --> Storage[{{Blob Store}}]
     Storage --> Origin
-    CDN --> Viewer
+    CDN_Edge --> Viewer
 `
 };

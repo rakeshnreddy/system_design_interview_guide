@@ -76,8 +76,8 @@ describe('MermaidDiagram', () => {
     });
     render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     await waitFor(() => {
-      // The test now expects the async error message, which is what's observed in the DOM.
-      expect(screen.getByText(/Error rendering diagram \(async\): Test render error. Check console./)).toBeInTheDocument();
+      // The test expects the error message rendered by the component.
+      expect(screen.getByText(/Error rendering diagram: Test render error. Check console./)).toBeInTheDocument();
     });
   });
 

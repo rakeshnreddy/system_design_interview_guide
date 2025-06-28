@@ -72,7 +72,7 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
             console.log(`MermaidDiagram: Deferred rendering diagram for ID: ${validDiagramId}`);
             // Using a promise wrapper to better handle errors from the render callback itself
             new Promise((resolve, reject) => {
-                mermaidInstanceForRender.render(validDiagramId + "-svg-temp", diagramDefinition, (svgCode, bindFunctions) => {
+                mermaidInstance.render(validDiagramId + "-svg-temp", diagramDefinition, (svgCode, bindFunctions) => {
                     if (!containerRef.current) { // Check ref again inside async callback
                         console.warn("MermaidDiagram: Container ref became null during mermaid.render callback for ID:", validDiagramId);
                         reject(new Error("Container ref became null during mermaid.render callback."));

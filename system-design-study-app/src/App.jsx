@@ -19,7 +19,7 @@ const LoadBalancingPage = lazy(() => import('./components/loadbalancing/LoadBala
 const ApiDesignPage = lazy(() => import('./components/apidesign/ApiDesignPage'));
 const ScalabilityConceptsPage = lazy(() => import('./components/scalabilityconcepts/ScalabilityConceptsPage'));
 const InterviewApproachPage = lazy(() => import('./components/interviewapproach/InterviewApproachPage'));
-const TopicsListPage = lazy(() => import('./pages/TopicsListPage')); // Added new Topics List Page
+const AllTopicsPage = lazy(() => import('./pages/AllTopicsPage.jsx')); // Renamed from TopicsListPage
 const TopicDetailPage = lazy(() => import('./pages/TopicDetailPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const CaseStudiesPage = lazy(() => import('./pages/CaseStudiesPage'));
@@ -49,7 +49,7 @@ function AppContent() {
               <Route path="/api-design" element={<ApiDesignPage />} />
               <Route path="/scalability-concepts" element={<ScalabilityConceptsPage />} />
               <Route path="/interview-approach" element={<InterviewApproachPage />} />
-              <Route path="/topics" element={<TopicsListPage />} /> {/* Added route for Topics List Page */}
+              <Route path="/topics" element={<AllTopicsPage />} /> {/* Use AllTopicsPage */}
               <Route path="/topic/:topicId" element={<TopicDetailPage />} />
               <Route path="/glossary" element={<GlossaryPage />} />
               <Route path="/case-studies" element={<CaseStudiesPage />} />
