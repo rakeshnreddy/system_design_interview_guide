@@ -5,35 +5,16 @@ import Card from '../common/Card';
 import Button from '../common/Button';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
-import { glossaryData } from '../../../data/glossaryData';
+import { glossaryData } from '../../data/glossaryData.js';
 import { Typography } from '@mui/material'; // For fallback
+import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
+// Note: parseTextForGlossaryLinks and getDefinitionSnippet are used by the local replaceTermsWithHtmlLinks,
+// so their direct imports might still be needed if that function isn't also refactored or if RenderTextWithLinks
+// doesn't cover all its use cases (especially for dangerouslySetInnerHTML).
+// For now, assuming replaceTermsWithHtmlLinks will keep its necessary imports or be refactored separately.
+// The primary goal here is to replace the React component RenderProcessedText.
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../utils/textProcessing.js'; // Keep for replaceTermsWithHtmlLinks
 
-// Helper component to render processed text (strings and links)
-const RenderProcessedText = ({ textParts, component = "span" }) => {
-  if (typeof textParts === 'string') {
-    return React.createElement(component, null, textParts);
-  }
-  if (!Array.isArray(textParts)) {
-    return null;
-  }
-  const elements = textParts.map((part, index) => {
-    if (part.type === 'link') {
-      return (
-        <RouterLink
-          key={`${part.displayText}-${index}`}
-          to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
-          className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
-          title={getDefinitionSnippet(part.term.definition)}
-        >
-          {part.displayText}
-        </RouterLink>
-      );
-    }
-    return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
-  });
-  return React.createElement(component, null, ...elements);
-};
 
 // Function to replace {{Term}} with HTML links for dangerouslySetInnerHTML
 const replaceTermsWithHtmlLinks = (htmlString, termsData) => {
@@ -136,12 +117,12 @@ const SectionSqlDB = () => {
     <Card padding="p-6 md:p-8" shadow="shadow-xl">
       <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-2">Relational Databases (SQL)</h1>
       <p className="text-lg text-neutral-500 dark:text-neutral-400 mb-6 leading-relaxed">
-        <RenderProcessedText textParts={parseTextForGlossaryLinks("The bedrock of many applications, offering structure, {{Consistency}}, and powerful querying capabilities.", glossaryData)} />
+        <RenderTextWithLinks text={"The bedrock of many applications, offering structure, {{Consistency}}, and powerful querying capabilities."} glossaryData={glossaryData} />
       </p>
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <p>
-          <RenderProcessedText textParts={parseTextForGlossaryLinks(textContent.intro, glossaryData)} />
+          <RenderTextWithLinks text={textContent.intro} glossaryData={glossaryData} />
         </p>
 
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mt-8 mb-4">Key Characteristics:</h2>
@@ -154,12 +135,12 @@ const SectionSqlDB = () => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mt-8 mb-4">Common Use Cases:</h2>
         <ul>
           {textContent.useCases.map((item, index) => (
-             <li key={index}><RenderProcessedText textParts={parseTextForGlossaryLinks(item, glossaryData)} /></li>
+             <li key={index}><RenderTextWithLinks text={item} glossaryData={glossaryData} /></li>
           ))}
         </ul>
 
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mt-8 mb-4">Popular Examples:</h2>
-        <p><RenderProcessedText textParts={parseTextForGlossaryLinks(textContent.examples, glossaryData)} /></p>
+        <p><RenderTextWithLinks text={textContent.examples} glossaryData={glossaryData} /></p>
 
         <h3 className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200 mt-8 mb-3">Common Indexing Strategies:</h3>
         <ul className="list-disc pl-5 space-y-1">

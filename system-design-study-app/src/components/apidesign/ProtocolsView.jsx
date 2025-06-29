@@ -1,9 +1,9 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import MermaidDiagram from '../common/MermaidDiagram'; // Import MermaidDiagram
+import MermaidDiagram from '../common/MermaidDiagram.jsx'; // Import MermaidDiagram
 import { Link as RouterLink } from 'react-router-dom';
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
-import { glossaryData } from '../../../data/glossaryData';
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../utils/textProcessing.js';
+import { glossaryData } from '../../data/glossaryData.js';
 
 // Helper component to render processed text (strings and links)
 const RenderProcessedText = ({ textParts }) => {

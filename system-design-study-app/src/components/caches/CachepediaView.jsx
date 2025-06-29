@@ -12,8 +12,8 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing'; // Adjusted path
-import { glossaryData } from '../../../data/glossaryData'; // Adjusted path
+import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../utils/textProcessing.js'; // Corrected path
+import { glossaryData } from '../../data/glossaryData.js'; // Corrected path
 
 // Helper component to render processed text (strings and links)
 const RenderProcessedText = ({ textParts }) => {
