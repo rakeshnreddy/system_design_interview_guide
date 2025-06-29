@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // Import useLocation
-import { glossaryData } from '../../data/glossaryData';
+import { glossaryData } from '../data/glossaryData.js';
 import GlossaryTermDetail from '../../components/glossary/GlossaryTermDetail';
 import Modal from '../../components/common/Modal';
 import { setMetaTag, removeMetaTag } from '../../utils/metaUtils';
