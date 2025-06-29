@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '../test-utils';
 import '@testing-library/jest-dom';
-import { BrowserRouter as Router } from 'react-router-dom'; // Needed for useLocation
+
 import GlossaryPage from './GlossaryPage';
 
 // Mock glossaryData. Using vi.mock to ensure it's hoisted.
@@ -37,29 +37,17 @@ describe('GlossaryPage', () => {
   });
 
   test('renders the main title "Glossary"', () => {
-    render(
-      <Router>
-        <GlossaryPage />
-      </Router>
-    );
+    render(<GlossaryPage />);;
     expect(screen.getByRole('heading', { name: /Glossary/i, level: 1 })).toBeInTheDocument();
   });
 
   test('renders search input', () => {
-    render(
-      <Router>
-        <GlossaryPage />
-      </Router>
-    );
+    render(<GlossaryPage />);;
     expect(screen.getByPlaceholderText('Search terms...')).toBeInTheDocument();
   });
 
   test('renders terms from mocked glossaryData', () => {
-    render(
-      <Router>
-        <GlossaryPage />
-      </Router>
-    );
+    render(<GlossaryPage />);;
     expect(screen.getByRole('heading', { name: 'A', level: 2 })).toBeInTheDocument();
     expect(screen.getByText('API')).toBeInTheDocument();
 
@@ -68,11 +56,7 @@ describe('GlossaryPage', () => {
   });
 
   test('displays "No terms match" message for an unmatchable search', () => {
-    render(
-      <Router>
-        <GlossaryPage />
-      </Router>
-    );
+    render(<GlossaryPage />);;
     const searchInput = screen.getByPlaceholderText('Search terms...');
     fireEvent.change(searchInput, { target: { value: 'NonExistentTerm123' } });
     expect(screen.getByText('No terms match your search for "NonExistentTerm123".')).toBeInTheDocument();

@@ -1,9 +1,5 @@
 import React, { useState, Suspense, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Box, Drawer, AppBar, Toolbar, IconButton, Typography, CircularProgress, Fab, CssBaseline } from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import MenuIcon from '@mui/icons-material/Menu';
-import HomeIcon from '@mui/icons-material/Home';
+import { Box, Drawer, Fab, CssBaseline } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import AiScenarioModal from './AiScenarioModal';
 

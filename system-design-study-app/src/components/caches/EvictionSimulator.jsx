@@ -70,11 +70,12 @@ const EvictionSimulator = () => {
         if (cache.length >= capacity) {
           // Eviction needed
           switch (policy) {
-            case 'LRU':
+            case 'LRU': {
               evictedItem = accessOrder.shift(); // LRU item is at the beginning of accessOrder
               cache = cache.filter(i => i !== evictedItem);
               break;
-            case 'LFU':
+            }
+            case 'LFU': {
               let minFreq = Infinity;
               let candidates = [];
               for (const cacheItem of cache) {
@@ -104,11 +105,13 @@ const EvictionSimulator = () => {
               delete frequencyMap[evictedItem]; // Remove from frequency map
               accessOrder = accessOrder.filter(i => i !== evictedItem); // Remove from access order
               break;
-            case 'FIFO':
+            }
+            case 'FIFO': {
               evictedItem = insertionOrder.shift(); // FIFO item is at the beginning of insertionOrder
               cache = cache.filter(i => i !== evictedItem);
               break;
-            case 'Random':
+            }
+            case 'Random': {
               const randomIndex = Math.floor(Math.random() * cache.length);
               evictedItem = cache[randomIndex];
               cache = cache.filter(i => i !== evictedItem);
@@ -117,11 +120,13 @@ const EvictionSimulator = () => {
               if (frequencyMap[evictedItem]) delete frequencyMap[evictedItem];
               insertionOrder = insertionOrder.filter(i => i !== evictedItem);
               break;
-            default:
+            }
+            default: {
               console.error("Unknown policy:", policy);
               evictedItem = cache[0]; // Fallback, should not happen
               cache.shift();
               break;
+            }
           }
           message = `Access ${item}: MISS. Cache full. Evicted ${evictedItem}. Added ${item}.`;
         } else {

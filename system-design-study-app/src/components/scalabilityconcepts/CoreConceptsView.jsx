@@ -1,4 +1,5 @@
 import React from 'react';
+import MermaidDiagram from '../common/MermaidDiagram';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 import Mermaid from '../common/Mermaid'; // Import Mermaid
 

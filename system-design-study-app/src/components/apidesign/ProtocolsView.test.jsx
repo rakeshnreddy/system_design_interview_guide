@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../test-utils';
 import '@testing-library/jest-dom';
 import ProtocolsView from './ProtocolsView';
 
@@ -49,7 +49,7 @@ describe('ProtocolsView', () => {
   test('renders all protocols from appData', () => {
     render(<ProtocolsView appData={mockAppData} />);
     expect(screen.getByText('REST (Representational State Transfer)')).toBeInTheDocument();
-    expect(screen.getByText('GraphQL')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'GraphQL' })).toBeInTheDocument();
   });
 
   test('renders structure, pros, cons, and use cases for each protocol', () => {

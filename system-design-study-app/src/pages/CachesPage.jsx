@@ -1,6 +1,5 @@
 // src/pages/CachesPage.jsx
-import React, { Suspense, lazy, useEffect } from 'react';
-import { CircularProgress } from '@mui/material';
+import React, { lazy, useEffect } from 'react';
 import TopicPageLayout from '../components/common/TopicPageLayout';
 import TopicSidebar from '../components/common/TopicSidebar'; // Import the new TopicSidebar
 import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
