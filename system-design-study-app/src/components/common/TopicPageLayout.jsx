@@ -1,5 +1,6 @@
 import React, { useState, Suspense, useEffect } from 'react';
 import { Box, Drawer, Fab, CssBaseline } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import AiScenarioModal from './AiScenarioModal';
 

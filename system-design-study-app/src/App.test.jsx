@@ -16,6 +16,13 @@ vi.mock('./components/loadbalancing/LoadBalancingPage', () => ({ default: () => 
 vi.mock('./components/apidesign/ApiDesignPage', () => ({ default: () => <div>Mocked ApiDesignPage</div> }));
 vi.mock('./components/scalabilityconcepts/ScalabilityConceptsPage', () => ({ default: () => <div>Mocked ScalabilityConceptsPage</div> }));
 vi.mock('./components/interviewapproach/InterviewApproachPage', () => ({ default: () => <div>Mocked InterviewApproachPage</div> }));
+vi.mock('./pages/AllTopicsPage.jsx', () => ({ default: () => <div>Mocked AllTopicsPage</div> }));
+vi.mock('./pages/TopicDetailPage', () => ({ default: () => <div>Mocked TopicDetailPage</div> }));
+vi.mock('./pages/GlossaryPage', () => ({ default: () => <div>Mocked GlossaryPage</div> }));
+vi.mock('./pages/CaseStudiesPage', () => ({ default: () => <div>Mocked CaseStudiesPage</div> }));
+vi.mock('./pages/CaseStudyDetailPage', () => ({ default: () => <div>Mocked CaseStudyDetailPage</div> }));
+vi.mock('./pages/InterviewFrameworksPage', () => ({ default: () => <div>Mocked InterviewFrameworksPage</div> }));
+vi.mock('./pages/TradeOffAnalysisPage', () => ({ default: () => <div>Mocked TradeOffAnalysisPage</div> }));
 
 
 describe('App', () => {
@@ -81,5 +88,47 @@ describe('App', () => {
     // We also need to wait for HomePage to load before checking layout elements around it.
     expect(await screen.findByText('Mocked HomePage')).toBeInTheDocument(); // Ensure page content is loaded
     expect(screen.getByRole('button', { name: /Topics/i })).toBeInTheDocument(); // Check for new header link
+  });
+
+  it('renders the loading spinner and then the AllTopicsPage when navigated', async () => {
+    renderAppWithRoute('/topics');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked AllTopicsPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the TopicDetailPage when navigated', async () => {
+    renderAppWithRoute('/topic/sample');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked TopicDetailPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the GlossaryPage when navigated', async () => {
+    renderAppWithRoute('/glossary');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked GlossaryPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the CaseStudiesPage when navigated', async () => {
+    renderAppWithRoute('/case-studies');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked CaseStudiesPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the CaseStudyDetailPage when navigated', async () => {
+    renderAppWithRoute('/case-studies/sample');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked CaseStudyDetailPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the InterviewFrameworksPage when navigated', async () => {
+    renderAppWithRoute('/interview-frameworks');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked InterviewFrameworksPage')).toBeInTheDocument();
+  });
+
+  it('renders the loading spinner and then the TradeOffAnalysisPage when navigated', async () => {
+    renderAppWithRoute('/trade-off-analysis');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(await screen.findByText('Mocked TradeOffAnalysisPage')).toBeInTheDocument();
   });
 });
