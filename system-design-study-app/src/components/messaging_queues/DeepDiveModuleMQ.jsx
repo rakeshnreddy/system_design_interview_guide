@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from '../common/Card'; // Using global Card component
-import Mermaid from '../common/Mermaid'; // Import Mermaid
+import MermaidDiagram from '../common/MermaidDiagram.jsx'; // Corrected Import Mermaid
 import { messagingQueuesAppData } from '../../data/messagingQueuesAppData'; // Import appData
 // import HighlightMQ from './common/HighlightMQ'; // If specific highlighting is needed
 // import CodeBlockMQ from './common/CodeBlockMQ'; // If specific code blocks are needed
@@ -39,7 +39,7 @@ const DeepDiveModuleMQ = () => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Point-to-Point Queue</h2>
         {mermaidDiagrams && mermaidDiagrams.pointToPoint && (
           <div className="my-4 flex justify-center">
-            <Mermaid chart={mermaidDiagrams.pointToPoint} />
+            <MermaidDiagram chart={mermaidDiagrams.pointToPoint} />
           </div>
         )}
         <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
@@ -53,7 +53,7 @@ const DeepDiveModuleMQ = () => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Publish-Subscribe Pattern</h2>
         {mermaidDiagrams && mermaidDiagrams.pubSub && (
           <div className="my-4 flex justify-center">
-            <Mermaid chart={mermaidDiagrams.pubSub} />
+            <MermaidDiagram chart={mermaidDiagrams.pubSub} />
           </div>
         )}
         <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">

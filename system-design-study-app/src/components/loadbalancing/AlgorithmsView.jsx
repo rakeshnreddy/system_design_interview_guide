@@ -1,35 +1,9 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import Mermaid from '../common/Mermaid';
+import MermaidDiagram from '../common/MermaidDiagram.jsx';
 import { Link as RouterLink } from 'react-router-dom';
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
-import { glossaryData } from '../../../data/glossaryData';
-
-// Helper component to render processed text (strings and links)
-const RenderProcessedText = ({ textParts, component="span" }) => {
-  if (typeof textParts === 'string') {
-    return React.createElement(component, null, textParts);
-  }
-  if (!Array.isArray(textParts)) {
-    return null;
-  }
-  const elements = textParts.map((part, index) => {
-    if (part.type === 'link') {
-      return (
-        <RouterLink
-          key={`${part.displayText}-${index}`}
-          to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
-          className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
-          title={getDefinitionSnippet(part.term.definition)}
-        >
-          {part.displayText}
-        </RouterLink>
-      );
-    }
-    return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
-  });
-  return React.createElement(component, null, ...elements);
-};
+import { glossaryData } from '../../data/glossaryData.js';
+import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
 
 function AlgorithmsView({ appData }) {
@@ -56,10 +30,10 @@ function AlgorithmsView({ appData }) {
             return (
               <React.Fragment key={algo.id}>
                 <ListItem id={elementId} sx={{ display: 'block', mb: 2 }}>
-                  <Typography variant="h6">{algo.name}</Typography>
+                  <Typography variant="h6"><RenderTextWithLinks text={algo.name} glossaryData={glossaryData} /></Typography>
                   <ListItemText
                     primary={<strong>How it works:</strong>}
-                    secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(algo.howItWorks, glossaryData)} component="div"/>}
+                    secondary={<RenderTextWithLinks text={algo.howItWorks} glossaryData={glossaryData} />}
                     sx={{mb: 1}}
                     secondaryTypographyProps={{ component: 'div' }}
                   />
@@ -72,7 +46,7 @@ function AlgorithmsView({ appData }) {
                           <ListItem key={index} sx={{pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
                              <ListItemText
                                primaryTypographyProps={{ variant: 'body2'}}
-                               primary={<RenderProcessedText textParts={parseTextForGlossaryLinks(pro, glossaryData)} />}
+                               primary={<RenderTextWithLinks text={pro} glossaryData={glossaryData} />}
                               />
                           </ListItem>
                         ))}
@@ -89,7 +63,7 @@ function AlgorithmsView({ appData }) {
                           <ListItem key={index} sx={{pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
                              <ListItemText
                                 primaryTypographyProps={{ variant: 'body2'}}
-                                primary={<RenderProcessedText textParts={parseTextForGlossaryLinks(con, glossaryData)} />}
+                               primary={<RenderTextWithLinks text={con} glossaryData={glossaryData} />}
                               />
                           </ListItem>
                         ))}
@@ -99,7 +73,7 @@ function AlgorithmsView({ appData }) {
                   />
                   <ListItemText
                     primary={<strong>Use Cases:</strong>}
-                    secondary={<RenderProcessedText textParts={parseTextForGlossaryLinks(algo.useCases, glossaryData)} component="div"/>}
+                    secondary={<RenderTextWithLinks text={algo.useCases} glossaryData={glossaryData} />}
                     secondaryTypographyProps={{ component: 'div' }}
                   />
                 </ListItem>
@@ -110,7 +84,7 @@ function AlgorithmsView({ appData }) {
         </List>
       </Paper>
       <Typography sx={{mt: 2}} variant="body1">
-        <RenderProcessedText textParts={parseTextForGlossaryLinks(footerText, glossaryData)} />
+        <RenderTextWithLinks text={footerText} glossaryData={glossaryData} />
       </Typography>
 
       {appData.mermaidDiagrams && appData.mermaidDiagrams.roundRobin && (
@@ -119,7 +93,7 @@ function AlgorithmsView({ appData }) {
             Round-Robin Distribution
           </Typography>
           <Paper elevation={3} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Mermaid chart={appData.mermaidDiagrams.roundRobin} />
+            <MermaidDiagram chart={appData.mermaidDiagrams.roundRobin} />
           </Paper>
         </Box>
       )}

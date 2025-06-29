@@ -1,7 +1,7 @@
 // src/components/databases/SectionReplicationDB.jsx
 import React from 'react';
 import Card from '../common/Card';
-import Mermaid from '../common/Mermaid'; // Import Mermaid
+import MermaidDiagram from '../common/MermaidDiagram.jsx'; // Corrected Import Mermaid
 import { databasesAppData } from '../../data/databasesAppData'; // Import appData
 
 const SectionReplicationDB = () => {
@@ -24,7 +24,7 @@ const SectionReplicationDB = () => {
           </p>
           {mermaidDiagrams && mermaidDiagrams.masterSlave && (
             <div className="my-4 flex justify-center">
-              <Mermaid chart={mermaidDiagrams.masterSlave} />
+              <MermaidDiagram chart={mermaidDiagrams.masterSlave} />
             </div>
           )}
           <ul className="list-disc pl-5 space-y-1 mt-2">
@@ -42,7 +42,7 @@ const SectionReplicationDB = () => {
           </p>
           {mermaidDiagrams && mermaidDiagrams.masterMaster && (
             <div className="my-4 flex justify-center">
-              <Mermaid chart={mermaidDiagrams.masterMaster} />
+              <MermaidDiagram chart={mermaidDiagrams.masterMaster} />
             </div>
           )}
           <p className="mt-2"><strong>Pros:</strong> Improved write availability (writes can occur even if some primaries fail), lower write latency for geographically distributed applications (write to local primary).</p>
