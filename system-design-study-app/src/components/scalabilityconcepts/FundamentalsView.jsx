@@ -1,71 +1,8 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
-import { parseAndRenderTextWithGlossary } from '../../../utils/textParsingUtils'; // Assuming a combined utility
-import { glossaryData } from '../../../data/glossaryData';
-
-
-// Helper component to render processed text (strings and links)
-// This is duplicated in other files, consider moving to a common utility
-const RenderProcessedTextWithMarkdownAndGlossary = ({ text, termsData }) => {
-  if (typeof text !== 'string' || !text) {
-    return <>{text || ''}</>;
-  }
-
-  // First, parse for {{Glossary Terms}}
-  const glossaryParts = parseTextForGlossaryLinks(text, termsData);
-
-  // Then, for each text part, parse for [Markdown Links](url)
-  const finalParts = [];
-  glossaryParts.forEach((gPart, gIndex) => {
-    if (gPart.type === 'text') {
-      // Regex to find markdown links: [link text](path)
-      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-      let lastIndex = 0;
-      let match;
-      const content = gPart.content;
-
-      while ((match = linkRegex.exec(content)) !== null) {
-        if (match.index > lastIndex) {
-          finalParts.push(<React.Fragment key={`${gIndex}-text-${lastIndex}`}>{content.substring(lastIndex, match.index)}</React.Fragment>);
-        }
-        const linkText = match[1];
-        const linkPath = match[2];
-        if (linkPath.startsWith('#') || linkPath.startsWith('/')) { // Internal links
-          finalParts.push(
-            <Link component={RouterLink} to={linkPath} key={`${gIndex}-mdlink-${lastIndex}`} sx={{color: 'primary.main', '&:hover': {textDecoration: 'underline'}}}>
-              {linkText}
-            </Link>
-          );
-        } else { // External links
-          finalParts.push(
-            <Link href={linkPath} target="_blank" rel="noopener noreferrer" key={`${gIndex}-mdlink-${lastIndex}`} sx={{color: 'primary.main', '&:hover': {textDecoration: 'underline'}}}>
-              {linkText}
-            </Link>
-          );
-        }
-        lastIndex = linkRegex.lastIndex;
-      }
-      if (lastIndex < content.length) {
-        finalParts.push(<React.Fragment key={`${gIndex}-text-${lastIndex}-rem`}>{content.substring(lastIndex)}</React.Fragment>);
-      }
-    } else if (gPart.type === 'link') { // Glossary link
-      finalParts.push(
-        <RouterLink
-          key={`${gIndex}-glossary-${gPart.displayText}`}
-          to={`/glossary?search=${encodeURIComponent(gPart.term.term)}`}
-          className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
-          title={getDefinitionSnippet(gPart.term.definition)}
-        >
-          {gPart.displayText}
-        </RouterLink>
-      );
-    }
-  });
-
-  return <>{finalParts}</>;
-};
+import { glossaryData } from '../../data/glossaryData.js';
+import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
 
 function FundamentalsView({ appData }) {
@@ -88,8 +25,8 @@ function FundamentalsView({ appData }) {
             <React.Fragment key={metric.id}>
               <ListItem>
                 <ListItemText
-                  primary={<RenderProcessedTextWithMarkdownAndGlossary text={metric.name} termsData={glossaryData} />}
-                  secondary={<RenderProcessedTextWithMarkdownAndGlossary text={metric.description} termsData={glossaryData} />}
+                  primary={<RenderTextWithLinks text={metric.name} glossaryData={glossaryData} />}
+                  secondary={<RenderTextWithLinks text={metric.description} glossaryData={glossaryData} />}
                 />
               </ListItem>
               <Divider component="li" />
@@ -104,11 +41,11 @@ function FundamentalsView({ appData }) {
         </Typography>
         <List>
           {appData.terminology.map((term, index) => (
-            <React.Fragment key={`${term.term}-${index}`}>
+            <React.Fragment key={`${term.term}-${index}`}> {/* It seems term.id is not always present in scalabilityConceptsAppData for terminology */}
               <ListItem>
                 <ListItemText
-                  primary={<RenderProcessedTextWithMarkdownAndGlossary text={term.term} termsData={glossaryData} />}
-                  secondary={<RenderProcessedTextWithMarkdownAndGlossary text={term.definition} termsData={glossaryData} />}
+                  primary={<RenderTextWithLinks text={term.term} glossaryData={glossaryData} />}
+                  secondary={<RenderTextWithLinks text={term.definition} glossaryData={glossaryData} />}
                 />
               </ListItem>
               <Divider component="li" />

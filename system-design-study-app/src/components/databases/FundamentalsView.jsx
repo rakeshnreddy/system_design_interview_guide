@@ -5,39 +5,9 @@ import Accordion from '../common/Accordion';
 // import Glossary from '../common/Glossary'; // Will render terminology directly
 import Mermaid from '../common/Mermaid';
 import { databasesAppData } from '../../data/databasesAppData'; // Assuming appData is passed or use this directly
-import { parseTextForGlossaryLinks, getDefinitionSnippet } from '../../../utils/textProcessing';
-import { glossaryData } from '../../../data/glossaryData';
+import { glossaryData } from '../../data/glossaryData.js';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-
-
-// Helper component to render processed text (strings and links)
-const RenderProcessedText = ({ textParts }) => {
-  if (typeof textParts === 'string') {
-    return <>{textParts}</>;
-  }
-  if (!Array.isArray(textParts)) {
-    return null;
-  }
-  return (
-    <>
-      {textParts.map((part, index) => {
-        if (part.type === 'link') {
-          return (
-            <RouterLink
-              key={`${part.displayText}-${index}`}
-              to={`/glossary?search=${encodeURIComponent(part.term.term)}`}
-              className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
-              title={getDefinitionSnippet(part.term.definition)}
-            >
-              {part.displayText}
-            </RouterLink>
-          );
-        }
-        return <React.Fragment key={`text-${index}`}>{part.content}</React.Fragment>;
-      })}
-    </>
-  );
-};
+import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
 
 const FundamentalsView = ({ appData: pageSpecificAppData }) => {
@@ -58,14 +28,14 @@ const FundamentalsView = ({ appData: pageSpecificAppData }) => {
       </Typography>
       <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
         <Typography variant="body1" paragraph>
-            <RenderProcessedText textParts={parseTextForGlossaryLinks(exampleDescription, glossaryData)} />
+            <RenderTextWithLinks text={exampleDescription} glossaryData={glossaryData} />
         </Typography>
       </Paper>
 
       <Accordion title="Overview of Database Concepts" defaultOpen>
         <Box sx={{p:2}}>
             <Typography variant="body1" paragraph>
-                <RenderProcessedText textParts={parseTextForGlossaryLinks(exampleOverview, glossaryData)} />
+                <RenderTextWithLinks text={exampleOverview} glossaryData={glossaryData} />
             </Typography>
         </Box>
       </Accordion>
@@ -80,10 +50,10 @@ const FundamentalsView = ({ appData: pageSpecificAppData }) => {
               <React.Fragment key={termItem.id || termItem.title}>
                 <ListItem alignItems="flex-start">
                   <ListItemText
-                    primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{termItem.title}</Typography>}
+                    primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}><RenderTextWithLinks text={termItem.title} glossaryData={glossaryData} /></Typography>}
                     secondary={
                       <Typography component="span" variant="body2" color="text.secondary">
-                        <RenderProcessedText textParts={parseTextForGlossaryLinks(termItem.description || termItem.details, glossaryData)} />
+                        <RenderTextWithLinks text={termItem.description || termItem.details} glossaryData={glossaryData} />
                       </Typography>
                     }
                   />
