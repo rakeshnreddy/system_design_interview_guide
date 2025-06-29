@@ -3,9 +3,12 @@ import { useLocation } from 'react-router-dom'; // Import useLocation
 import { glossaryData } from '../../data/glossaryData';
 import GlossaryTermDetail from '../../components/glossary/GlossaryTermDetail';
 import Modal from '../../components/common/Modal';
+import { setMetaTag, removeMetaTag } from '../../utils/metaUtils';
 
 const GlossaryPage = () => {
   const location = useLocation(); // Get location object
+  const pageTitle = "System Design Glossary | System Design Interview Prep";
+  const pageDescription = "Find definitions for key system design terminology. Search and filter terms related to scalability, databases, caching, and more.";
   const [filterText, setFilterText] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +19,24 @@ const GlossaryPage = () => {
     if (searchTerm) {
       setFilterText(searchTerm);
     }
-  }, [location.search]); // Re-run if location.search changes
+
+    // Meta tags effect
+    const originalDocTitle = document.title;
+    document.title = pageTitle;
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'og:type', content: 'website', isProperty: true },
+      // { name: 'og:url', content: window.location.href, isProperty: true },
+    ];
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalDocTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [location.search, pageTitle, pageDescription]); // pageTitle and pageDescription are stable but included for completeness
 
   const handleFilterChange = (event) => {
     setFilterText(event.target.value);

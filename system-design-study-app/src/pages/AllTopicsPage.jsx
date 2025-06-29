@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, TextField, Paper } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { setMetaTag, removeMetaTag } from '../utils/metaUtils';
 
 // Placeholder for data loading, will be replaced with actual imports
 import { cachesAppData } from '../data/cachesAppData';
@@ -95,6 +96,28 @@ const subtopicConfig = {
 
 const AllTopicsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const pageTitle = "All System Design Topics | System Design Interview Prep";
+  const pageDescription = "Browse all system design topics covered, including caching, databases, load balancing, API design, scalability concepts, and interview approaches. Find detailed guides and subtopics.";
+
+  useEffect(() => {
+    const originalDocTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'og:type', content: 'website', isProperty: true },
+      // { name: 'og:url', content: window.location.href, isProperty: true },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalDocTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, []); // Empty dependency array as title and description are static for this page
 
   const processSubtopics = (mainTopicPath) => {
     const config = subtopicConfig[mainTopicPath];

@@ -5,6 +5,7 @@ import Button from '../common/Button';
 import InteractiveDecisionTree from '../common/InteractiveDecisionTree';
 import QuizView from '../common/QuizView';
 import ComparisonView from '../common/ComparisonView'; // Import the new ComparisonView component
+import EvictionSimulator from './EvictionSimulator'; // Import the EvictionSimulator
 
 // --- Flashcard Component (Simplified) ---
 const Flashcard = ({ card, isFlipped, onFlip }) => {
@@ -125,6 +126,14 @@ const PracticeView = ({ appData }) => {
         ) : (
           <p className="text-sm text-neutral-500 dark:text-neutral-400">Comparison data not available for this topic.</p>
         )}
+      </Card>
+
+      <Card padding="p-6">
+        <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Cache Eviction Simulator</h2>
+        <p className="text-base text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+          Experiment with different cache eviction policies (LRU, LFU, FIFO) and see how they perform with various access sequences.
+        </p>
+        <EvictionSimulator />
       </Card>
 
        {/* Reminder about typography plugin */}
