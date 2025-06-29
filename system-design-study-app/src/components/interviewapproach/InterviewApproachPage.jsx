@@ -1,16 +1,60 @@
-import React from 'react';
-import { Box, Typography, List, ListItem, ListItemText, Paper, Divider } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Typography, List, ListItem, ListItemText, Paper, Divider, Link } from '@mui/material';
 import { interviewApproachAppData } from '../../data/interviewApproachAppData';
 import Mermaid from '../common/MermaidDiagram'; // Import Mermaid
+import { setMetaTag, removeMetaTag } from '../../utils/metaUtils';
+
+// Helper function to parse markdown-style links
+const parseAndRenderText = (text) => {
+  if (!text) return '';
+  // Regex to find markdown links: [link text](path)
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    // Add the link
+    const linkText = match[1];
+    const linkPath = match[2];
+    if (linkPath.startsWith('#') || linkPath.startsWith('/')) { // Internal links
+      parts.push(
+        <Link component={RouterLink} to={linkPath} key={lastIndex} sx={{color: 'primary.main', '&:hover': {textDecoration: 'underline'}}}>
+          {linkText}
+        </Link>
+      );
+    } else { // External links (optional: open in new tab)
+      parts.push(
+        <Link href={linkPath} target="_blank" rel="noopener noreferrer" key={lastIndex} sx={{color: 'primary.main', '&:hover': {textDecoration: 'underline'}}}>
+          {linkText}
+        </Link>
+      );
+    }
+    lastIndex = linkRegex.lastIndex;
+  }
+
+  // Add any remaining text after the last link
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.map((part, index) => <React.Fragment key={index}>{part}</React.Fragment>);
+};
+
 
 // Helper function to render content items
 const renderContentItem = (item, index) => {
   switch (item.type) {
     case 'paragraph':
-      return <Typography variant="body1" paragraph key={index} className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{item.text}</Typography>;
+      return <Typography variant="body1" paragraph key={index} className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{parseAndRenderText(item.text)}</Typography>;
     case 'heading':
       const HeadingVariant = `h${item.level + 2}`; // h3 -> h5, h2 -> h4, etc.
-      return <Typography variant={HeadingVariant} component={HeadingVariant} gutterBottom key={index} className="mt-4 mb-2 font-semibold text-primary dark:text-primary-light">{item.text}</Typography>;
+      return <Typography variant={HeadingVariant} component={HeadingVariant} gutterBottom key={index} className="mt-4 mb-2 font-semibold text-primary dark:text-primary-light">{parseAndRenderText(item.text)}</Typography>;
     case 'list':
       return (
         <List dense key={index} className="mb-4">
@@ -18,7 +62,7 @@ const renderContentItem = (item, index) => {
             <ListItem key={idx} className="py-0">
               <ListItemText
                 primaryTypographyProps={{ className: "text-neutral-700 dark:text-neutral-300" }}
-                primary={`• ${listItem}`}
+                primary={<>• {parseAndRenderText(listItem)}</>}
               />
             </ListItem>
           ))}
@@ -31,6 +75,29 @@ const renderContentItem = (item, index) => {
 
 function InterviewApproachPage() {
   const { title, sections, mermaidDiagrams } = interviewApproachAppData;
+  const pageTitle = `${title} | System Design Interview Prep`;
+  const pageDescription = "Master a structured approach for system design interviews. Learn frameworks, key principles, and common pitfalls to effectively design complex systems."; // Generic description
+
+  useEffect(() => {
+    const originalDocTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'og:type', content: 'website', isProperty: true },
+      // Add other relevant tags like og:image, twitter:card etc. if available
+      // { name: 'og:url', content: window.location.href, isProperty: true },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalDocTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
 
   // Temporary AppBar to avoid import errors if it's not defined elsewhere yet
   // In a real app, this would be part of a shared Layout component

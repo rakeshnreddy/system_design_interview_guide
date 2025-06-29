@@ -1,8 +1,9 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../common/TopicPageLayout';
 import TopicSidebar from '../common/TopicSidebar'; // Import the unified TopicSidebar
 import { loadBalancingAppData } from '../../data/loadBalancingAppData';
+import { setMetaTag, removeMetaTag } from '../../utils/metaUtils';
 
 // Lazy load views
 const FundamentalsView = lazy(() => import('./FundamentalsView'));
@@ -54,10 +55,34 @@ const SidebarComponentWithProps = (props) => (
 );
 
 function LoadBalancingPage() {
+  const pageTitle = `${loadBalancingAppData.title || 'Load Balancing'} | System Design Interview Prep`;
+  const pageDescription = loadBalancingAppData.overview
+    ? loadBalancingAppData.overview.substring(0, 160) + (loadBalancingAppData.overview.length > 160 ? '...' : '')
+    : "Understand various load balancing algorithms, types (L4/L7), and their impact on system availability, scalability, and performance.";
+
+  useEffect(() => {
+    const originalDocTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'og:type', content: 'website', isProperty: true },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalDocTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
+
   return (
     <TopicPageLayout
-      pageTitle="Load Balancing"
-      SidebarComponent={SidebarComponentWithProps} // Use the wrapper for TopicSidebar
+      pageTitle={loadBalancingAppData.title || "Load Balancing"}
+      SidebarComponent={SidebarComponentWithProps}
       renderViewFunction={renderLoadBalancingView}
       initialView="fundamentals"
       appData={loadBalancingAppData}

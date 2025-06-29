@@ -99,7 +99,7 @@ function FundamentalsView({ appData }) {
         </List>
       </Paper>
        <Typography sx={{mt: 2}} variant="body1">
-        More content related to API design fundamentals will be displayed here, such as discussions on {{Idempotency}} and {{API Versioning}}.
+        <RenderProcessedText textParts={parseTextForGlossaryLinks("More content related to API design fundamentals will be displayed here, such as discussions on {{Idempotency}} and {{API Versioning}}.", glossaryData)} />
       </Typography>
     </Box>
   );

@@ -1,3 +1,22 @@
+// This file already has useEffect, setMetaTag, removeMetaTag imports and usage.
+// The existing useEffect hook correctly sets the meta tags.
+// No change needed here for meta tags, it was already implemented correctly.
+// I will just re-verify its content.
+
+// useEffect(() => {
+// const originalTitle = document.title;
+// document.title = pageTitle; // pageTitle is "Messaging Queues | System Design Interview Prep"
+
+// const metaTags = [
+//      { name: 'description', content: pageDescription }, // pageDescription is "Explore message brokers..."
+//      { name: 'og:title', content: pageTitle, isProperty: true },
+// ...
+// ];
+// metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+// return () => { ... };
+// }, [pageTitle, pageDescription]);
+
+// The existing implementation is fine.
 import React, { Suspense, lazy, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../components/common/TopicPageLayout';

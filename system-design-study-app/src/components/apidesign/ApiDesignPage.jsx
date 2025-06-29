@@ -1,8 +1,9 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
 import TopicPageLayout from '../common/TopicPageLayout';
 import TopicSidebar from '../common/TopicSidebar'; // Import the new TopicSidebar
 import { apiDesignAppData } from '../../data/apiDesignAppData';
+import { setMetaTag, removeMetaTag } from '../../utils/metaUtils';
 
 // Lazy load views
 const FundamentalsView = lazy(() => import('./FundamentalsView'));
@@ -58,9 +59,33 @@ const SidebarComponentWithProps = (props) => (
 );
 
 function ApiDesignPage() {
+  const pageTitle = `${apiDesignAppData.title || 'API Design'} | System Design Interview Prep`;
+  const pageDescription = apiDesignAppData.overview
+    ? apiDesignAppData.overview.substring(0, 160) + (apiDesignAppData.overview.length > 160 ? '...' : '')
+    : "Learn key principles and best practices for designing robust, scalable, and maintainable APIs, including REST, GraphQL, and gRPC.";
+
+  useEffect(() => {
+    const originalDocTitle = document.title;
+    document.title = pageTitle;
+
+    const metaTags = [
+      { name: 'description', content: pageDescription },
+      { name: 'og:title', content: pageTitle, isProperty: true },
+      { name: 'og:description', content: pageDescription, isProperty: true },
+      { name: 'og:type', content: 'website', isProperty: true },
+    ];
+
+    metaTags.forEach(tag => setMetaTag(tag.name, tag.content, tag.isProperty));
+
+    return () => {
+      document.title = originalDocTitle;
+      metaTags.forEach(tag => removeMetaTag(tag.name, tag.isProperty));
+    };
+  }, [pageTitle, pageDescription]);
+
   return (
     <TopicPageLayout
-      pageTitle="API Design"
+      pageTitle={apiDesignAppData.title || "API Design"} // Ensure TopicPageLayout gets a simple title
       SidebarComponent={SidebarComponentWithProps}
       renderViewFunction={renderApiDesignView}
       initialView="fundamentals"
