@@ -19,6 +19,7 @@ const categoryToPathMapping = {
   'API Design': '/api-design',
   'Load Balancing': '/load-balancing',
   'Scalability Concepts': '/scalability-concepts',
+  'Core Concepts': '/networking-cdn', // Added for Networking & CDN
   // Note: 'Interview Approach' topics might not fit this pattern if they don't have sub-topic IDs
   // and are just sections of a single page. For now, we assume topicsData has relevant categories.
 };
@@ -59,6 +60,7 @@ const navItems = {
       { label: 'Load Balancing', path: '/load-balancing' },
       { label: 'API Design', path: '/api-design' },
       { label: 'Scalability Concepts', path: '/scalability-concepts' },
+      { label: 'Networking & CDN', path: '/networking-cdn' }, // Added new guide
       { label: 'Interview Approach', path: '/interview-approach' },
     ],
   },

@@ -19,6 +19,7 @@ const LoadBalancingPage = lazy(() => import('./components/loadbalancing/LoadBala
 const ApiDesignPage = lazy(() => import('./components/apidesign/ApiDesignPage'));
 const ScalabilityConceptsPage = lazy(() => import('./components/scalabilityconcepts/ScalabilityConceptsPage'));
 const InterviewApproachPage = lazy(() => import('./components/interviewapproach/InterviewApproachPage'));
+const NetworkingCDNPage = lazy(() => import('./pages/NetworkingCDNPage')); // Added new page
 const AllTopicsPage = lazy(() => import('./pages/AllTopicsPage.jsx')); // Renamed from TopicsListPage
 const TopicDetailPage = lazy(() => import('./pages/TopicDetailPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
@@ -56,6 +57,7 @@ function AppContent() {
               <Route path="/case-studies/:caseStudyId" element={<CaseStudyDetailPage />} />
               <Route path="/interview-frameworks" element={<InterviewFrameworksPage />} />
               <Route path="/trade-off-analysis" element={<TradeOffAnalysisPage />} />
+              <Route path="/networking-cdn" element={<NetworkingCDNPage />} /> {/* Added new route */}
             </Routes>
           </Suspense>
         </Layout>

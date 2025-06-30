@@ -444,5 +444,83 @@ export const glossaryData = [
     "id": "serviceMesh",
     "term": "Service Mesh",
     "definition": "An infrastructure layer for managing service-to-service communication (e.g., Istio, Linkerd), offering traffic control, security, and observability."
+  },
+  {
+    "id": "tls-ssl",
+    "term": "TLS/SSL (Transport Layer Security/Secure Sockets Layer)",
+    "definition": "Cryptographic protocols that provide communications security over a computer network. TLS is the successor to SSL. They are widely used in applications such as web browsing ({{HTTPS}}), email, instant messaging, and VoIP.",
+    "icon": "LockKeyhole"
+  },
+  {
+    "id": "cdn-edge-server",
+    "term": "CDN Edge Server (PoP)",
+    "definition": "A server at a CDN's Point of Presence (PoP) located geographically close to users. It caches and delivers content, reducing latency and load on origin servers.",
+    "icon": "Server"
+  },
+  {
+    "id": "cdn-propagation",
+    "term": "CDN Propagation",
+    "definition": "The time it takes for content changes (updates or purges) from an origin server to be reflected across all edge servers in a CDN network.",
+    "icon": "Replace"
+  },
+  {
+    "id": "ttfb",
+    "term": "Time to First Byte (TTFB)",
+    "definition": "A metric that measures the responsiveness of a web server or other network resource. It's the time between the client making an HTTP request and receiving the first byte of the response from the server.",
+    "icon": "Gauge"
+  },
+  {
+    "id": "http-methods",
+    "term": "HTTP Methods (Verbs)",
+    "definition": "A set of request methods to indicate the desired action to be performed for a given resource. Common methods include GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS.",
+    "icon": "ListTodo"
+  },
+  {
+    "id": "http-status-codes",
+    "term": "HTTP Status Codes",
+    "definition": "Standardized three-digit codes issued by a server in response to a client's request made to the server. Examples: 200 OK, 404 Not Found, 500 Internal Server Error.",
+    "icon": "FileBadge"
+  },
+  {
+    "id": "tcp",
+    "term": "TCP (Transmission Control Protocol)",
+    "definition": "One of the main protocols of the Internet protocol suite. It provides reliable, ordered, and error-checked delivery of a stream of octets (bytes) between applications running on hosts communicating via an IP network.",
+    "icon": "Network"
+  },
+  {
+    "id": "udp",
+    "term": "UDP (User Datagram Protocol)",
+    "definition": "A simpler message-oriented transport layer protocol in the Internet protocol suite. It is connectionless and does not provide reliability, ordering, or data integrity checking, making it faster but less reliable than TCP.",
+    "icon": "Network"
+  },
+  {
+    "id": "network-sockets",
+    "term": "Sockets (Network Sockets)",
+    "definition": "An endpoint of a bidirectional inter-process communication flow across an Internet Protocol-based computer network, such as the Internet. A socket is identified by an IP address and a port number.",
+    "icon": "PlugZap"
+  },
+  {
+    "id": "cache-control",
+    "term": "Cache-Control Headers",
+    "definition": "HTTP headers that specify browser and proxy caching policies for a resource (e.g., `max-age`, `no-cache`, `public`, `private`). Essential for controlling how CDNs and clients cache content.",
+    "icon": "History"
+  },
+  {
+    "id": "ip-address",
+    "term": "IP Address",
+    "definition": "A numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication. It serves two main functions: host or network interface identification and location addressing.",
+    "icon": "LocateFixed"
+  },
+  {
+    "id": "http",
+    "term": "HTTP (Hypertext Transfer Protocol)",
+    "definition": "The foundation of data communication for the World Wide Web. It is an application protocol for distributed, collaborative, hypermedia information systems.",
+    "icon": "Globe2"
+  },
+  {
+    "id": "https",
+    "term": "HTTPS (HTTP Secure)",
+    "definition": "An extension of the Hypertext Transfer Protocol (HTTP) for secure communication over a computer network, and is widely used on the Internet. In HTTPS, the communication protocol is encrypted using Transport Layer Security (TLS) or, formerly, Secure Sockets Layer (SSL).",
+    "icon": "LockKeyhole"
   }
 ];
