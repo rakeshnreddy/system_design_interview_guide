@@ -1,63 +1,119 @@
 // src/components/databases/SectionReplicationDB.jsx
 import React from 'react';
 import Card from '../common/Card';
-import MermaidDiagram from '../common/MermaidDiagram.jsx'; // Corrected Import Mermaid
-import { databasesAppData } from '../../data/databasesAppData'; // Import appData
+import MermaidDiagram from '../common/MermaidDiagram.jsx';
+import { glossaryData } from '../../data/glossaryData.js';
+import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
-const SectionReplicationDB = () => {
-  const { mermaidDiagrams } = databasesAppData; // Destructure mermaidDiagrams
+const SectionReplicationDB = ({ appData }) => {
+  const { mermaidDiagrams, patterns } = appData || {};
+
+  const replicationPatterns = patterns?.filter(p =>
+    p.id === 'leader-follower' ||
+    p.id === 'multi-leader' ||
+    p.id === 'quorum' ||
+    p.id === 'active-passive-replication' ||
+    p.id === 'active-active-replication'
+  ) || [];
+
+  const getDiagramForPattern = (patternId) => {
+    if (!mermaidDiagrams) return null;
+    if (patternId === 'leader-follower' && mermaidDiagrams.masterSlave) return mermaidDiagrams.masterSlave;
+    if (patternId === 'multi-leader' && mermaidDiagrams.masterMaster) return mermaidDiagrams.masterMaster;
+    // Add more specific diagram mappings if needed for other patterns
+    return null;
+  };
+
+  if (!appData || replicationPatterns.length === 0) {
+    return (
+      <Card padding="p-6 md:p-8" shadow="shadow-xl">
+        <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6">
+          Data Replication Strategies
+        </h1>
+        <p className="text-lg text-neutral-700 dark:text-neutral-300">Replication data not available.</p>
+      </Card>
+    );
+  }
 
   return (
     <Card padding="p-6 md:p-8" shadow="shadow-xl">
       <h1 className="text-4xl font-extrabold text-neutral-900 dark:text-white mb-6">
         Data Replication Strategies
       </h1>
-      <div className="prose prose-lg dark:prose-invert max-w-none space-y-6">
+      <div className="prose prose-lg dark:prose-invert max-w-none space-y-10">
         <p className="text-lg text-neutral-700 dark:text-neutral-300 leading-relaxed">
           Data replication involves copying data from a source database to one or more destination databases. It's crucial for high availability, disaster recovery, read scalability, and geographically distributing data closer to users.
         </p>
 
-        <div>
-          <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-3">Primary-Secondary Replication (Leader-Follower)</h2>
-          <p>
-            Writes go to a single primary (leader/master) node. The primary then replicates changes to one or more secondary (follower/replica/slave) nodes. Reads can often be served by secondaries to reduce load on the primary.
-          </p>
-          {mermaidDiagrams && mermaidDiagrams.masterSlave && (
-            <div className="my-4 flex justify-center">
-              <MermaidDiagram chart={mermaidDiagrams.masterSlave} />
-            </div>
-          )}
-          <ul className="list-disc pl-5 space-y-1 mt-2">
-            <li><strong>Synchronous Replication:</strong> Primary waits for acknowledgment from at least one secondary before confirming the write. Ensures higher consistency but increases write latency.</li>
-            <li><strong>Asynchronous Replication:</strong> Primary confirms write immediately and replicates to secondaries in the background. Lower write latency but potential for data loss on primary failure if changes haven't replicated.</li>
-          </ul>
-          <p className="mt-2"><strong>Pros:</strong> Simpler to manage consistency, good for read scaling.</p>
-          <p><strong>Cons:</strong> Primary is a single point of failure for writes (failover needed), potential replication lag with async.</p>
-        </div>
+        {replicationPatterns.map(pattern => (
+          <div key={pattern.id}>
+            <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-3">
+              <RenderTextWithLinks text={pattern.title} glossaryData={glossaryData} />
+            </h2>
+            <p className="mb-2"><RenderTextWithLinks text={pattern.description} glossaryData={glossaryData} /></p>
 
-        <div>
-          <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-3">Multi-Primary Replication (Multi-Leader)</h2>
-          <p>
-            Multiple nodes can accept writes. Changes are then replicated to other primary nodes and any secondary nodes.
-          </p>
-          {mermaidDiagrams && mermaidDiagrams.masterMaster && (
-            <div className="my-4 flex justify-center">
-              <MermaidDiagram chart={mermaidDiagrams.masterMaster} />
-            </div>
-          )}
-          <p className="mt-2"><strong>Pros:</strong> Improved write availability (writes can occur even if some primaries fail), lower write latency for geographically distributed applications (write to local primary).</p>
-          <p><strong>Cons:</strong> Significantly more complex to manage, especially conflict resolution when the same data is modified concurrently on different primaries. Requires careful design to avoid data divergence.</p>
-        </div>
+            {getDiagramForPattern(pattern.id) && (
+              <div className="my-4 flex justify-center p-2 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-800/30">
+                <MermaidDiagram chart={getDiagramForPattern(pattern.id)} diagramId={`${pattern.id}-diagram`} />
+              </div>
+            )}
 
-        <div>
-          <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-3">Quorum-Based Replication</h2>
-          <p>
-            Writes must be acknowledged by a majority (a quorum) of replicas before being considered successful (e.g., W &gt; N/2). Reads must query a quorum of replicas (R &gt; N/2). If W + R &gt; N, it ensures strong consistency (at least one node read from has the latest write).
-          </p>
-          <p className="mt-2"><strong>Pros:</strong> Balances consistency, availability, and partition tolerance (often used in systems like Cassandra or Dynamo-style databases).</p>
-          <p><strong>Cons:</strong> Can have higher latency for reads and writes due to coordination. Requires careful tuning of W, R, and N values.</p>
-        </div>
-        {/* Diagrams added above */}
+            {pattern.details && (
+                 <p className="text-sm my-2 p-2 bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 dark:border-blue-400 rounded">
+                    <RenderTextWithLinks text={pattern.details} glossaryData={glossaryData} />
+                </p>
+            )}
+
+            {pattern.pros && pattern.pros.length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-neutral-700 dark:text-neutral-200 mt-3 mb-1">Pros:</h4>
+                <ul className="list-disc pl-7 space-y-1 text-base">
+                  {pattern.pros.map((pro, index) => (
+                    <li key={index}><RenderTextWithLinks text={pro} glossaryData={glossaryData} /></li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {pattern.cons && pattern.cons.length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-neutral-700 dark:text-neutral-200 mt-3 mb-1">Cons:</h4>
+                <ul className="list-disc pl-7 space-y-1 text-base">
+                  {pattern.cons.map((con, index) => (
+                    <li key={index}><RenderTextWithLinks text={con} glossaryData={glossaryData} /></li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {pattern.whenToUse && pattern.whenToUse.length > 0 && (
+                 <>
+                <h4 className="text-xl font-semibold text-neutral-700 dark:text-neutral-200 mt-3 mb-1">When to Use:</h4>
+                <ul className="list-disc pl-7 space-y-1 text-base">
+                  {pattern.whenToUse.map((useCase, index) => (
+                    <li key={index}><RenderTextWithLinks text={useCase} glossaryData={glossaryData} /></li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {pattern.interviewTalkingPoints && pattern.interviewTalkingPoints.length > 0 && (
+                <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/30 border-l-4 border-amber-500 dark:border-amber-400 rounded">
+                    <h4 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200 mb-1">Interview Talking Points:</h4>
+                    <ul className="list-disc pl-5 space-y-1 text-sm">
+                    {pattern.interviewTalkingPoints.map((point, index) => (
+                        <li key={index}><RenderTextWithLinks text={point} glossaryData={glossaryData} /></li>
+                    ))}
+                    </ul>
+                </div>
+            )}
+            {pattern.defendingYourDecision && (
+                 <p className="text-sm italic mt-2 p-2 bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 dark:border-green-400 rounded">
+                    <strong>Defending Your Decision:</strong> <RenderTextWithLinks text={pattern.defendingYourDecision} glossaryData={glossaryData} />
+                </p>
+            )}
+          </div>
+        ))}
       </div>
     </Card>
   );

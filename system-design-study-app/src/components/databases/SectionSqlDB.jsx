@@ -6,6 +6,7 @@ import Button from '../common/Button';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { glossaryData } from '../../data/glossaryData.js';
+import { databasesAppData } from '../../data/databasesAppData.js';
 import { Typography } from '@mui/material'; // For fallback
 import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 // Note: parseTextForGlossaryLinks and getDefinitionSnippet are used by the local replaceTermsWithHtmlLinks,
@@ -159,6 +160,30 @@ const SectionSqlDB = () => {
             </p>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">(Placeholder for a more visual representation of relational tables and foreign key relationships)</p>
         </div>
+
+        {/* Case Studies Section */}
+        {databasesAppData.databasepedia.find(db => db.id === 'postgresql')?.caseStudies && (
+          <>
+            <h2 className="text-3xl font-bold text-secondary dark:text-secondary-light mt-10 mb-4">Real-World Case Studies: PostgreSQL</h2>
+            {databasesAppData.databasepedia.find(db => db.id === 'postgresql').caseStudies.map((study, index) => (
+              <div key={index} className="mb-6 p-4 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-800/40">
+                <h3 className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100 mb-2"><RenderTextWithLinks text={study.name} glossaryData={glossaryData} /></h3>
+                <p className="mb-2"><RenderTextWithLinks text={study.description} glossaryData={glossaryData} /></p>
+                {study.keyChoices && (
+                  <>
+                    <h4 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200 mt-3 mb-1">Key Decision Factors:</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {study.keyChoices.map((choice, cIndex) => (
+                        <li key={cIndex}><RenderTextWithLinks text={choice} glossaryData={glossaryData} /></li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                <p className="mt-3 italic text-sm text-neutral-600 dark:text-neutral-400"><strong>Takeaway:</strong> <RenderTextWithLinks text={study.takeaway} glossaryData={glossaryData} /></p>
+              </div>
+            ))}
+          </>
+        )}
 
         <h2 className="text-3xl font-bold text-primary dark:text-primary-light mt-10 mb-4">E5 Interview Deep Dive: SQL</h2>
       </div>
