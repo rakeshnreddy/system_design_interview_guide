@@ -1,7 +1,9 @@
 export const messagingQueuesAppData = {
   overview: `Asynchronous messaging is a communication method where senders (producers) and receivers (consumers) of messages do not need to interact at the same time. Producers place messages into a queue, and consumers retrieve them when ready, allowing components to be {{Decoupling|decoupled}} and operate independently. This {{Decoupling}} is fundamental to building {{Resilient Systems|resilient}} and {{Scalable Systems|scalable}} distributed systems.
 
-Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}}, and {{Durability}}. {{Reliability}} is increased because messages persist in the queue even if consumers are temporarily unavailable, ensuring eventual processing. {{Throughput}} benefits as producers can offload tasks quickly without waiting for immediate processing, and multiple consumers can process messages in parallel. {{Durability}} is achieved by persisting messages, protecting against data loss in case of system failures, ensuring that critical information is not lost before it can be acted upon.`,
+Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}}, and {{Durability}}. {{Reliability}} is increased because messages persist in the queue even if consumers are temporarily unavailable, ensuring eventual processing. {{Throughput}} benefits as producers can offload tasks quickly without waiting for immediate processing, and multiple consumers can process messages in parallel. {{Durability}} is achieved by persisting messages, protecting against data loss in case of system failures, ensuring that critical information is not lost before it can be acted upon.
+
+For instance, in a ride-hailing application, when a user requests a ride, the request (e.g., user location, destination) can be placed as a message onto a queue. This allows the user's mobile app to receive an immediate acknowledgment, enhancing user experience. Meanwhile, separate backend services (consumers) can process this message asynchronously: one service might find available drivers, another could handle notifications, and a third might process payment details later. This asynchronous processing ensures the system remains responsive even under heavy load and can gracefully handle temporary unavailability or slowness of any downstream service, as ride requests are safely queued.`,
   title: "Messaging Queues",
   metrics: [
     {
@@ -119,24 +121,27 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
   deliverySemantics: [
     {
       term: "{{At-Least-Once Delivery|At-Least-Once}}",
-      definition: "Guarantees that each message will be delivered one or more times. If an acknowledgment is not received, the message may be redelivered, potentially leading to duplicates.",
-      pros: "Ensures no message loss, suitable for critical tasks where processing a message multiple times is acceptable or can be handled ({{Idempotency}}).",
-      cons: "Requires consumers to be {{Idempotency|idempotent}} to handle potential duplicate messages correctly.",
-      exampleScenario: "Order processing systems where duplicate orders can be detected and handled, ensuring every order is eventually processed."
+      definition: "This guarantee ensures that each message will be delivered one or more times to a consumer. If an acknowledgment (ack) from the consumer is not received by the broker (e.g., due to network issues or consumer crash before acking), the message may be redelivered. This prevents message loss but can lead to duplicate message processing.",
+      pros: "High reliability in terms of message delivery; no messages are lost by the broker if the consumer eventually processes them. Suitable for critical tasks where data loss is unacceptable.",
+      cons: "Consumers **must** be designed to be {{Idempotency|idempotent}}. That is, processing the same message multiple times must have the same effect as processing it only once. Failure to ensure idempotency can lead to incorrect data or unintended side effects (e.g., charging a customer multiple times).",
+      implications: "Requires careful consumer design to handle duplicates, possibly by tracking processed message IDs or using database constraints (e.g., unique keys) if the processing involves database writes. Most common default for reliable messaging systems.",
+      exampleScenario: "Order processing systems where duplicate orders can be detected and handled (e.g., by checking order ID). Background job processing where jobs can be safely re-run."
     },
     {
       term: "{{At-Most-Once Delivery|At-Most-Once}}",
-      definition: "Guarantees that each message will be delivered zero or one time. Messages might be lost if an acknowledgment fails or a system crashes before delivery confirmation.",
-      pros: "Simple to implement, avoids duplicate messages. Suitable for non-critical data where occasional message loss is tolerable.",
-      cons: "Potential for message loss; not suitable for critical data or tasks.",
-      exampleScenario: "Real-time telemetry updates where losing a single data point is acceptable and out-of-sequence or duplicate data is problematic."
+      definition: "This guarantee ensures that each message will be delivered zero or one time. Messages might be lost if the broker fails before a message is delivered, or if a consumer fails after receiving but before processing and the message isn't requeued. It's often referred to as 'fire and forget'.",
+      pros: "Simplest to implement with the lowest overhead on both broker and consumer. Avoids the complexity of handling duplicate messages.",
+      cons: "Potential for message loss. This makes it unsuitable for any application where data loss is critical.",
+      implications: "Only use when occasional message loss is acceptable and doesn't impact the overall system correctness or user experience. Often used for non-critical logging or metrics where some data points can be missed.",
+      exampleScenario: "Non-critical telemetry data (e.g., tracking UI clicks for analytics where a few missed events are okay), or when data can be easily reconstructed or is of transient value."
     },
     {
       term: "{{Exactly-Once Semantics|Exactly-Once}}",
-      definition: "Guarantees that each message is delivered and processed exactly one time. This is the most complex to achieve and often involves coordination between the broker and the consumer application (e.g., transactional processing, deduplication mechanisms).",
-      pros: "Ideal for critical applications where message loss and duplicate processing are unacceptable, like financial transactions.",
-      cons: "Often incurs higher {{Latency}} and complexity in implementation. May require specialized broker features or careful application design.",
-      exampleScenario: "Financial payment processing where each transaction must be processed once and only once to avoid incorrect fund transfers."
+      definition: "This is the strongest guarantee, ensuring that each message is delivered and processed by the logical consumer exactly one time. No messages are lost, and no messages are processed as duplicates. This is the most complex semantic to achieve in distributed systems.",
+      pros: "Provides the highest level of data integrity and simplifies consumer logic as they don't need to handle system-level duplicates (though business-level idempotency might still be good practice). Ideal for critical applications.",
+      cons: "Often incurs higher {{Latency}} and lower {{Throughput}} due to the overhead of coordination, state management (e.g., deduplication windows, transactional commits) required between the broker, producer, and consumer. Can be significantly more complex to implement and configure correctly.",
+      implications: "Requires specialized features in the message broker (e.g., {{Apache Kafka|Kafka's transactional API}}) and/or careful design in the consumer application to coordinate processing with message acknowledgments and state updates in an atomic way. Not all messaging systems truly support or make this easy.",
+      exampleScenario: "Financial payment processing systems where each transaction must be processed once and only once to prevent incorrect fund transfers or duplicate charges. Critical state updates in event-sourced systems."
     }
   ],
   brokerpedia: [
@@ -171,7 +176,8 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "{{RPC (Request/Reply)|RPC (Request/Reply)}} patterns.",
         "Event-driven systems with complex routing logic.",
         "Integrating polyglot systems with its multi-protocol support."
-      ]
+      ],
+      realWorldExamples: "Used by companies like Reddit for processing background tasks and notifications; various financial institutions for reliable message delivery in trading systems; and many applications for managing distributed workloads and inter-service communication."
     },
     {
       id: "apache_kafka",
@@ -201,7 +207,8 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "Real-time analytics pipelines",
         "{{Event Sourcing}} in {{Microservices}} architectures",
         "Log aggregation from distributed systems"
-      ]
+      ],
+      realWorldExamples: "Originally developed at LinkedIn for tracking user activity and operational data. Now widely used by companies like Netflix for real-time data pipelines, Uber for stream processing, and Spotify for event delivery."
     },
     {
       id: "redis_streams",
@@ -247,6 +254,7 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "[Caching](#/caches) messages or sensor data.",
         "Inter-service communication in {{Microservices}} architectures already using {{Redis}}."
       ],
+      realWorldExamples: "Used by various applications for features like real-time chat components, lightweight notification systems, or as an efficient way to distribute tasks to workers when Redis is already part of the stack. For example, a social media app might use Redis Streams to quickly propagate 'like' notifications to connected clients.",
       deliveryGuarantees: "{{At-Least-Once Delivery|At-least-once}} (with consumer acknowledgements and proper handling). Message loss is possible if {{Redis Persistence|Redis persistence}} is not configured or if a master fails before replicating to slaves when {{Persistence}} is fsync-on-write."
     },
     {
@@ -280,7 +288,8 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "Background job processing with {{AWS Lambda|Lambda}}.",
         "Buffering requests to protect [databases](#/databases).",
         "Reliable task offloading for web applications."
-      ]
+      ],
+      realWorldExamples: "Widely used by companies building on AWS for a multitude of tasks, such as decoupling services in e-commerce platforms (e.g., order processing from shipping notification), managing background image processing tasks for social media applications, or buffering data for ingestion into analytics pipelines."
     },
     {
       id: "google_cloud_pubsub",
@@ -325,6 +334,7 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "Real-time data distribution.",
         "{{Decoupling}} applications."
       ],
+      realWorldExamples: "Used by services within Google Cloud for event-driven architectures, such as triggering {{Google Cloud Functions|Cloud Functions}} from events, streaming data into {{Google BigQuery|BigQuery}} for analytics, or distributing notifications for services like Spotify (which runs on GCP).",
       deliveryGuarantees: "{{At-Least-Once Delivery|At-least-once}}. Ordering can be achieved by publishing messages with the same ordering key to the same region. {{Exactly-Once Semantics|Exactly-once processing}} requires {{Idempotency|idempotent}} consumers."
     }
   ],
@@ -502,6 +512,18 @@ Queues enhance distributed systems by improving {{Reliability}}, {{Throughput}},
         "{{Schema Evolution}} management as event formats change.",
       learnings:
         "Event logs provide replayability and {{Decoupling}} of analytics from production systems."
+    },
+    {
+      id: "purchase_order_queue",
+      title: "Scenario: Designing a Purchase Order System with Queues",
+      description: "Design a system where user purchase orders are processed asynchronously to decouple front-end confirmation from backend order fulfillment, inventory updates, and notification services. The system must be reliable and ensure no orders are lost.",
+      problem: "How to ensure reliable order processing even if fulfillment services are slow or temporarily down? Which {{Delivery Guarantees|delivery guarantee}} is appropriate to prevent lost orders while managing potential duplicate processing if retries occur?",
+      solution: {
+        strategy: "Use a durable message queue (e.g., {{RabbitMQ}} or {{Amazon SQS|AWS SQS}}). Choose {{At-Least-Once Delivery|At-Least-Once delivery}} for order messages to ensure no orders are lost. Implement {{Idempotency|idempotent consumers}} in fulfillment, inventory, and notification services to handle potential retries safely (e.g., by checking if an order ID has already been processed against a [database](#/databases)). Use a {{Dead Letter Queue (DLQ)}} for orders that repeatedly fail processing after several retries, allowing for manual investigation.",
+        components: ["API Gateway (receives order)", "Order Service (Producer, validates & publishes order message)", "Message Queue (e.g., RabbitMQ/SQS)", "Fulfillment Service (Consumer, interacts with fulfillment [database](#/databases))", "Inventory Service (Consumer, interacts with inventory [database](#/databases))", "Notification Service (Consumer)", "{{DLQ (Dead Letter Queue)}}"]
+      },
+      challenges: "Ensuring consumer {{Idempotency}}. Managing message ordering if strictly required for specific order types. Monitoring {{Queue Depth}} and {{DLQ (Dead Letter Queue)|DLQ}} for issues. Maintaining data {{Consistency}} between the order [database](#/databases) and inventory [database](#/databases) during asynchronous processing.",
+      learnings: "{{Decoupling}} order submission from processing enhances responsiveness and resilience. {{At-Least-Once Delivery|At-Least-Once delivery}} combined with {{Idempotency|idempotent}} consumers (often involving [database](#/databases) checks) is a robust pattern for critical tasks like order processing."
     }
   ],
   flashcards: [
@@ -705,5 +727,37 @@ run().catch(e => console.error('[example/kafkajs] e.message', e));
       Broker->>Sub1: deliver(msg)
       Broker->>Sub2: deliver(msg)
   `
+  },
+  eventStreamingVsMqNote: {
+    title: "Event Streaming (e.g., Kafka) vs. Traditional Message Queues (e.g., RabbitMQ)",
+    introduction: "While both event streaming platforms and traditional message queues deal with messages, they serve different primary purposes and have distinct architectural characteristics.",
+    points: [
+      {
+        aspect: "Primary Purpose",
+        streaming: "{{Apache Kafka|Kafka}} and similar platforms are designed for handling continuous streams of immutable events, often at very high volume. They act as a distributed, durable log where events can be replayed by multiple consumers independently.",
+        traditionalMq: "{{RabbitMQ}}, {{Amazon SQS|SQS}}, etc., are typically focused on reliable message delivery for specific tasks or commands. Messages are usually consumed and then removed from the queue (though features like {{Dead Letter Queues (DLQ)|DLQs}} exist for failures)."
+      },
+      {
+        aspect: "Message Consumption Model",
+        streaming: "Consumers (often in {{Consumer Groups (Kafka specific)|consumer groups}}) pull messages from partitions in a topic. Multiple consumer groups can read the same data independently, maintaining their own {{Offsets}} (pointers to their current position in the log). This enables replayability.",
+        traditionalMq: "Consumers typically pull messages from a queue. Once a message is acknowledged by a consumer, it's removed and generally not available to other consumers (unless using fan-out exchanges in RabbitMQ, which mimics some pub/sub behavior)."
+      },
+      {
+        aspect: "Message Retention",
+        streaming: "Messages (events) are retained in the log for a configurable period (e.g., days, weeks, or even indefinitely), irrespective of consumption. This allows new consumers to process historical data.",
+        traditionalMq: "Messages are typically deleted from the queue once successfully processed and acknowledged by a consumer."
+      },
+      {
+        aspect: "Use Cases",
+        streaming: "Real-time analytics, event sourcing, stream processing, data integration pipelines, audit logging, website activity tracking.",
+        traditionalMq: "Task queues (background job processing), {{Decoupling}} services for command-based interactions, {{RPC (Request/Reply)|RPC-style messaging}}, ensuring a specific task is done once by one worker."
+      },
+      {
+        aspect: "Analogy",
+        streaming: "Think of it like a newspaper subscription (Kafka topics). Multiple subscribers get their own copy and read at their own pace. Old newspapers (events) are kept for a while.",
+        traditionalMq: "Think of it like a to-do list or a post office mailbox (Queue). A task/letter is picked up by one person, and once done/read, it's removed."
+      }
+    ],
+    conclusion: "Choose {{Apache Kafka|Kafka}} when you need to process streams of events, require message replayability, or have multiple diverse consumers for the same data. Choose traditional MQs like {{RabbitMQ}} or {{Amazon SQS|SQS}} for task distribution, reliable command processing, and simpler point-to-point or complex routed messaging where messages are generally consumed and then disappear."
   }
 };
