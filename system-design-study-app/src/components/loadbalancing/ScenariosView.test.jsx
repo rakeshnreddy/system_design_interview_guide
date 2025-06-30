@@ -38,14 +38,20 @@ describe('ScenariosView', () => {
     expect(screen.getByText('Loading scenario data...')).toBeInTheDocument();
   });
 
-  test('renders no data message when scenarios is empty', () => {
-    render(<ScenariosView appData={emptyAppData} />);
-    expect(screen.getByText('No load balancing scenario data available.')).toBeInTheDocument();
+  test('renders correctly when scenarios is empty but other data might exist', () => {
+    // Test that the "Real-World Scenarios" section title is not rendered,
+    // but the main page title "Load Balancing Scenarios & Trade-offs" is.
+    const appDataWithEmptyScenarios = { ...mockAppData, scenarios: [] };
+    render(<ScenariosView appData={appDataWithEmptyScenarios} />);
+    expect(screen.getByText('Load Balancing Scenarios & Trade-offs')).toBeInTheDocument();
+    expect(screen.queryByText('Real-World Scenarios')).not.toBeInTheDocument();
+    // The old "No load balancing scenario data available." message is no longer globally applicable
+    // as the trade-offs section might still render.
   });
 
   test('renders main title', () => {
     render(<ScenariosView appData={mockAppData} />);
-    expect(screen.getByText('Load Balancing Scenarios')).toBeInTheDocument();
+    expect(screen.getByText('Load Balancing Scenarios & Trade-offs')).toBeInTheDocument();
   });
 
   test('renders all scenarios from appData', () => {
