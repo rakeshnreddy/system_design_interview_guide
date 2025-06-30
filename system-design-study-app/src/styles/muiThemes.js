@@ -87,7 +87,7 @@ export const darkTheme = createTheme({
     },
     text: {
       primary: '#edf2f7',   // --text-primary
-      secondary: '#a0aec0', // --text-secondary
+      secondary: '#e2e8f0', // --text-secondary (Increased contrast)
     },
   },
 });
