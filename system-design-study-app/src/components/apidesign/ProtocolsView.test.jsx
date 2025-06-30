@@ -54,60 +54,127 @@ describe('ProtocolsView', () => {
     expect(screen.getByRole('heading', { name: 'API Protocols & Styles', level: 4 })).toBeInTheDocument();
   });
 
-  // TODO: Revisit this test. Finding headings with linked text reliably is tricky.
-  // test('renders all protocol names as headings', () => {
-  //   render(<ProtocolsView appData={mockAppData} />);
-  //   mockAppData.protocols.forEach(protocol => {
-  //     const protocolName = protocol.name.replace(/\{\{([^}]+)\}\}/g, '$1');
-  //     const headings = screen.getAllByText(protocolName, { selector: 'div.MuiTypography-h6 a, div.MuiTypography-h6 span' });
-  //     expect(headings.length).toBeGreaterThanOrEqual(1);
-  //   });
-  // });
+  test('renders all protocol names as headings', () => {
+    render(<ProtocolsView appData={mockAppData} />);
+    mockAppData.protocols.forEach(protocol => {
+      const protocolDisplayName = protocol.name.replace(/\{\{([^}]+)\}\}/g, (match, content) => {
+        return content.split('|')[0];
+      }).trim();
 
-  // TODO: Revisit this test. Complex assertions with RenderTextWithLinks and within require careful debugging.
-  // test('renders structure, pros, cons, and whenToUse for each protocol', () => {
-  //   render(<ProtocolsView appData={mockAppData} />);
+      // Find all elements styled as h6 by MUI (typically divs with specific classes)
+      // The class "MuiTypography-h6" is a general class for h6 variants.
+      const headingElements = document.querySelectorAll('div.MuiTypography-h6');
+      let foundHeading = false;
+      headingElements.forEach(headingEl => {
+        if (within(headingEl).queryByText(protocolDisplayName)) {
+          foundHeading = true;
+        }
+      });
+      expect(foundHeading).toBe(true, `Heading for "${protocolDisplayName}" not found.`);
+    });
+  });
 
-  //   mockAppData.protocols.forEach(protocol => {
-  //     const protocolName = protocol.name.replace(/\{\{([^}]+)\}\}/g, '$1');
-  //     const protocolTitleElement = screen.getByText(protocolName, { selector: 'div.MuiTypography-h6 a, div.MuiTypography-h6 span' });
-  //     const protocolContainer = protocolTitleElement.closest('li');
-  //     expect(protocolContainer).toBeInTheDocument();
+  test('renders structure, pros, cons, realWorldExample, interviewTalkingPoints and whenToUse for each protocol', () => {
+    render(<ProtocolsView appData={mockAppData} />);
 
-  //     if (protocolContainer) {
-  //       const withinListItem = within(protocolContainer);
+    mockAppData.protocols.forEach(protocol => {
+      const protocolDisplayName = protocol.name.replace(/\{\{([^}]+)\}\}/g, (match, content) => {
+        return content.split('|')[0];
+      }).trim();
 
-  //       const structureKeyPhrase = protocol.structure.split(',')[0].replace(/\{\{.*?\}\}/g, "").trim();
-  //       expect(withinListItem.getByText(new RegExp(structureKeyPhrase, "i"))).toBeInTheDocument();
+      // Find the specific heading element (div styled as h6) that contains the protocol display name.
+      const allStyledHeadings = document.querySelectorAll('div.MuiTypography-h6');
+      let targetHeadingElement = null;
+      allStyledHeadings.forEach(sh => {
+        if (within(sh).queryByText(protocolDisplayName)) {
+          targetHeadingElement = sh;
+        }
+      });
+      expect(targetHeadingElement).not.toBeNull(`Could not find heading element for ${protocolDisplayName}`);
 
-  //       protocol.pros.forEach(pro => {
-  //         const proKeyPhrase = pro.split(" ")[0].replace(/\{\{.*?\}\}/g, "").trim();
-  //         if(proKeyPhrase) expect(withinListItem.getByText(new RegExp(proKeyPhrase, "i"))).toBeInTheDocument();
-  //       });
+      const protocolContainer = targetHeadingElement.closest('li');
+      expect(protocolContainer).toBeInTheDocument();
 
-  //       protocol.cons.forEach(con => {
-  //         let conKeyPhrase = con.split(" ")[0].replace(/\{\{.*?\}\}/g, "").trim();
-  //         if (conKeyPhrase.includes('/')) {
-  //           conKeyPhrase = conKeyPhrase.split('/')[0];
-  //         }
-  //         if(conKeyPhrase) expect(withinListItem.getByText(new RegExp(conKeyPhrase, "i"))).toBeInTheDocument();
-  //       });
+      if (protocolContainer) {
+        const withinProtocolContainer = within(protocolContainer);
 
-  //       protocol.whenToUse.forEach(use => {
-  //         const useKeyPhrase = use.split(" ")[0].replace(/\{\{.*?\}\}/g, "").trim();
-  //         if(useKeyPhrase) expect(withinListItem.getByText(new RegExp(useKeyPhrase, "i"))).toBeInTheDocument();
-  //       });
+        const getSafeSnippet = (text, length = 20) => {
+          const braceIndex = text.indexOf("{{");
+          let snippet;
+          if (braceIndex === 0) { // Starts with a glossary term
+            // We can't reliably use a snippet before the term, so we'll look for the term itself later if needed
+            // For now, this approach might skip asserting content if it starts with a term and has no text after.
+            // A more complex approach would be to extract the display text of the first term.
+            // However, RenderTextWithLinks handles this, so we rely on its output.
+            // The current test checks for presence of labels like "Pros:", "Cons:" and then *some* text from the items.
+            // If an item is *only* a glossary term, this snippet approach for item content might not work.
+            // Let's try taking text *after* the first term if it starts with one.
+            const closingBraceIndex = text.indexOf("}}");
+            if (closingBraceIndex !== -1 && text.length > closingBraceIndex + 2) {
+                snippet = text.substring(closingBraceIndex + 2).trim().substring(0, length);
+            } else { // Only a glossary term or nothing after
+                snippet = text.replace(/\{\{([^}]+)\}\}/g, (match, content) => content.split('|')[0]).substring(0,length); // Use the display name of the term
+            }
+          } else if (braceIndex > 0) {
+            snippet = text.substring(0, braceIndex).trim();
+          } else {
+            snippet = text.substring(0, length).trim();
+          }
+          return snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape for regex
+        };
 
-  //       if (protocol.realWorldExample) {
-  //         const exampleKeyPhrase = protocol.realWorldExample.split(" ").slice(0,3).join(" ").trim();
-  //         if(exampleKeyPhrase) expect(withinListItem.getByText(new RegExp(exampleKeyPhrase, "i"))).toBeInTheDocument();
-  //       }
+        // Check for Structure
+        if (protocol.structure) {
+          expect(withinProtocolContainer.getByText(/Structure \/ Key Characteristics:/i)).toBeInTheDocument();
+          const structureSnippet = getSafeSnippet(protocol.structure, 30);
+          if (structureSnippet) {
+            expect(withinProtocolContainer.getByText(new RegExp(structureSnippet, "i"))).toBeInTheDocument();
+          }
+        }
 
-  //       if (protocol.interviewTalkingPoints && protocol.interviewTalkingPoints.length > 0) {
-  //          const talkingPointKeyPhrase = protocol.interviewTalkingPoints[0].split(" ")[0].trim();
-  //          if(talkingPointKeyPhrase) expect(withinListItem.getByText(new RegExp(talkingPointKeyPhrase, "i"))).toBeInTheDocument();
-  //       }
-  //     }
-  //   });
-  // });
+        // Check for Pros
+        if (protocol.pros && protocol.pros.length > 0) {
+          expect(withinProtocolContainer.getByText(/Pros:/i)).toBeInTheDocument();
+          protocol.pros.forEach(pro => {
+            const proSnippet = getSafeSnippet(pro);
+            if(proSnippet) expect(withinProtocolContainer.getByText(new RegExp(proSnippet, "i"))).toBeInTheDocument();
+          });
+        }
+
+        // Check for Cons
+        if (protocol.cons && protocol.cons.length > 0) {
+          expect(withinProtocolContainer.getByText(/Cons:/i)).toBeInTheDocument();
+          protocol.cons.forEach(con => {
+            const conSnippet = getSafeSnippet(con);
+            if(conSnippet) expect(withinProtocolContainer.getByText(new RegExp(conSnippet, "i"))).toBeInTheDocument();
+          });
+        }
+
+        // Check for When to Use
+        if (protocol.whenToUse && protocol.whenToUse.length > 0) {
+          expect(withinProtocolContainer.getByText(/When to Use:/i)).toBeInTheDocument();
+          protocol.whenToUse.forEach(use => {
+            const useSnippet = getSafeSnippet(use);
+            if(useSnippet) expect(withinProtocolContainer.getByText(new RegExp(useSnippet, "i"))).toBeInTheDocument();
+          });
+        }
+
+        // Check for Real-World Example
+        if (protocol.realWorldExample) {
+          expect(withinProtocolContainer.getByText(/Real-World Example:/i)).toBeInTheDocument();
+           const exampleSnippet = getSafeSnippet(protocol.realWorldExample, 30);
+           if(exampleSnippet) expect(withinProtocolContainer.getByText(new RegExp(exampleSnippet, "i"))).toBeInTheDocument();
+        }
+
+        // Check for Interview Talking Points
+        if (protocol.interviewTalkingPoints && protocol.interviewTalkingPoints.length > 0) {
+          expect(withinProtocolContainer.getByText(/Interview Talking Points:/i)).toBeInTheDocument();
+           protocol.interviewTalkingPoints.forEach(point => {
+            const pointSnippet = getSafeSnippet(point);
+            if(pointSnippet) expect(withinProtocolContainer.getByText(new RegExp(pointSnippet, "i"))).toBeInTheDocument();
+          });
+        }
+      }
+    });
+  });
 });
