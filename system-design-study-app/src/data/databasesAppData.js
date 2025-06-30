@@ -1,5 +1,7 @@
 export const databasesAppData = {
   title: "Databases",
+  description: "Databases are the heart of most modern applications, responsible for storing, organizing, and retrieving data efficiently and reliably. Choosing the right database is a critical system design decision with long-term implications for scalability, performance, consistency, and development complexity. This section explores the fundamental differences between {{SQL (Structured Query Language)|SQL}} and {{NoSQL (Not Only SQL)|NoSQL}} databases, key concepts like the {{CAP Theorem (Brewer's Theorem)|CAP Theorem}} and {{ACID Properties|ACID}} vs. {{BASE Properties|BASE}}, various data models, and practical considerations for selecting a database in system design interviews.",
+  overview: "A database is an organized collection of data, generally stored and accessed electronically from a computer system. The choice of database technology significantly impacts how an application handles data persistence, querying, scalability, and fault tolerance. \n\n**Why Choosing the Right Database Matters:**\nIn system design interviews, demonstrating an understanding of different database types and their trade-offs is crucial. Selecting an inappropriate database can lead to performance bottlenecks, difficulty scaling, data integrity issues, or increased development complexity. For instance, using a relational database for a use case that demands extreme write scalability and flexible schema (like IoT event streams) might be suboptimal, just as using a simple key-value store for complex transactional data with many relationships would be problematic.\n\n**Core Distinction: SQL vs. NoSQL**\n*   **{{SQL (Structured Query Language)|SQL Databases (Relational)}}:** These databases, like {{PostgreSQL}} and {{MySQL}}, store data in structured tables with predefined schemas (rows and columns). They enforce relationships between tables using foreign keys and are known for strong data integrity through {{ACID Properties|ACID transactions}}. They excel at complex queries involving multiple tables (joins) and are a traditional choice for applications requiring strong consistency.\n*   **{{NoSQL (Not Only SQL)|NoSQL Databases (Non-Relational)}}:** This broad category encompasses various database types designed for specific use cases, often prioritizing scalability, performance, and schema flexibility over the strict relational model. Examples include {{MongoDB}} (Document), {{Apache Cassandra|Cassandra}} (Wide-Column), {{Redis}} (Key-Value), and {{Neo4j}} (Graph). They often follow the {{BASE Properties|BASE}} model and are well-suited for large datasets, high traffic applications, and evolving data structures. The choice within NoSQL depends heavily on the specific data model and access patterns (e.g., document stores for flexible JSON-like data, key-value stores for fast lookups, graph databases for relationship-heavy data).",
   metrics: [
     {
       id: "iops",
@@ -203,10 +205,10 @@ export const databasesAppData = {
       id: "mongodb",
       title: "MongoDB",
       type: "{{NoSQL (Document Store)}}",
-      architecture: "Distributed document database. Stores data in {{BSON}} (Binary JSON-like) format. Supports {{Sharding (Horizontal Partitioning)|sharding}} and {{Replication}} (replica sets) natively for {{Scalability}} and {{Availability}}.",
+      architecture: "Distributed document database. Stores data in {{BSON}} (Binary JSON-like) format. Supports {{Sharding (Horizontal Partitioning)}} and {{Replication}} (replica sets) natively for {{Scalability}} and {{Availability}}.",
       pros: [
         "Flexible schema ({{Schema-on-Read}}) allows for rapid iteration and handling of evolving or unstructured/semi-structured data.",
-        "Good {{Horizontal Scaling|horizontal scalability}} and {{High Availability}} through automatic {{Sharding (Horizontal Partitioning)|sharding}} and replica sets.",
+        "Good {{Horizontal Scaling}} and {{High Availability}} through automatic {{Sharding (Horizontal Partitioning)}} and replica sets.",
         "Developer-friendly query language (similar to {{JSON}}) and drivers for many programming languages.",
         "Rich document model can represent complex hierarchical relationships in a single document, reducing need for joins."
       ],
@@ -273,8 +275,22 @@ export const databasesAppData = {
         "When low-latency reads of {{Strongly Consistent|strongly consistent}} data are always required.",
         "If the team is not prepared for query-first data modeling."
       ],
+      caseStudies: [
+        {
+          name: "Netflix's Use of Apache Cassandra",
+          description: "Netflix uses {{Apache Cassandra|Cassandra}} extensively for many of its backend services, particularly for managing massive amounts of user data, viewing history, and personalized recommendations. Given their global scale and need for constant {{Availability}}, Cassandra's masterless architecture, linear {{Scalability}}, and multi-datacenter {{Replication}} capabilities were a strong fit.",
+          keyChoices: [
+            "**High Availability & Fault Tolerance:** Cassandra's distributed, decentralized nature means no {{Single Point of Failure (SPOF)|single point of failure}}, crucial for a service that needs to be always on.",
+            "**Linear Scalability:** Netflix handles billions of data points and operations daily. Cassandra scales horizontally by simply adding more nodes, allowing them to handle growth seamlessly.",
+            "**Write Performance:** Optimized for high write {{Throughput}}, essential for ingesting viewing activity and user interactions in real-time.",
+            "**Geographic Distribution:** Native support for multi-datacenter clusters allows Netflix to replicate data across regions, ensuring lower {{Latency}} for global users and disaster recovery.",
+            "**CAP Context:** Netflix often prioritizes Availability and Partition Tolerance (AP) for many of its services, making Cassandra (an AP system) a suitable choice. They manage {{Eventual Consistency}} for use cases where it's acceptable."
+          ],
+          takeaway: "Illustrates how {{NoSQL (Not Only SQL)|NoSQL}} wide-column stores like Cassandra can power large-scale, global applications with extreme {{Availability}} and {{Scalability}} requirements, especially for write-heavy workloads where {{Eventual Consistency}} is manageable."
+        }
+      ],
       interviewTalkingPoints: [
-        "Emphasize its masterless architecture, ensuring no {{Single Point of Failure (SPOF)|single point of failure}} and {{High Availability}}.",
+        "Emphasize its masterless architecture, ensuring no {{Single Point ofFailure (SPOF)|single point of failure}} and {{High Availability}}, as leveraged by Netflix.",
         "Highlight its linear {{Scalability}} for write-heavy workloads.",
         "Discuss its tunable {{Consistency}} and how it relates to {{CAP Theorem (Brewer's Theorem)|CAP theorem}} choices.",
         "Mention the importance of query-driven data modeling ({{Denormalization}})."
@@ -306,7 +322,7 @@ export const databasesAppData = {
         "{{Durability}} guarantees depend heavily on the chosen {{Persistence}} configuration ({{RDB (Redis Database Backup)|RDB}} vs. {{AOF (Append Only File)|AOF}}) and can trade off performance."
       ],
       whenToUse: [
-        "As a primary [caching](#/caches) layer to reduce {{Latency}} and load on backend databases.",
+        "As a primary [caching layer](#/caches) to reduce {{Latency}} and load on backend databases.",
         "Session management for web applications.",
         "Real-time leaderboards, counters, and rate limiters.",
         "As a [message broker](#/messaging-queues) or task queue (especially with {{Redis Streams}}).",
@@ -318,14 +334,14 @@ export const databasesAppData = {
         "When long-term storage of infrequently accessed data is the primary goal (could be expensive)."
       ],
       interviewTalkingPoints: [
-        "Stress its in-memory nature and speed for [caching](#/caches) and real-time use cases.",
+        "Stress its in-memory nature and speed for [caching strategies](#/caches) and real-time use cases.",
         "Mention its versatile data structures beyond simple key-value.",
         "Discuss its use for session stores, leaderboards, and as a [message queue](#/messaging-queues).",
         "Acknowledge RAM limitations and {{Persistence}} trade-offs ({{RDB (Redis Database Backup)|RDB}} vs. {{AOF (Append Only File)|AOF}})."
       ],
-      defendingYourDecision: "{{Redis}} was chosen for its exceptional speed as an in-memory [cache](#/caches) and session store, drastically reducing {{Latency}} for frequently accessed data. Its rich data structures also allow us to efficiently implement [e.g., real-time leaderboards]. While {{Persistence}} is a consideration, for this specific use case, the benefits of its performance outweigh the need for {{RDBMS}}-level {{Durability}} for all cached data.",
+      defendingYourDecision: "{{Redis}} was chosen for its exceptional speed as an in-memory [cache layer](#/caches) and session store, drastically reducing {{Latency}} for frequently accessed data. Its rich data structures also allow us to efficiently implement [e.g., real-time leaderboards]. While {{Persistence}} is a consideration, for this specific use case, the benefits of its performance outweigh the need for {{RDBMS}}-level {{Durability}} for all cached data.",
       useCases: [
-        "[Caching](#/caches) layer for applications.",
+        "[Caching layer](#/caches) for applications.",
         "Session store.",
         "Real-time leaderboards and counters.",
         "[Message broker](#/messaging-queues) / task queue ({{Redis Streams}}).",
@@ -492,6 +508,64 @@ export const databasesAppData = {
       description: "A pattern that separates read and update operations (models) for a data store. Commands update data, Queries read data. Often used with separate read and write databases.",
       pros: "Optimized data models for reads and writes, improved {{Scalability}} and performance.",
       cons: "Increased complexity, potential for {{Eventual Consistency}} between read/write models."
+    },
+    {
+      id: "active-passive-replication",
+      title: "Active-Passive Multi-Region Replication",
+      description: "In an active-passive multi-region setup, one region (the active region) handles all live traffic (reads and writes). Data is replicated to one or more passive (standby/DR - Disaster Recovery) regions. The passive region(s) do not serve live traffic but are ready to take over if the active region fails.",
+      pros: [
+        "Simpler {{Failover}} process compared to active-active, as there's a clear designated backup.",
+        "Lower risk of data conflicts as all writes go to the active region first.",
+        "Can be more cost-effective during normal operations as passive region resources might be scaled down or used for non-critical tasks like backups or analytics (though they need to be ready to scale up quickly)."
+      ],
+      cons: [
+        "Higher {{Latency}} for users geographically distant from the active region.",
+        "Passive region resources are underutilized for live traffic during normal operations.",
+        "{{Failover}} can result in some data loss (Recovery Point Objective - RPO > 0) if replication is asynchronous and the active region fails suddenly.",
+        "Failover time (Recovery Time Objective - RTO) can be non-zero, leading to downtime during the switch.",
+        "Requires robust monitoring and automated {{Failover}} mechanisms."
+      ],
+      whenToUse: [
+        "When disaster recovery is a primary concern and some downtime during failover is acceptable.",
+        "Applications where writes are centralized and can tolerate slightly higher latency for users far from the active region.",
+        "When cost optimization of standby resources is important."
+      ],
+      interviewTalkingPoints: [
+        "Explain that only one region is active, others are on standby for DR.",
+        "Discuss RPO/RTO implications during failover.",
+        "Mention trade-offs: simplicity and cost vs. latency and resource utilization."
+      ],
+      defendingYourDecision: "We chose an active-passive multi-region setup to ensure business continuity with a clear disaster recovery plan. While it means users far from the active region might experience slightly higher latency, the simplicity of failover and reduced risk of data conflicts were deemed more critical for our application. The RPO/RTO achievable with this setup meets our business requirements."
+    },
+    {
+      id: "active-active-replication",
+      title: "Active-Active Multi-Region Replication",
+      description: "In an active-active multi-region setup, multiple regions are simultaneously serving live traffic (reads and potentially writes). Data is replicated bidirectional or in a mesh between these active regions. This setup aims for higher {{Availability}}, lower {{Latency}} for globally distributed users, and better resource utilization.",
+      pros: [
+        "Improved {{Availability}}: If one region fails, others can continue serving traffic seamlessly (or with minimal disruption).",
+        "Lower {{Latency}} for users as they can be routed to the nearest active region.",
+        "Better utilization of resources as all regions are actively serving traffic.",
+        "Enhanced disaster recovery capabilities as multiple regions are already live."
+      ],
+      cons: [
+        "Significantly increased complexity, especially for managing data {{Consistency}} and resolving write conflicts between regions.",
+        "Higher operational costs due to fully active infrastructure in multiple regions.",
+        "Requires sophisticated routing logic (e.g., geo-DNS) to direct users to the appropriate region.",
+        "Data {{Replication}} between active regions can be complex and may introduce {{Latency}} or require careful handling of {{Eventual Consistency}}.",
+        "Not all database technologies natively support active-active multi-region writes effectively; specialized databases (e.g., {{Google Spanner}}, {{Amazon DynamoDB|DynamoDB Global Tables}}, {{CockroachDB}}) or complex application-level logic might be needed."
+      ],
+      whenToUse: [
+        "Global applications requiring very high {{Availability}} and low {{Latency}} for users across different geographic locations.",
+        "When the cost and complexity are justified by the need for near-zero downtime and global presence.",
+        "Applications that can be designed to handle {{Eventual Consistency}} or have clear {{Conflict Resolution}} strategies if writes occur in multiple regions."
+      ],
+      interviewTalkingPoints: [
+        "Explain that multiple regions serve live traffic, improving availability and latency.",
+        "Crucially, highlight the challenge of data consistency and conflict resolution for writes.",
+        "Mention the need for global traffic management.",
+        "Discuss database technologies that support this (e.g., Spanner, DynamoDB Global Tables)."
+      ],
+      defendingYourDecision: "An active-active multi-region architecture was selected to provide the highest level of availability and lowest latency for our global user base. We are using [specific database, e.g., DynamoDB Global Tables] which handles multi-master replication and conflict resolution, and we've implemented [geo-routing strategy] to direct users to the nearest available region. While complex, this meets our stringent uptime and performance SLAs."
     }
   ],
   scenarios: [
@@ -515,7 +589,7 @@ export const databasesAppData = {
         "Relational databases ({{PostgreSQL}}, {{MySQL}}) are a strong fit due to {{ACID Properties|ACID compliance}}.",
         "Need for accurate stock counts and reliable transaction processing.",
         "{{Read Replicas}} can handle high read loads for product browsing.",
-        "[Caching](#/caches) (e.g., {{Redis}}) for popular product details."
+        "[Caching strategies](#/caches) (e.g., {{Redis}}) for popular product details."
       ],
       solutionRationale: "{{PostgreSQL}} or {{MySQL}} with {{InnoDB}} for its {{ACID Properties|ACID properties}}. {{Read Replicas}} to scale reads. Potentially a {{NoSQL (Not Only SQL)|NoSQL}} solution for product catalogs if schema flexibility and search are major concerns, but inventory itself needs transactional integrity."
     },
@@ -784,5 +858,179 @@ except Exception as e:
       end
       click N1 "https://docs.example.com/node1"
   `
+  },
+  polyglotPersistence: {
+    title: "Polyglot Persistence",
+    introduction: "Polyglot persistence is the practice of using multiple database technologies within a single application or system, selecting the most appropriate database for each specific job or service. Instead of relying on a one-size-fits-all database solution, this approach acknowledges that different data types and access patterns are best handled by specialized databases. This is particularly common in {{Microservices Architecture|microservice architectures}} where each service can choose its own optimal data store (see {{Database per Service (Microservices)}} pattern).",
+    whyItMatters: "Modern applications often handle diverse types of data (e.g., transactional data, user profiles, product catalogs, social graphs, real-time analytics, [caches](#/caches)). A single database technology rarely excels at all these tasks. Polyglot persistence allows architects to leverage the strengths of {{SQL (Structured Query Language)|SQL}} databases (for {{ACID Properties|ACID transactions}}, complex queries), {{Document Stores}} (for flexible schemas), {{Key-Value Stores}} (for [caching](#/caches) and session management), {{Graph Databases}} (for relationship-heavy data), and {{Search Indexes}} (for full-text search) within the same overall system.",
+    example: {
+      title: "Example: E-commerce Platform (e.g., Amazon-like)",
+      description: "A large e-commerce platform might employ polyglot persistence as follows:",
+      components: [
+        {
+          service: "User Accounts & Orders",
+          database: "{{PostgreSQL}} or {{MySQL}} (Relational DB)",
+          reason: "Handles transactional data requiring strong {{ACID Properties|ACID compliance}} (e.g., order creation, payment processing, user credentials)."
+        },
+        {
+          service: "Product Catalog",
+          database: "{{MongoDB}} or {{Amazon DynamoDB|DynamoDB}} (Document or Key-Value/Document DB)",
+          reason: "Manages products with varying attributes and complex nested structures. Allows for flexible schema and easy updates to product information. {{Amazon DynamoDB|DynamoDB}} offers high scalability for a massive catalog."
+        },
+        {
+          service: "Shopping Cart & User Sessions",
+          database: "{{Redis}} or {{Memcached}} (In-Memory Key-Value Store)",
+          reason: "Provides extremely fast read/write access for temporary data like shopping carts and user session information (see [caching strategies](#/caches)), improving responsiveness."
+        },
+        {
+          service: "Search Functionality",
+          database: "{{Elasticsearch}} or {{Apache Solr}} (Search Engine)",
+          reason: "Powers product search with advanced features like full-text search, faceting, and relevance ranking."
+        },
+        {
+          service: "Recommendations Engine",
+          database: "{{Neo4j}} or {{Amazon Neptune}} (Graph Database)",
+          reason: "Models relationships between users, products, and purchases to generate personalized recommendations (e.g., 'customers who bought X also bought Y')."
+        },
+        {
+          service: "Inventory Management",
+          database: "Relational DB (e.g., {{PostgreSQL}} with high consistency) or a specialized inventory service using a consistent store.",
+          reason: "Requires accurate, consistent tracking of stock levels to prevent overselling. Often needs strong transactional guarantees that might integrate with the Order service's database or be a dedicated service."
+        },
+        {
+          service: "Analytics & Reporting",
+          database: "{{Apache Hadoop|Hadoop}} Ecosystem ({{HDFS}}, {{Spark}}), {{Snowflake}}, or {{Google BigQuery}} (Data Warehouse/Lake)",
+          reason: "Aggregates data from various sources for business intelligence, trend analysis, and reporting. Handles large volumes of historical data and complex analytical queries ({{OLAP}})."
+        }
+      ],
+      conclusion: "This approach allows each part of the e-commerce platform to use the most suitable data storage technology, optimizing for performance, scalability, and specific functional requirements. However, it introduces challenges in data consistency and operational management across multiple database systems."
+    },
+    challenges: [
+      "**Data Consistency:** Ensuring data remains consistent across different databases is a major challenge. {{Eventual Consistency}} is often adopted, requiring careful design of data synchronization mechanisms (e.g., event-driven architecture, CDC).",
+      "**Transactional Integrity:** Maintaining transactional guarantees across multiple databases is complex. Distributed transaction protocols (like Two-Phase Commit) are often avoided due to complexity and performance impact; patterns like {{Sagas}} are used instead.",
+      "**Operational Overhead:** Managing, monitoring, and backing up multiple database systems increases operational complexity and requires diverse skill sets.",
+      "**Increased System Complexity:** The overall architecture becomes more intricate with more moving parts and inter-service communication for data."
+    ],
+    benefits: [
+      "**Optimized Performance & Scalability:** Each service uses a database tailored to its specific workload, leading to better performance and scalability for that component.",
+      "**Technology Flexibility:** Teams can choose the best tool for the job, fostering innovation and allowing the use of specialized database features.",
+      "**Improved Resilience:** Failure in one database system might not necessarily impact other services if designed for loose coupling.",
+      "**Better Fit for Microservices:** Aligns well with the {{Database per Service (Microservices)|database-per-service pattern}} in microservice architectures."
+    ]
+  },
+  databaseComparisonSummary: {
+    title: "Database Comparison Summary",
+    introduction: "Choosing the right database is crucial. This summary provides a high-level comparison of major database categories, highlighting their typical data models, consistency approaches, scalability characteristics, and common use cases. Remember that specific implementations within each category can vary significantly.",
+    categories: [
+      {
+        name: "Relational Databases (SQL)",
+        examples: "{{PostgreSQL}}, {{MySQL}}, MS SQL Server, Oracle",
+        dataModel: "Tables with rows and columns; predefined schema; relationships enforced by foreign keys.",
+        consistency: "Primarily {{Strong Consistency}} via {{ACID Properties|ACID transactions}}.",
+        scalability: "{{Vertical Scaling}} is common. {{Horizontal Scaling}} via {{Read Replicas}} for reads, and {{Sharding (Horizontal Partitioning)|sharding}} for writes (can be complex).",
+        pros: [
+          "Mature technology, well understood.",
+          "Strong data integrity and consistency.",
+          "Powerful query language ({{SQL (Structured Query Language)|SQL}}) for complex joins and aggregations.",
+          "Rich ecosystem of tools and expertise."
+        ],
+        cons: [
+          "Schema rigidity can slow down development if requirements change frequently.",
+          "Horizontal scaling for writes can be challenging and complex to implement.",
+          "Can be more expensive for very large scale or high throughput compared to some {{NoSQL (Not Only SQL)|NoSQL}} options."
+        ],
+        whenToUse: "Applications requiring strong transactional guarantees (e.g., financial systems, ERPs, order management). Systems with complex relationships and well-defined, structured data. When {{ACID Properties|ACID compliance}} is non-negotiable."
+      },
+      {
+        name: "Key-Value Stores",
+        examples: "{{Redis}}, {{Amazon DynamoDB|DynamoDB}} (can also act as document store), {{Memcached}}",
+        dataModel: "Simple key-value pairs. Value can be a simple data type, string, or complex object (e.g., {{JSON}}).",
+        consistency: "Varies widely. In-memory caches like {{Redis}} can be strongly consistent for single operations. Distributed K-V stores often offer tunable consistency, commonly {{Eventual Consistency}} (AP systems).",
+        scalability: "Excellent {{Horizontal Scaling}}. Designed for high throughput and low latency lookups.",
+        pros: [
+          "Extremely fast for simple read/write operations by key.",
+          "Highly scalable and available.",
+          "Simple data model, easy to use."
+        ],
+        cons: [
+          "Limited query capabilities beyond direct key lookups (no complex joins or aggregations typically).",
+          "Relationships between data items must be managed at the application level.",
+          "Not ideal for complex transactional workloads."
+        ],
+        whenToUse: "[Caching strategies](#/caches), session management, real-time leaderboards, user preference storage, serving frequently accessed data with low latency. Good for applications with high velocity reads and writes of relatively small pieces of data."
+      },
+      {
+        name: "Document Databases",
+        examples: "{{MongoDB}}, Couchbase, {{Amazon DynamoDB|DynamoDB}} (as document store)",
+        dataModel: "Collections of documents (often {{JSON}}/{{BSON}}-like). Documents can have varying structures (flexible schema).",
+        consistency: "Often tunable. Many offer {{Eventual Consistency}} by default for reads from secondaries but can be configured for stronger consistency. {{MongoDB}} supports multi-document {{ACID Properties|ACID transactions}} in recent versions.",
+        scalability: "Good {{Horizontal Scaling}} through {{Sharding (Horizontal Partitioning)|sharding}}.",
+        pros: [
+          "Flexible schema allows for rapid development and easy handling of evolving or semi-structured data.",
+          "Documents can represent complex hierarchical data naturally.",
+          "Developer-friendly query languages (often {{JSON}}-based)."
+        ],
+        cons: [
+          "Complex joins between documents (collections) can be less performant or more difficult than in {{SQL (Structured Query Language)|SQL}}.",
+          "Multi-document transactions, while available in some, can be more complex or have performance implications compared to {{RDBMS}}.",
+          "Data redundancy can occur if not modeled carefully (denormalization is common)."
+        ],
+        whenToUse: "Content management systems, product catalogs, user profiles, applications with rapidly changing requirements or semi-structured data. Mobile application backends."
+      },
+      {
+        name: "Wide-Column (Column-Family) Stores",
+        examples: "{{Apache Cassandra|Cassandra}}, {{Google Bigtable}}, HBase",
+        dataModel: "Tables (column families) where rows are identified by a key. Each row can have a different set of columns, grouped into column families. Data is often versioned by timestamp.",
+        consistency: "Typically tunable, often prioritizing {{Availability}} and {{Partition Tolerance}} (AP systems), leading to {{Eventual Consistency}}. Some offer lightweight transactions on single rows.",
+        scalability: "Massive {{Horizontal Scaling}}, designed for very high write throughput and large datasets (petabytes).",
+        pros: [
+          "Excellent for write-intensive workloads.",
+          "Linearly scalable and highly available due to distributed, often masterless, architecture.",
+          "Flexible schema at the column level within a row."
+        ],
+        cons: [
+          "Limited ad-hoc query capabilities; data modeling is typically query-driven (denormalization is key).",
+          "Joins are generally not supported or are very inefficient.",
+          "Steeper learning curve for data modeling and operations."
+        ],
+        whenToUse: "Time-series data (IoT, metrics, logs), applications requiring extreme write throughput and scale, real-time analytics on large datasets, systems needing high availability across geographic regions."
+      },
+      {
+        name: "Graph Databases",
+        examples: "{{Neo4j}}, {{Amazon Neptune}}, JanusGraph",
+        dataModel: "Nodes (entities) and Edges (relationships), both can have properties. Optimized for traversing relationships.",
+        consistency: "Many graph databases offer {{ACID Properties|ACID transactions}} for graph operations.",
+        scalability: "Scaling graph databases, especially for writes in a distributed manner, can be complex. Read scaling is often easier. Some are optimized for single-server performance with very large graphs.",
+        pros: [
+          "Excellent for managing and querying highly interconnected data and complex relationships.",
+          "Intuitive data model for relationship-heavy domains.",
+          "Performant for deep relationship traversals (e.g., 'friends of friends')."
+        ],
+        cons: [
+          "May not be ideal for querying based on properties across the entire dataset (less efficient than {{SQL (Structured Query Language)|SQL}} or search engines for that).",
+          "Scaling massive, highly connected graphs in a distributed environment can be challenging.",
+          "Ecosystem might be less mature than for {{SQL (Structured Query Language)|SQL}} or some other {{NoSQL (Not Only SQL)|NoSQL}} types."
+        ],
+        whenToUse: "Social networks, recommendation engines, fraud detection, knowledge graphs, network and IT operations monitoring, identity and access management."
+      },
+      {
+        name: "NewSQL Databases",
+        examples: "{{Google Spanner}}, {{CockroachDB}}, VoltDB, TiDB",
+        dataModel: "Primarily relational (tables, {{SQL (Structured Query Language)|SQL}}), but with architectures designed for horizontal scalability.",
+        consistency: "Aim to provide the strong consistency and {{ACID Properties|ACID transactions}} of traditional {{SQL (Structured Query Language)|SQL}} databases, often globally distributed.",
+        scalability: "Designed for {{Horizontal Scaling}} of both reads and writes, similar to {{NoSQL (Not Only SQL)|NoSQL}} systems, while retaining {{SQL (Structured Query Language)|SQL}} features.",
+        pros: [
+          "Combines {{SQL (Structured Query Language)|SQL}}'s familiar interface and transactional guarantees with {{NoSQL (Not Only SQL)|NoSQL}}'s scalability.",
+          "Can simplify architecture by providing a single, scalable, consistent database for demanding applications.",
+          "Often designed for distributed environments and fault tolerance."
+        ],
+        cons: [
+          "Can be more complex to operate and manage than traditional {{SQL (Structured Query Language)|SQL}} databases or simpler {{NoSQL (Not Only SQL)|NoSQL}} options.",
+          "May have specific architectural assumptions or limitations depending on the implementation.",
+          "Ecosystem might be less mature than for long-standing {{SQL (Structured Query Language)|SQL}} databases."
+        ],
+        whenToUse: "Applications that need the transactional consistency of {{SQL (Structured Query Language)|SQL}} but also require massive horizontal scalability that traditional {{RDBMS}} struggle to provide. Global applications needing distributed, consistent data. Replacing complex sharded {{SQL (Structured Query Language)|SQL}} setups."
+      }
+    ]
   }
 };

@@ -30,6 +30,9 @@ const FundamentalsView = ({ appData }) => {
   const additionalMetricsList = [
     "<strong>Eviction Rate:</strong> The rate at which items are being removed from the cache due to space limitations or {{TTL}} expiry. High eviction rates might indicate an undersized cache or overly aggressive TTLs.",
     "<strong>Cache CPU/Memory Usage:</strong> Monitoring the resource consumption of cache nodes/processes helps identify performance bottlenecks or resource exhaustion.",
+    "<strong>Network Throughput:</strong> For {{Distributed Caches}}, network bandwidth can become a limiting factor for cache performance.",
+    "<strong>Number of Cache Items:</strong> Tracking the total number of items in the cache can help understand if the cache is being fully utilized or growing unexpectedly, which might affect memory.",
+    "<strong>Error Rates:</strong> Errors connecting to the cache, or errors during cache operations (e.g., serialization issues, timeouts). High error rates point to instability."
   ];
 
   const cacheCoherencyTerm = appData.terminology.find(t => t.term === "{{Cache Coherency}}");
@@ -212,9 +215,6 @@ const FundamentalsView = ({ appData }) => {
   );
 };
 export default FundamentalsView;
-    "<strong>Network Throughput:</strong> For {{Distributed Caches}}, network bandwidth can become a limiting factor for cache performance.",
-    "<strong>Number of Cache Items:</strong> Tracking the total number of items in the cache can help understand if the cache is being fully utilized or growing unexpectedly, which might affect memory.",
-    "<strong>Error Rates:</strong> Errors connecting to the cache, or errors during cache operations (e.g., serialization issues, timeouts). High error rates point to instability."
   ];
 
 
