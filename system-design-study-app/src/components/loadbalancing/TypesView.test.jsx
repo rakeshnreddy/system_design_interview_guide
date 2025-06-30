@@ -30,7 +30,8 @@ describe('TypesView', () => {
         description: 'Distributes traffic based on network layer information (IP, port).',
         pros: ['Fast', 'Simple'],
         cons: ['Not content-aware'],
-        useCases: 'General purpose TCP/UDP load balancing.',
+        whenToUse: ['General purpose TCP/UDP load balancing.', 'High-performance scenarios where packet inspection is not needed.'],
+        // useCases field is not directly rendered by this name in the component, whenToUse is used.
       },
       {
         id: 'l7',
@@ -38,7 +39,7 @@ describe('TypesView', () => {
         description: 'Distributes traffic based on application layer data (HTTP headers, cookies).',
         pros: ['Content-aware routing', 'SSL termination'],
         cons: ['Slower than L4', 'More complex'],
-        useCases: 'Web applications, microservices.',
+        whenToUse: ['Web applications, microservices.', 'Scenarios requiring content-based routing.'],
       },
     ],
   };
@@ -79,13 +80,18 @@ describe('TypesView', () => {
     expect(screen.getByText(l4Data.description)).toBeInTheDocument();
     l4Data.pros.forEach(pro => expect(screen.getByText(pro)).toBeInTheDocument());
     l4Data.cons.forEach(con => expect(screen.getByText(con)).toBeInTheDocument());
-    expect(screen.getByText(l4Data.useCases)).toBeInTheDocument();
+    // Check content from whenToUse array
+    expect(screen.getByText(/General purpose.*TCP.*UDP load balancing/i)).toBeInTheDocument();
+    expect(screen.getByText(/High-performance scenarios where packet inspection is not needed/i)).toBeInTheDocument();
+
 
     // Check L7 data
     expect(screen.getByText(l7Data.description)).toBeInTheDocument();
     l7Data.pros.forEach(pro => expect(screen.getByText(pro)).toBeInTheDocument());
     l7Data.cons.forEach(con => expect(screen.getByText(con)).toBeInTheDocument());
-    expect(screen.getByText(l7Data.useCases)).toBeInTheDocument();
+    // Check content from whenToUse array
+    expect(screen.getByText(/Web applications.*microservices/i)).toBeInTheDocument();
+    expect(screen.getByText(/Scenarios requiring content-based routing/i)).toBeInTheDocument();
   });
 
   // The fix for nesting errors was to use secondaryTypographyProps={{ component: 'div' }}
