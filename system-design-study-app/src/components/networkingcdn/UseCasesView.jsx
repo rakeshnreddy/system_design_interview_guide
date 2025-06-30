@@ -54,6 +54,7 @@ function UseCasesView({ appData }) {
                 <ListItem sx={{pb:1, pt:0.5}}>
                   <ListItemText
                     primary={<Typography variant="subtitle1" component="span" sx={{fontWeight:'medium'}}><RenderTextWithLinks text={tradeoff.aspect} glossaryData={glossaryData} /></Typography>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={<RenderTextWithLinks text={tradeoff.detail} glossaryData={glossaryData} />}
                   />
                 </ListItem>

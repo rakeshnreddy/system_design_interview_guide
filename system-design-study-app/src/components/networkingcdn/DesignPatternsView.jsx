@@ -32,7 +32,7 @@ function DesignPatternsView({ appData }) {
               <List dense>
                 {pattern.whatToOffload.map((item, i) => (
                   <ListItem key={i} sx={{ display: 'list-item', listStyleType: 'disc', pl: 2.5, py:0.5 }}>
-                    <ListItemText primaryTypographyProps={{variant:'body2'}}>
+                    <ListItemText primaryTypographyProps={{variant:'body2', component: 'div'}}>
                         <RenderTextWithLinks text={item} glossaryData={glossaryData} />
                     </ListItemText>
                   </ListItem>
@@ -46,7 +46,7 @@ function DesignPatternsView({ appData }) {
               <List dense>
                 {pattern.whatNotToOffloadTypically.map((item, i) => (
                   <ListItem key={i} sx={{ display: 'list-item', listStyleType: 'disc', pl: 2.5, py:0.5 }}>
-                     <ListItemText primaryTypographyProps={{variant:'body2'}}>
+                     <ListItemText primaryTypographyProps={{variant:'body2', component: 'div'}}>
                         <RenderTextWithLinks text={item} glossaryData={glossaryData} />
                     </ListItemText>
                   </ListItem>

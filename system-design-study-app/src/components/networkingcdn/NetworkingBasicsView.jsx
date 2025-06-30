@@ -66,6 +66,7 @@ function NetworkingBasicsView({ appData }) {
                 <ListItem key={vIndex} disableGutters>
                   <ListItemText
                     primary={<Typography variant="subtitle1" component="span" sx={{fontWeight:'medium'}}><RenderTextWithLinks text={v.version} glossaryData={glossaryData} /></Typography>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={<RenderTextWithLinks text={v.description} glossaryData={glossaryData} />}
                   />
                 </ListItem>

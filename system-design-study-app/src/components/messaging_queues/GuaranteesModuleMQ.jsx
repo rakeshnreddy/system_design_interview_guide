@@ -115,10 +115,10 @@ const GuaranteesModuleMQ = ({ appData }) => {
                     <strong>Circuit Breaker Pattern for Consumers:</strong> If a consumer repeatedly fails to process messages due to issues with a downstream dependency (e.g., a [database](#/databases) or external API), a circuit breaker can "open". This stops the consumer from attempting to process messages that are likely to fail, reducing load on the failing dependency and preventing wasted resources. The consumer can periodically attempt a "half-open" request to see if the dependency has recovered.
                 </li>
                 <li>
-                    <strong>{{Idempotency|Idempotent Consumers}} (Revisited):</strong> Crucial for any retry mechanism. Ensuring that reprocessing a message (due to retry or redelivery from broker) doesn't cause unintended side effects (e.g., duplicate [database](#/databases) entries, multiple charges).
+                    <RenderTextWithLinks text="<strong>{{Idempotency|Idempotent Consumers}} (Revisited):</strong> Crucial for any retry mechanism. Ensuring that reprocessing a message (due to retry or redelivery from broker) doesn't cause unintended side effects (e.g., duplicate [database](#/databases) entries, multiple charges)." glossaryData={glossaryData} />
                 </li>
                 <li>
-                    <strong>Fine-grained DLQ Strategies:</strong> Instead of one generic {{DLQ (Dead Letter Queue)|DLQ}}, having multiple {{DLQ (Dead Letter Queue)|DLQs}} based on error types or message sources can help categorize and prioritize investigation of failed messages.
+                    <RenderTextWithLinks text="<strong>Fine-grained DLQ Strategies:</strong> Instead of one generic {{DLQ (Dead Letter Queue)|DLQ}}, having multiple {{DLQ (Dead Letter Queue)|DLQs}} based on error types or message sources can help categorize and prioritize investigation of failed messages." glossaryData={glossaryData} />
                 </li>
             </ul>
         </div>

@@ -5,7 +5,8 @@ import { glossaryData } from '../../data/glossaryData.js';
 import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
 function KeyTakeawaysView({ appData }) {
-  if (!appData || !appData.keyTakeaways || appData.keyTakeaways.length === 0) {
+  // Check if appData and the nested takeaways array are available and not empty
+  if (!appData || !appData.keyTakeaways || !appData.keyTakeaways.takeaways || appData.keyTakeaways.takeaways.length === 0) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="h4" gutterBottom component="h1">Key Takeaways</Typography>
@@ -14,17 +15,18 @@ function KeyTakeawaysView({ appData }) {
     );
   }
 
-  const { keyTakeaways } = appData;
+  // Destructure title and the takeaways array from appData.keyTakeaways
+  const { title, takeaways } = appData.keyTakeaways;
 
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom component="h1">
-        Key Takeaways: Networking & CDN
+        {title || "Key Takeaways"}
       </Typography>
 
       <Paper elevation={1} sx={{ p: 2, mt: 2 }}>
         <List>
-          {keyTakeaways.map((takeaway, index) => (
+          {takeaways.map((takeaway, index) => ( // Map over the 'takeaways' array
             <ListItem key={index} sx={{pb: 1, alignItems: 'flex-start'}}>
               <ListItemIcon sx={{minWidth: 32, mt: 0.5}}>
                 <CheckCircleOutlineIcon color="primary" fontSize="small" />
