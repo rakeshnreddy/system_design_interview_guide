@@ -2,6 +2,8 @@ export const apiDesignAppData = {
   title: "API Design",
   overview: `An API (Application Programming Interface) is a set of rules, protocols, and tools that allows different software applications to communicate with each other. In system design, APIs are the fundamental building blocks for creating modular, scalable, and maintainable systems. They define how various components of a system, or different systems altogether, interact, exchange data, and invoke functionality without needing to know the intricacies of each other's internal implementations. This abstraction enables decoupling, promotes reusability, and facilitates integration between disparate services, whether they are internal microservices or external third-party services.
 
+APIs are the backbone of modern software, enabling services like Google Maps, Twitter, and Stripe to expose their functionality and data for integration into other applications.
+
 APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous APIs}} require the client to send a request and wait for an immediate response from the server. This blocking nature is suitable for operations where the client needs a quick confirmation or data to proceed, like retrieving user details. In contrast, {{Asynchronous APIs}} allow the client to send a request and continue processing without waiting for an immediate response; the server processes the request in the background and notifies the client upon completion, often via {{Webhooks}} or [message queues](#/messaging-queues). The choice between synchronous and asynchronous design significantly impacts system responsiveness, resource utilization, and {{Fault Tolerance}}. For example, long-running tasks like video processing are better suited for asynchronous APIs to avoid tying up client resources, while quick data lookups benefit from synchronous interaction. Design choices here are crucial for user experience and system efficiency.`,
   metrics: [
     {
@@ -97,6 +99,21 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
       id: "schemaFirst", // Added id for consistency
       term: "{{Schema-First Design}}",
       definition: "Design approach where the API/schema is defined before implementation (common in {{GraphQL}})."
+    },
+    {
+      id: "http11",
+      term: "{{HTTP/1.1}}",
+      definition: "A version of the Hypertext Transfer Protocol. It introduced features like persistent connections, pipelining, and chunked encoding, but can suffer from head-of-line blocking for multiple requests over a single connection."
+    },
+    {
+      id: "http2",
+      term: "{{HTTP/2}}",
+      definition: "A major revision of the HTTP network protocol. Key features include request multiplexing over a single TCP connection, header compression (HPACK), and server push, leading to improved performance and reduced latency compared to {{HTTP/1.1}}."
+    },
+    {
+      id: "protocol_buffers",
+      term: "{{Protocol Buffers (Protobuf)}}",
+      definition: "A language-neutral, platform-neutral, extensible mechanism for serializing structured data – think XML, but smaller, faster, and simpler. Developed by Google, it's often used with {{gRPC (Google Remote Procedure Call)|gRPC}}."
     }
   ],
   protocols: [
@@ -141,10 +158,10 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
       id: "graphql",
       name: "{{GraphQL}}",
       // 'description' from prompt is mapped to 'structure' here for consistency
-      structure: "A query language and runtime allowing clients to request exactly the data they need, with a single endpoint.",
+      structure: "GraphQL was developed by Facebook to optimize data fetching for their complex mobile application news feeds, addressing issues of over-fetching (requesting too much data) and under-fetching (needing multiple requests to get all necessary data) common with traditional REST APIs. It is a query language for APIs and a server-side runtime for executing those queries by using a type system you define for your data. Clients request exactly the data they need via a single endpoint, often `/graphql`.",
       pros: [
-        "Reduces {{Over-fetching}} and {{Under-fetching}}",
-        "Strongly typed schema with introspection",
+        "Solves {{Over-fetching}} and {{Under-fetching}}: Clients request only the specific fields they need, leading to more efficient data transfer.",
+        "Strongly typed schema with introspection: The schema defines all possible data types and fields, and clients can query the schema itself (introspection) to understand the API's capabilities.",
         "Evolvable without versioning"
       ],
       cons: [
@@ -167,15 +184,16 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
       useCases: [ // Mapped from prompt's useCases (array)
         "Mobile application backends",
         "APIs with evolving front-end requirements"
-      ]
+      ],
+      realWorldExample: "Facebook's mobile app utilizes GraphQL extensively to efficiently fetch data for its dynamic news feed and complex UI. This allows the app to request only the necessary data fields from multiple resources (like users, posts, comments, images) in a single network call, significantly improving performance and reducing data usage on mobile devices."
     },
     {
       id: "grpc",
       name: "{{gRPC (Google Remote Procedure Call)}}",
-      structure: "A contract-first API development framework. Services and message structures are defined in .proto files ({{Protocol Buffers}}). Uses {{HTTP/2}} for transport, enabling features like {{Multiplexing}}, {{Server Push}}, and efficient binary serialization. Supports unary {{RPC (Remote Procedure Call)|RPC}}, server streaming, client streaming, and bi-directional streaming.",
+      structure: "gRPC was developed by Google and is extensively used internally for high-performance, inter-service communication in their microservices architectures. It leverages {{HTTP/2}} for efficiency and {{Protocol Buffers}} for schema definition. It's a contract-first API development framework where services and message structures are defined in `.proto` files ({{Protocol Buffers}}). This enables features like {{Multiplexing}}, {{Server Push}}, and efficient binary serialization. gRPC supports unary {{RPC (Remote Procedure Call)|RPC}}, server streaming, client streaming, and bi-directional streaming.",
       pros: [
         "High performance and low {{Latency}} due to efficient binary serialization ({{Protocol Buffers}}) and {{HTTP/2}} transport.",
-        "Strict contract enforcement through .proto files, with code generation for clients and servers in multiple languages.",
+        "Strict contract enforcement through `.proto` files, with code generation for clients and servers in multiple languages.",
         "Excellent for internal {{Microservice}} communication where performance and strong contracts are critical.",
         "Natively supports various streaming modes (unary, server-side, client-side, bi-directional) efficiently.",
         "Features like deadlines, cancellation, and metadata are built-in."
@@ -206,7 +224,8 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
         "Mention limitations like binary format and browser support ({{gRPC-Web}})."
       ],
       defendingYourDecision: "{{gRPC (Google Remote Procedure Call)|gRPC}} was chosen for our internal {{Microservice}} communication due to its high performance, low {{Latency}}, and strong contract enforcement via {{Protocol Buffers}}. This is critical for maintaining reliability and efficiency in our distributed backend. The support for bi-directional streaming also benefits our [specific real-time feature].",
-      useCases: "Internal {{Microservice}} communication, real-time applications requiring high performance and low {{Latency}}, streaming applications, polyglot environments needing strong contracts."
+      useCases: "Internal {{Microservice}} communication, real-time applications requiring high performance and low {{Latency}}, streaming applications, polyglot environments needing strong contracts.",
+      realWorldExample: "Google uses gRPC for a vast number of its internal microservices. Netflix also leverages gRPC for a significant portion of its inter-service communication to handle its massive scale and performance needs, particularly for backend services that require efficient, strongly-typed communication."
     },
     {
       id: "websockets",
@@ -350,15 +369,37 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
       useCases: "Applications with multiple distinct frontend clients (e.g., web, mobile, desktop) that have different data and interaction requirements."
     },
     {
-      id: "api_versioning_general",
-      name: "{{API Versioning}}", // Changed from patternName to name for consistency
-      description: "Techniques for evolving APIs without breaking existing clients (URL versioning, header versioning, {{Semantic Versioning}}).",
+      id: "api_versioning_strategies", // Changed id for clarity
+      name: "{{API Versioning Strategies}}",
+      description: "As APIs evolve, changes are inevitable. API versioning is crucial for introducing these changes without breaking existing client integrations. The primary goal is to allow clients to continue using an older version of the API while new clients can adopt newer versions. Maintaining backward compatibility for as long as feasible is a key principle, but when breaking changes are necessary, a versioning strategy must be in place.",
       strategies: [
-        { name: "{{Path Versioning}}", detail: "Include version in URL (e.g., /v1/users)." },
-        { name: "{{Header Versioning}}", detail: "Use custom headers to indicate version." }
+        {
+          name: "{{URI Path Versioning}}",
+          detail: "The API version is included directly in the URL path. Example: `/api/v1/users`, `/api/v2/users`.",
+          pros: ["Very explicit and clear to clients browsing the API.", "Easy to route requests to different backend implementations based on the path.", "Simple for developers to understand and test specific versions via browser or cURL."],
+          cons: ["Can lead to 'URI clutter' if many versions exist.", "Some argue it violates REST principles that a URI should represent a unique resource, not a versioned view of it."]
+        },
+        {
+          name: "{{Header Versioning}} (Content Negotiation)",
+          detail: "The API version is specified using custom HTTP headers (e.g., `X-API-Version: 2`) or through content negotiation using the `Accept` header (e.g., `Accept: application/vnd.myapi.v2+json`).",
+          pros: ["Keeps URIs clean and version-agnostic, adhering more strictly to REST principles.", "Allows for more granular versioning if needed (e.g., versioning specific representations)."],
+          cons: ["Less obvious to clients; requires them to correctly set headers.", "Cannot easily test different versions directly in a browser address bar.", "Can be slightly more complex to implement routing on the server side compared to path versioning."]
+        },
+        {
+          name: "{{Query Parameter Versioning}}",
+          detail: "The API version is specified as a query parameter in the URL. Example: `/api/users?version=1`, `/api/users?version=2`.",
+          pros: ["Relatively simple to implement.", "Easy to test different versions by changing the query parameter."],
+          cons: ["Can make URLs look messy.", "Query parameters are often used for filtering or pagination, so adding versioning here might overload their purpose.", "Less common for major versioning than path or header versioning."]
+        }
       ],
-      pros: ["Clear separation of versions", "Easy to deprecate old versions"],
-      cons: ["URL clutter (for path versioning)", "Clients must update headers (for header versioning)"] // Clarified cons
+      generalConsiderations: [
+        "**Backward Compatibility:** Strive to make changes backward compatible whenever possible to avoid the need for new versions (e.g., adding new optional fields to responses).",
+        "**Deprecation Policy:** Have a clear policy for deprecating old API versions, including timelines and communication with clients.",
+        "**Documentation:** Clearly document all available versions, changes between them, and deprecation schedules.",
+        "**{{Semantic Versioning (SemVer)|Semantic Versioning}} (MAJOR.MINOR.PATCH):** Often used to indicate the nature of changes (MAJOR for breaking, MINOR for additive non-breaking, PATCH for bug fixes). While SemVer is common, how it maps to API endpoint versions (e.g. /v1, /v2 for MAJOR) needs to be defined."
+      ],
+      pros: ["Allows API evolution without breaking existing clients.", "Provides a clear path for clients to migrate to newer features.", "Manages complexity of supporting multiple API contracts."], // General pros of versioning
+      cons: ["Increases maintenance overhead as multiple versions might need to be supported concurrently.", "Can lead to code duplication or complex conditional logic in the backend if not managed well.", "Requires clear communication and documentation for clients."] // General cons of versioning
     },
     {
       id: "idempotency_key_pattern",
@@ -562,5 +603,61 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
       Client->>GraphQLServer: query { user(id:123){ name } }
       GraphQLServer-->>Client: { "data":{ "user":{ "name":"Alice" } } }
   `
+  },
+  protocolComparison: {
+    title: "Comparison: REST vs. GraphQL vs. gRPC",
+    introduction: "Choosing the right API protocol/style is a critical design decision. Here's a comparison of REST, GraphQL, and gRPC across key characteristics:",
+    headers: ["Characteristic", "REST", "GraphQL", "gRPC"],
+    rows: [
+      {
+        characteristic: "Data Fetching Model",
+        rest: "Multiple endpoints; often leads to over-fetching or under-fetching. Client gets what server defines for the resource.",
+        graphql: "Single endpoint; client requests exactly the data it needs, preventing over/under-fetching.",
+        grpc: "Service methods defined by contract ({{Protocol Buffers}}); client calls specific methods. Efficient for defined operations."
+      },
+      {
+        characteristic: "Performance",
+        rest: "Can be less performant due to multiple requests or large payloads ({{JSON}}/{{XML}}). {{HTTP/1.1}} overhead.",
+        graphql: "Can improve performance by reducing number of requests and payload size. Server-side complexity can impact.",
+        grpc: "High performance due to {{HTTP/2}} and binary serialization ({{Protocol Buffers}}). Low {{Latency}}."
+      },
+      {
+        characteristic: "Payload Format",
+        rest: "Typically {{JSON}} or {{XML}} (text-based, human-readable).",
+        graphql: "{{JSON}} (text-based).",
+        grpc: "{{Protocol Buffers}} (binary, not human-readable directly)."
+      },
+      {
+        characteristic: "Schema/Contract",
+        rest: "No built-in schema enforcement; relies on conventions and external definitions like {{OpenAPI Specification (Swagger)|OpenAPI}}.",
+        graphql: "Strongly typed schema defined on the server; client queries validated against schema. Introspection support.",
+        grpc: "Strict contract defined in `.proto` files; strong typing and code generation for client/server."
+      },
+      {
+        characteristic: "Caching",
+        rest: "Leverages standard {{HTTP Caching}} mechanisms effectively (e.g., `Cache-Control`, ETags).",
+        graphql: "More complex to cache at {{HTTP}} level due to single endpoint and POST requests. Application-level or client-side caching often used.",
+        grpc: "Less straightforward for {{HTTP Caching}}; typically relies on client-side or intermediary application-level caching."
+      },
+      {
+        characteristic: "Streaming",
+        rest: "Not inherently designed for streaming; requires techniques like {{Long Polling}} or chunked responses.",
+        graphql: "Supports subscriptions for real-time updates (streaming).",
+        grpc: "Excellent support for various streaming modes (unary, server-streaming, client-streaming, bi-directional)."
+      },
+      {
+        characteristic: "Browser Support",
+        rest: "Native browser support (standard {{HTTP}}).",
+        graphql: "Requires client libraries; typically uses {{HTTP POST}}.",
+        grpc: "Requires {{gRPC-Web}} proxy for direct browser communication."
+      },
+      {
+        characteristic: "Use Case Fit",
+        rest: "Public APIs, simple resource-oriented services, {{CRUD}} operations.",
+        graphql: "Mobile apps, complex UIs needing flexible data, applications where clients have diverse data needs.",
+        grpc: "Internal {{Microservice}} communication, high-performance real-time services, streaming applications."
+      }
+    ],
+    summary: "**When to use which (general guidance):**\n*   **{{REST (Representational State Transfer)|REST}}:** Best for standard public APIs, resource-oriented services, and when leveraging {{HTTP Caching}} and simplicity is key.\n*   **{{GraphQL}}:** Ideal for applications with complex data requirements, mobile clients needing optimized data fetching, or when frontend teams need flexibility in data requests without backend changes.\n*   **{{gRPC (Google Remote Procedure Call)|gRPC}}:** Suited for high-performance internal {{Microservice}} communication, streaming scenarios, and when strong contracts and efficiency are paramount."
   }
 };
