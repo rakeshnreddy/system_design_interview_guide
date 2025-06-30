@@ -37,36 +37,6 @@ import { databasesAppData } from '../../data/databasesAppData.js';
 import { glossaryData } from '../../data/glossaryData.js';
 import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
 
-// AccordionItem component definition (can be kept as is or moved to a common component if used elsewhere)
-const AccordionItem = ({ title, children, idx, openIdx, setOpenIdx, lastItem }) => {
-    const isOpen = idx === openIdx;
-    return (
-        <div className={`bg-neutral-50 dark:bg-neutral-700/50 ${lastItem ? 'rounded-b-lg' : ''} ${idx === 0 && !isOpen ? 'rounded-t-lg' : ''} ${isOpen && idx === 0 ? 'rounded-t-lg' : ''}`}>
-            <Button
-                onClick={() => setOpenIdx(isOpen ? null : idx)}
-                variant="outline"
-                className={`w-full flex justify-between items-center p-4 font-semibold transition-colors
-                    ${isOpen ? 'bg-neutral-100 dark:bg-neutral-600/60' : 'hover:bg-neutral-100 dark:hover:bg-neutral-600/50'}
-                    ${idx === 0 ? 'rounded-t-lg' : ''}
-                    ${isOpen && !lastItem ? '' : (lastItem && isOpen ? 'rounded-b-lg' : '')}
-                    ${!isOpen && !lastItem ? 'border-b border-neutral-200 dark:border-neutral-600/70' : ''}
-                    ${lastItem && !isOpen ? 'rounded-b-lg' : ''}
-                    border-transparent text-neutral-700 dark:text-neutral-200`}
-                aria-expanded={isOpen}
-            >
-                <span>{title}</span>
-                {isOpen ? <KeyboardArrowUpIcon className="h-5 w-5" /> : <KeyboardArrowDownIcon className="h-5 w-5" />}
-            </Button>
-            {isOpen && (
-                <div className={`p-4 pt-2 text-sm text-neutral-600 dark:text-neutral-300 bg-white dark:bg-neutral-700/30 ${lastItem ? 'rounded-b-lg' : 'border-b border-neutral-200 dark:border-neutral-600/70'}`}>
-                    {children}
-                </div>
-            )}
-        </div>
-    );
-};
-
-
 const SectionPolyglotDB = ({ appData }) => {
   const [openAccordion, setOpenAccordion] = useState(null);
   const polyglotData = appData?.polyglotPersistence;

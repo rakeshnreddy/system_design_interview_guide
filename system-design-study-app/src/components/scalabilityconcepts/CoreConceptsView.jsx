@@ -1,8 +1,7 @@
 import React from 'react';
 import MermaidDiagram from '../common/MermaidDiagram';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import Mermaid from '../common/Mermaid'; // Import Mermaid
-
+// Removed incorrect import of Mermaid
 
 function CoreConceptsView({ appData }) {
   if (!appData || !appData.coreConcepts) {
@@ -16,7 +15,7 @@ function CoreConceptsView({ appData }) {
           <>
             {appData.mermaidDiagrams && appData.mermaidDiagrams.capTriangle && (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <Mermaid chart={appData.mermaidDiagrams.capTriangle} />
+                <MermaidDiagram diagramDefinition={appData.mermaidDiagrams.capTriangle} diagramId="cap-triangle-diagram" />
               </Box>
             )}
             <ListItemText component="div" primary="Explanation" secondary={concept.explanation} primaryTypographyProps={{ component: 'div' }} secondaryTypographyProps={{ component: 'div', sx: { whiteSpace: 'pre-line' } }} sx={{ mb: 1 }} />
@@ -46,7 +45,7 @@ function CoreConceptsView({ appData }) {
           <>
             {appData.mermaidDiagrams && appData.mermaidDiagrams.statelessStateful && (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <Mermaid chart={appData.mermaidDiagrams.statelessStateful} />
+                <MermaidDiagram diagramDefinition={appData.mermaidDiagrams.statelessStateful} diagramId="stateless-stateful-diagram" />
               </Box>
             )}
             <Typography variant="subtitle1" gutterBottom>Stateless Architecture</Typography>
@@ -73,7 +72,7 @@ function CoreConceptsView({ appData }) {
             {appData.mermaidDiagrams && appData.mermaidDiagrams.consistencyTimeline && (
               <Box sx={{ my: 2, p: 1, border: '1px dashed grey', overflowX: 'auto' }}>
                 <Typography variant="h6" gutterBottom sx={{mt: 2}}>Consistency Models Timeline</Typography>
-                <Mermaid chart={appData.mermaidDiagrams.consistencyTimeline} />
+                <MermaidDiagram diagramDefinition={appData.mermaidDiagrams.consistencyTimeline} diagramId="consistency-timeline-diagram" />
               </Box>
             )}
           </List>

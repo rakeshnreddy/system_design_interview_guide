@@ -7,16 +7,8 @@ const HighlightMQ = ({ children, className }) => (
   </span>
 );
 
-import React from 'react';
-import Card from '../common/Card';
 import { glossaryData } from '../../data/glossaryData.js';
 import { RenderTextWithLinks } from '../../utils/textRenderUtils.jsx';
-
-const HighlightMQ = ({ children, className }) => (
-  <span className={`bg-primary-light/20 text-primary-dark dark:bg-primary-dark/30 dark:text-primary-light px-1 py-0.5 rounded ${className}`}>
-    {children}
-  </span>
-);
 
 const GuaranteesModuleMQ = ({ appData }) => {
   const semantics = appData?.deliverySemantics || [];

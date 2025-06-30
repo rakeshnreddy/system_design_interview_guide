@@ -180,13 +180,13 @@ export const loadBalancingAppData = {
       id: "cloud_lb",
       name: "{{Cloud Load Balancers (Managed LBaaS)}}",
       description: "Managed load balancing services provided by cloud platforms (e.g., {{AWS ELB/ALB}}, {{Google Cloud Load Balancing}}). They abstract away infrastructure and offer {{Auto Scaling}}, {{High Availability}} out of the box.",
-      pros: ["No maintenance overhead, integrated with cloud {{Auto Scaling}}, pay-as-you-go, easy to configure"],
-      cons: ["Less customizable than self-managed, dependent on provider, potential cost at high scale"],
-      whenToUse: "When you're in the cloud and want quick setup without managing hardware/VMs; when {{Auto Scaling}} and global routing are needed with minimal effort.",
-      whenNotToUse: "On-prem deployments, or scenarios requiring custom load-balancing logic not supported by provider.",
-      interviewTalkingPoints: ["mention built-in {{High Availability}}", "discuss how they simplify ops but can be a black box"],
-      defendingYourDecision: "We chose a managed {{Cloud Load Balancer|cloud LB}} to leverage out-of-the-box {{Scalability}} and {{Health Checks}}, avoiding reinventing the wheel for our web tier.",
-      useCases: "Startups or teams using AWS/GCP/Azure for quick traffic distribution, services that need global routing ({{Cloud CDN}}+LB combos)."
+      pros: ["No maintenance overhead, integrated with cloud {{Auto Scaling}}.", "Pay-as-you-go pricing model.", "Easy and quick to configure and deploy.", "Built-in {{High Availability}} and often global routing capabilities."],
+      cons: ["Less customizable than self-managed software or hardware load balancers.", "Can be dependent on the cloud provider's feature set and limitations.", "Potential for higher costs at very large scale compared to self-managed solutions if not optimized.", "Can sometimes be a 'black box' with less granular control or visibility."],
+      whenToUse: ["When deploying applications in a cloud environment ({{AWS}}, {{GCP}}, Azure, etc.).", "For rapid setup and deployment without managing underlying hardware or VMs.", "When integrated {{Auto Scaling}} with backend services is a key requirement.", "If leveraging global load balancing features offered by the cloud provider with minimal operational overhead."],
+      whenNotToUse: ["On-premise deployments where cloud services are not used or accessible.", "Scenarios requiring highly custom or proprietary load-balancing algorithms not supported by the provider.", "When extremely granular control over every aspect of the load balancer is necessary.", "Strict budget constraints at massive scale where self-managed options might become more cost-effective after initial investment."],
+      interviewTalkingPoints: ["Mention built-in {{High Availability}} and integration with {{Auto Scaling}} services.", "Discuss the trade-off between ease of use/management and potential lack of deep customization or 'black box' nature.", "Highlight pay-as-you-go model and suitability for cloud-native applications."],
+      defendingYourDecision: "We chose a managed {{Cloud Load Balancer|cloud LB}} to leverage out-of-the-box {{Scalability}}, {{High Availability}}, and integration with our cloud provider's {{Auto Scaling}} features. This allows us to focus on application development rather than infrastructure management, and it provides the necessary {{Health Checks}} and reliability for our web tier.",
+      useCases: "Startups and teams using {{AWS}}/{{GCP}}/Azure for quick traffic distribution to web applications or {{Microservices}}. Applications that benefit from seamless integration with cloud provider's {{Auto Scaling}} and monitoring. Services requiring global load balancing capabilities offered by cloud providers (e.g., routing to the nearest region)."
     },
     {
       id: "gslb",
