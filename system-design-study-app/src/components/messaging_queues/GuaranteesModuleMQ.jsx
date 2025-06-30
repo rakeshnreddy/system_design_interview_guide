@@ -105,7 +105,7 @@ const GuaranteesModuleMQ = ({ appData }) => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Advanced Error Handling Patterns</h2>
          <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
             <p className="leading-relaxed mb-3">
-                Beyond basic {{Dead Letter Queues (DLQ)|DLQs}}, sophisticated error handling in consumer applications often involves:
+                <RenderTextWithLinks text="Beyond basic {{Dead Letter Queues (DLQ)|DLQs}}, sophisticated error handling in consumer applications often involves:" glossaryData={glossaryData} />
             </p>
             <ul className="list-disc space-y-3 pl-5">
                 <li>
