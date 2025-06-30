@@ -36,7 +36,7 @@ function CDNConceptsView({ appData }) {
             <List dense sx={{ listStyleType: 'decimal', pl: 2.5 }}>
               {howItWorks.steps.map((step, index) => (
                 <ListItem key={index} sx={{ display: 'list-item', py: 0.5 }}>
-                  <ListItemText primaryTypographyProps={{variant:'body2'}}>
+                  <ListItemText primaryTypographyProps={{variant:'body2', component: 'div'}}>
                     <RenderTextWithLinks text={step} glossaryData={glossaryData} />
                   </ListItemText>
                 </ListItem>
@@ -62,6 +62,7 @@ function CDNConceptsView({ appData }) {
                 <ListItem>
                   <ListItemText
                     primary={<Typography variant="subtitle1" component="span" sx={{fontWeight:'medium'}}><RenderTextWithLinks text={provider.name} glossaryData={glossaryData} /></Typography>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={<RenderTextWithLinks text={provider.features} glossaryData={glossaryData} />}
                   />
                 </ListItem>

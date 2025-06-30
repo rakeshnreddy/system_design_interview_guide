@@ -66,7 +66,11 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
           try {
             // Initialize Mermaid. Mermaid's initialize should be safe to call multiple times.
             // It typically checks if it's already initialized or reconfigures.
-            mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
+            if (!window.mermaidInitialized) {
+              mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
+              window.mermaidInitialized = true; // Set flag after first initialization
+              // console.log(`MermaidDiagram: Mermaid initialized for the first time for render ID: ${validDiagramId}`);
+            }
             // console.log(`MermaidDiagram: Ensured Mermaid initialized for render ID: ${validDiagramId}`);
 
             console.log(`MermaidDiagram: Deferred rendering diagram for ID: ${validDiagramId}`);

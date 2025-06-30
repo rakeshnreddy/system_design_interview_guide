@@ -35,6 +35,7 @@ function OverviewView({ appData }) {
                 <ListItem sx={{pb:1, pt:0.5}}>
                   <ListItemText
                     primary={<Typography variant="subtitle1" component="span" sx={{fontWeight:'medium'}}><RenderTextWithLinks text={metric.name} glossaryData={glossaryData} /></Typography>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={
                         <>
                             <RenderTextWithLinks text={metric.description} glossaryData={glossaryData} />
@@ -65,6 +66,7 @@ function OverviewView({ appData }) {
                 <ListItem sx={{pb:1, pt:0.5}}>
                   <ListItemText
                     primary={<Typography variant="subtitle1" component="span" sx={{fontWeight:'medium'}}><RenderTextWithLinks text={term.term} glossaryData={glossaryData} /></Typography>}
+                    secondaryTypographyProps={{ component: 'div' }}
                     secondary={<RenderTextWithLinks text={term.definition} glossaryData={glossaryData} />}
                   />
                 </ListItem>
