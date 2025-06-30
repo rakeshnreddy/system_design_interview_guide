@@ -68,5 +68,14 @@ export const topicsData = [
     category: 'Scalability Concepts',
     description: 'Understanding when to add more servers versus more powerful servers.',
     content: '{{Horizontal Scaling}} adds more nodes to handle load, improving {{Availability}}. {{Vertical Scaling}} increases resources on a single node but has hardware limits.'
+  },
+  {
+    id: 'networking-cdn',
+    title: 'Networking & CDN',
+    category: 'Core Concepts', // Or a new category like 'Networking'
+    description: 'Fundamentals of computer networking (TCP/IP, HTTP) and Content Delivery Networks (CDNs) for performance and scalability.',
+    content: 'Understanding {{DNS}}, {{TCP (Transmission Control Protocol)|TCP}}/{{UDP (User Datagram Protocol)|UDP}}, {{HTTP (Hypertext Transfer Protocol)|HTTP}} protocols, and how {{Content Delivery Network (CDN)|CDNs}} use edge caching, {{Anycast}}, and other techniques to deliver content faster and reduce origin server load is crucial for designing distributed systems. Covers topics like {{Latency}}, {{Bandwidth}}, {{Cache-Control Headers}}, and real-world CDN examples like Cloudflare and Amazon CloudFront.',
+    // path: "/networking-cdn", // Path is not part of this file's current structure, linking is likely by id
+    iconName: "Globe" // Example icon
   }
 ];
