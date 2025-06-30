@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
-import Mermaid from '../common/Mermaid'; // Import Mermaid
+import MermaidDiagram from '../common/MermaidDiagram'; // Corrected import
 
 function PatternsView({ appData }) {
   if (!appData || !appData.scalingPatterns) {
@@ -27,7 +27,7 @@ function PatternsView({ appData }) {
           <>
             {mermaidDiagrams && mermaidDiagrams.archComparison && pattern.name === "Microservices Architecture for Scalability" && (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <Mermaid chart={mermaidDiagrams.archComparison} />
+                <MermaidDiagram diagramDefinition={mermaidDiagrams.archComparison} diagramId="arch-comparison-diagram" />
               </Box>
             )}
             <ListItemText secondary={pattern.description} sx={{mb:1}}/>
@@ -56,7 +56,7 @@ function PatternsView({ appData }) {
         <Box sx={{ my: 3 }}>
           <Typography variant="h5" gutterBottom>Monolith vs Microservices</Typography>
           <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Mermaid chart={mermaidDiagrams.archComparison} />
+            <MermaidDiagram diagramDefinition={mermaidDiagrams.archComparison} diagramId="arch-comparison-diagram-alt" />
           </Paper>
         </Box>
       )} */}
