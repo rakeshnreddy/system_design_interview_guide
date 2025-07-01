@@ -1,14 +1,14 @@
 export const apiDesignAppData = {
   title: "API Design",
-  overview: `An API (Application Programming Interface) is a set of rules, protocols, and tools that allows different software applications to communicate with each other. In system design, APIs are the fundamental building blocks for creating modular, scalable, and maintainable systems. They define how various components of a system, or different systems altogether, interact, exchange data, and invoke functionality without needing to know the intricacies of each other's internal implementations. This abstraction enables decoupling, promotes reusability, and facilitates integration between disparate services, whether they are internal microservices or external third-party services.
+  overview: `An {{API (Application Programming Interface)}} is a set of rules, protocols, and tools that allows different software applications to communicate with each other. In system design, APIs are the fundamental building blocks for creating {{Scalability|modular, scalable}}, and `{{Maintainability|maintainable}}` systems. They define how various components of a system, or different systems altogether, interact, exchange data, and invoke functionality without needing to know the intricacies of each other's internal implementations. This abstraction enables `{{Decoupling}}`, promotes reusability, and facilitates integration between disparate services, whether they are internal `{{Microservices Architecture|microservices}}` or external third-party services.
 
 APIs are the backbone of modern software, enabling services like Google Maps, Twitter, and Stripe to expose their functionality and data for integration into other applications.
 
-APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous APIs}} require the client to send a request and wait for an immediate response from the server. This blocking nature is suitable for operations where the client needs a quick confirmation or data to proceed, like retrieving user details. In contrast, {{Asynchronous APIs}} allow the client to send a request and continue processing without waiting for an immediate response; the server processes the request in the background and notifies the client upon completion, often via {{Webhooks}} or [message queues](#/messaging-queues). The choice between synchronous and asynchronous design significantly impacts system responsiveness, resource utilization, and {{Fault Tolerance}}. For example, long-running tasks like video processing are better suited for asynchronous APIs to avoid tying up client resources, while quick data lookups benefit from synchronous interaction. Design choices here are crucial for user experience and system efficiency.`,
+APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous APIs}} require the client to send a request and wait for an immediate response from the server. This blocking nature is suitable for operations where the client needs a quick confirmation or data to proceed, like retrieving user details. In contrast, {{Asynchronous APIs}} allow the client to send a request and continue processing without waiting for an immediate response; the server processes the request in the background and notifies the client upon completion, often via {{Webhooks}} or `{{Message Queue|message queues}}` (see also [Messaging Queues Topic](#/messaging-queues)). The choice between synchronous and asynchronous design significantly impacts system responsiveness, `{{Resource Utilization}}`, and {{Fault Tolerance}}. For example, long-running tasks like video processing are better suited for {{Asynchronous APIs}} to avoid tying up client resources, while quick data lookups benefit from `{{Synchronous APIs|synchronous interaction}}`. Design choices here are crucial for user experience and system efficiency.`,
   metrics: [
     {
       id: "rps_api",
-      name: "Requests Per Second (RPS)",
+      name: "{{Requests Per Second (RPS)}}",
       description: "Number of API requests received per second. Indicates current load and capacity requirements."
     },
     {
@@ -44,7 +44,7 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     },
     {
       term: "{{REST (Representational State Transfer)}}",
-      definition: "An architectural style for designing networked applications, based on {{HTTP}} methods, URIs for resources, and {{Statelessness|Stateless}} communication."
+      definition: "An architectural style for designing networked applications, based on `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` methods, URIs for resources, and `{{Statelessness}}` communication."
     },
     {
       term: "{{GraphQL}}",
@@ -52,7 +52,7 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     },
     {
       term: "{{gRPC (Google Remote Procedure Call)}}",
-      definition: "A high-performance, open-source universal {{RPC (Remote Procedure Call)}} framework. Uses {{HTTP/2}} for transport and {{Protocol Buffers}} as the interface description language."
+      definition: "A high-performance, open-source universal `{{RPC (Remote Procedure Call)}}` framework. Uses `{{HTTP/2}}` for transport and `{{Protocol Buffers}}` as the interface description language."
     },
     {
       term: "{{Idempotency}}",
@@ -60,7 +60,7 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     },
     {
       term: "{{Pagination}}",
-      definition: "The process of dividing a large dataset into smaller, manageable chunks (pages) for API responses. Common methods: {{Offset Pagination (Page-Based)|Offset-based}}, {{Cursor-Based Pagination (Seek Method / Keyset Pagination)|Cursor-based}}."
+      definition: "The process of dividing a large dataset into smaller, manageable chunks (pages) for API responses. Common methods: `{{Offset Pagination (Page-Based)|Offset-based}}`, `{{Cursor-Based Pagination (Seek Method / Keyset Pagination)|Cursor-based}}`."
     },
     {
       term: "{{Rate Limiting}}",
@@ -72,7 +72,7 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     },
     {
       term: "{{Authentication (AuthN)}}",
-      definition: "The process of verifying the identity of a client or user trying to access the API (e.g., {{API Keys}}, {{OAuth 2.0}} tokens)."
+      definition: "The process of verifying the identity of a client or user trying to access the API (e.g., `{{API Keys}}`, `{{OAuth 2.0}}` tokens)."
     },
     {
       term: "{{Authorization (AuthZ)}}",
@@ -80,15 +80,15 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     },
     {
       term: "{{OpenAPI Specification (Swagger)}}",
-      definition: "A standard, language-agnostic interface description for {{RESTful APIs}}, which allows both humans and computers to discover and understand the capabilities of the service without access to source code or documentation."
+      definition: "A standard, language-agnostic interface description for `{{RESTful APIs}}`, which allows both humans and computers to discover and understand the capabilities of the service without access to source code or documentation."
     },
     {
       term: "{{Webhook}}",
-      definition: "An {{HTTP}} callback or {{HTTP POST}} that occurs when something happens; a simple event-notification via {{HTTP POST}}. Used for asynchronous communication from server to client."
+      definition: "An `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` callback or `{{HTTP POST}}` that occurs when something happens; a simple event-notification via `{{HTTP POST}}`. Used for asynchronous communication from server to client."
     },
     {
       term: "{{Statelessness}}",
-      definition: "A characteristic of {{REST APIs}} where each request from a client to a server must contain all the information needed to understand the request, and cannot take advantage of any stored context on the server."
+      definition: "A characteristic of `{{REST APIs}}` where each request from a client to a server must contain all the information needed to understand the request, and cannot take advantage of any stored context on the server."
     },
     {
       id: "hypermedia", // Added id for consistency
@@ -120,47 +120,47 @@ APIs can be broadly categorized as synchronous or asynchronous. {{Synchronous AP
     {
       id: "rest",
       name: "{{REST (Representational State Transfer)}}",
-      structure: "Uses standard {{HTTP}} methods (GET, POST, PUT, DELETE, PATCH), URIs to identify resources (e.g., /users, /products/{id}), and typically {{JSON}} or {{XML}} for data exchange. Emphasizes {{Statelessness}}, {{Uniform Interface}}, and {{Cacheability}}.",
+      structure: "Uses standard `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` methods (GET, POST, PUT, DELETE, PATCH), URIs to identify resources (e.g., /users, /products/{id}), and typically `{{JSON}}` or `{{XML}}` for data exchange. Emphasizes `{{Statelessness}}`, `{{Uniform Interface}}`, and `{{Cacheability}}`.",
       pros: [
-        "Simple and familiar due to its use of standard {{HTTP}} methods and status codes, making it easy to learn and use.",
+        "Simple and familiar due to its use of standard `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` methods and status codes, making it easy to learn and use.",
         "Widely adopted with a vast ecosystem of tools, libraries, and gateways.",
-        "{{Statelessness}} promotes {{Scalability}} as any server can handle any request.",
-        "Leverages {{HTTP Caching}} mechanisms effectively for better performance with cacheable resources."
+        "`{{Statelessness}}` promotes `{{Scalability}}` as any server can handle any request.",
+        "Leverages `{{HTTP Caching}}` mechanisms effectively for better performance with cacheable resources."
       ],
       cons: [
-        "Can lead to {{Over-fetching}} (retrieving more data than needed) or {{Under-fetching}} (requiring multiple requests to get all necessary data) for complex data requirements.",
-        "No strict contract enforcement out-of-the-box; relies on conventions and documentation (e.g., {{OpenAPI Specification (Swagger)|OpenAPI/Swagger}}) which can drift from implementation.",
-        "Can be verbose with metadata ({{HTTP Headers}}) and data formats like {{JSON}}/{{XML}} compared to binary protocols.",
+        "Can lead to `{{Over-fetching}}` (retrieving more data than needed) or `{{Under-fetching}}` (requiring multiple requests to get all necessary data) for complex data requirements.",
+        "No strict contract enforcement out-of-the-box; relies on conventions and documentation (e.g., `{{OpenAPI Specification (Swagger)|OpenAPI/Swagger}}`) which can drift from implementation.",
+        "Can be verbose with metadata (`{{HTTP Headers}}`) and data formats like `{{JSON}}`/`{{XML}}` compared to binary protocols.",
         "Managing multiple versions can be complex (URI, headers, etc.)."
       ],
       whenToUse: [
         "Public APIs where ease of adoption and broad compatibility are important.",
-        "Standard web applications and mobile application backends performing {{CRUD}} operations on well-defined resources.",
-        "Systems where {{Statelessness}} and {{Cacheability}} are key requirements.",
-        "When simplicity and leveraging existing {{HTTP}} infrastructure are priorities."
+        "Standard web applications and mobile application backends performing `{{CRUD (Create, Read, Update, Delete)|CRUD}}` operations on well-defined resources.",
+        "Systems where `{{Statelessness}}` and `{{Cacheability}}` are key requirements.",
+        "When simplicity and leveraging existing `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` infrastructure are priorities."
       ],
       whenNotToUse: [
-        "Applications with complex data fetching needs where clients need to specify the exact data to avoid over/under-fetching ({{GraphQL}} might be better).",
-        "High-performance internal {{Microservice}} communication where the overhead of {{HTTP}}/{{JSON}} is significant ({{gRPC (Google Remote Procedure Call)|gRPC}} might be better).",
-        "Real-time bi-directional communication ({{WebSockets}} are designed for this).",
-        "When a very strict contract between client and server is required from the start ({{gRPC (Google Remote Procedure Call)|gRPC}}'s .proto files offer this)."
+        "Applications with complex data fetching needs where clients need to specify the exact data to avoid over/under-fetching (`{{GraphQL}}` might be better).",
+        "High-performance internal `{{Microservices Architecture|Microservice}}` communication where the overhead of `{{HTTP (Hypertext Transfer Protocol)|HTTP}}`/`{{JSON}}` is significant (`{{gRPC (Google Remote Procedure Call)|gRPC}}` might be better).",
+        "Real-time bi-directional communication (`{{WebSockets}}` are designed for this).",
+        "When a very strict contract between client and server is required from the start (`{{gRPC (Google Remote Procedure Call)|gRPC}}`'s .proto files offer this)."
       ],
       interviewTalkingPoints: [
-        "Discuss its reliance on {{HTTP}} verbs and status codes.",
-        "Highlight {{Statelessness}} and {{Cacheability}} as key principles.",
-        "Mention common issues like {{Over-fetching}}/{{Under-fetching}}.",
-        "Contrast with {{GraphQL}} for data fetching flexibility and {{gRPC (Google Remote Procedure Call)|gRPC}} for performance."
+        "Discuss its reliance on `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` verbs and status codes.",
+        "Highlight `{{Statelessness}}` and `{{Cacheability}}` as key principles.",
+        "Mention common issues like `{{Over-fetching}}`/`{{Under-fetching}}`.",
+        "Contrast with `{{GraphQL}}` for data fetching flexibility and `{{gRPC (Google Remote Procedure Call)|gRPC}}` for performance."
       ],
-      defendingYourDecision: "{{REST (Representational State Transfer)|REST}} was chosen for its ubiquity, simplicity, and alignment with {{HTTP}} standards, making it easily consumable by a wide range of clients. For our resource-oriented services, {{REST (Representational State Transfer)|REST}} provides a natural and well-understood interaction model. While we considered {{GraphQL}} for its flexible querying, the added complexity wasn't justified for our current {{CRUD}}-heavy workload and well-defined resources. {{OpenAPI Specification (Swagger)|OpenAPI}} helps us maintain a clear contract.",
-      useCases: "Public APIs, web applications, mobile application backends, {{CRUD}} operations on resources, systems where simplicity and standard {{HTTP}} are preferred."
+      defendingYourDecision: "`{{REST (Representational State Transfer)|REST}}` was chosen for its ubiquity, simplicity, and alignment with `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` standards, making it easily consumable by a wide range of clients. For our resource-oriented services, `{{REST (Representational State Transfer)|REST}}` provides a natural and well-understood interaction model. While we considered `{{GraphQL}}` for its flexible querying, the added complexity wasn't justified for our current `{{CRUD (Create, Read, Update, Delete)|CRUD}}`-heavy workload and well-defined resources. `{{OpenAPI Specification (Swagger)|OpenAPI}}` helps us maintain a clear contract.",
+      useCases: "Public APIs, web applications, mobile application backends, `{{CRUD (Create, Read, Update, Delete)|CRUD}}` operations on resources, systems where simplicity and standard `{{HTTP (Hypertext Transfer Protocol)|HTTP}}` are preferred."
     },
     {
       id: "graphql",
       name: "{{GraphQL}}",
       // 'description' from prompt is mapped to 'structure' here for consistency
-      structure: "GraphQL was developed by Facebook to optimize data fetching for their complex mobile application news feeds, addressing issues of over-fetching (requesting too much data) and under-fetching (needing multiple requests to get all necessary data) common with traditional REST APIs. It is a query language for APIs and a server-side runtime for executing those queries by using a type system you define for your data. Clients request exactly the data they need via a single endpoint, often `/graphql`.",
+      structure: "GraphQL was developed by Facebook to optimize data fetching for their complex mobile application news feeds, addressing issues of `{{Over-fetching}}` (requesting too much data) and `{{Under-fetching}}` (needing multiple requests to get all necessary data) common with traditional `{{REST APIs}}`. It is a query language for APIs and a server-side runtime for executing those queries by using a type system you define for your data. Clients request exactly the data they need via a single endpoint, often `/graphql`.",
       pros: [
-        "Solves {{Over-fetching}} and {{Under-fetching}}: Clients request only the specific fields they need, leading to more efficient data transfer.",
+        "Solves `{{Over-fetching}}` and `{{Under-fetching}}`: Clients request only the specific fields they need, leading to more efficient data transfer.",
         "Strongly typed schema with introspection: The schema defines all possible data types and fields, and clients can query the schema itself (introspection) to understand the API's capabilities.",
         "Evolvable without versioning"
       ],
