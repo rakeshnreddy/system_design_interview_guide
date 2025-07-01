@@ -1,7 +1,7 @@
 // Placeholder for Networking & CDN App Data
 export const networkingCDNAppData = {
   title: "Networking & Content Delivery Networks (CDN)",
-  overview: "This section covers fundamental networking concepts, protocols like TCP/IP and HTTP, and explores how Content Delivery Networks (CDNs) enhance website performance, reliability, and scalability by distributing content closer to users.",
+  overview: "This section covers fundamental networking concepts, protocols like TCP/IP and HTTP, and explores how Content Delivery Networks (CDNs) enhance website performance, reliability, and scalability by distributing content closer to users.\n\n_Q: What is the main purpose of a {{CDN (Content Delivery Network)}}?_\n_A: A {{CDN (Content Delivery Network)}} aims to reduce {{Latency}} and improve website/application performance by caching content (like images, videos, CSS, JavaScript) on servers geographically closer to end-users. This also reduces the load on origin servers._\n\n_Q: How does {{DNS (Domain Name System)}} resolution work at a high level?_\n_A: When you type a domain name (e.g., www.example.com) into your browser, your computer queries a series of {{DNS (Domain Name System)|DNS servers}} (recursive resolver, root servers, TLD servers, authoritative name servers) to translate that human-readable domain name into a machine-readable {{IP Address}} of the server hosting that website._",
   metrics: [
     { id: "latency", name: "{{Latency}}", description: "The delay experienced by users. CDNs aim to reduce this.", formula: "Time to receive first byte - Time request sent" },
     { id: "throughput_cdn", name: "{{Throughput}} (CDN)", description: "The rate of successful data transfer through the CDN." },
