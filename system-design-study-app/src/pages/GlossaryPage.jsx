@@ -98,7 +98,7 @@ const GlossaryPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Glossary</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center dark:text-neutral-100">Glossary</h1>
 
       <div className="mb-8 max-w-xl mx-auto">
         <input
@@ -106,36 +106,36 @@ const GlossaryPage = () => {
           placeholder="Search terms..."
           value={filterText}
           onChange={handleFilterChange}
-          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 border border-gray-300 dark:border-neutral-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-neutral-100"
         />
       </div>
 
       {Object.keys(processedTerms).length === 0 && filterText && (
-         <p className="text-center text-gray-500">No terms match your search for "{filterText}".</p>
+         <p className="text-center text-gray-500 dark:text-neutral-400">No terms match your search for "{filterText}".</p>
       )}
 
       {Object.keys(processedTerms).length === 0 && !filterText && glossaryData.length > 0 && (
-         <p className="text-center text-gray-500">No terms found.</p>
+         <p className="text-center text-gray-500 dark:text-neutral-400">No terms found.</p>
       )}
 
       {Object.keys(processedTerms).length === 0 && !filterText && glossaryData.length === 0 && (
-         <p className="text-center text-gray-500">Loading terms or glossary is empty...</p>
+         <p className="text-center text-gray-500 dark:text-neutral-400">Loading terms or glossary is empty...</p>
       )}
 
       {Object.keys(processedTerms).length > 0 && (
         Object.entries(processedTerms).map(([letter, terms]) => (
           <div key={letter} className="mb-6">
-            <h2 className="text-2xl font-semibold mb-3 text-blue-600 border-b pb-2">{letter}</h2>
+            <h2 className="text-2xl font-semibold mb-3 text-blue-600 dark:text-blue-400 border-b pb-2 dark:border-neutral-700">{letter}</h2>
             <dl>
               {terms.map((term) => (
-                <div id={`term-${encodeURIComponent(term.term)}`} key={term.term} className="mb-3 p-3 hover:bg-gray-50 rounded-md">
+                <div id={`term-${encodeURIComponent(term.term)}`} key={term.term} className="mb-3 p-3 hover:bg-gray-50 dark:hover:bg-neutral-700 rounded-md">
                   <dt
-                    className="font-bold text-lg text-gray-800 cursor-pointer hover:text-blue-700"
+                    className="font-bold text-lg text-gray-800 dark:text-neutral-100 cursor-pointer hover:text-blue-700 dark:hover:text-blue-400"
                     onClick={() => handleTermClick(term)}
                   >
                     {term.term}
                   </dt>
-                  <dd className="text-gray-600 ml-4">
+                  <dd className="text-gray-600 dark:text-neutral-300 ml-4">
                     {getDefinitionSnippet(term.definition)}
                   </dd>
                 </div>

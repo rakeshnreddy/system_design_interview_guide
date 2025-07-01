@@ -52,7 +52,8 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
             aria-label="Close modal"
             className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600" // Making it more like an icon button
           >
-            <Icon name="close" className="h-5 w-5" /> {/* Using Icon component */}
+            {/* <Icon name="close" className="h-5 w-5" /> Using Icon component */}
+            X {/* Placeholder for close icon */}
           </Button>
         </div>
         <div className="p-4 sm:p-6">
