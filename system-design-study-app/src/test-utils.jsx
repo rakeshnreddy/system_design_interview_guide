@@ -3,12 +3,19 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-const AllTheProviders = ({ children }) => {
-  return <MemoryRouter>{children}</MemoryRouter>;
+// Modified AllTheProviders to accept routerProps
+const AllTheProviders = ({ children, routerProps }) => {
+  return <MemoryRouter {...routerProps}>{children}</MemoryRouter>;
 };
 
-const customRender = (ui, options) =>
-  render(ui, { wrapper: AllTheProviders, ...options });
+// Modified customRender to pass routerProps
+const customRender = (ui, options) => {
+  const { routerProps, ...renderOptions } = options || {};
+  return render(ui, {
+    wrapper: (props) => <AllTheProviders {...props} routerProps={routerProps} />,
+    ...renderOptions
+  });
+}
 
 // re-export everything
 export * from '@testing-library/react';

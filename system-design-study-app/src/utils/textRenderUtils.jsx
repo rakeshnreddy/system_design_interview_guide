@@ -9,7 +9,7 @@ export const RenderGlossaryLink = ({ term, displayText, keyPrefix = 'glossary-li
   return (
     <RouterLink
       key={`${keyPrefix}-${term.term}-${displayText}`}
-      to={`/glossary?search=${encodeURIComponent(term.term)}`}
+      to={`/glossary?search=${encodeURIComponent(term.term)}#term-${encodeURIComponent(term.term)}`}
       className="glossary-link text-blue-600 hover:text-blue-800 hover:underline"
       title={getDefinitionSnippet(term.definition)}
     >

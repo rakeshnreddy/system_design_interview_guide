@@ -10,7 +10,8 @@ import logo from '../assets/logo.svg'; // Import the new logo
 
 const navItems = [
   { path: '/', label: 'Home', exact: true },
-  { path: '/topics', label: 'All Topics' }, // Added new "All Topics" link
+  { path: '/topics', label: 'All Topics' },
+  { path: '/glossary', label: 'Glossary' },
   { path: '/interview-approach', label: 'Interview Approach' },
   { path: '/caches', label: 'Caching Strategies' },
   { path: '/databases', label: 'Database Selection' },
@@ -18,6 +19,7 @@ const navItems = [
   { path: '/load-balancing', label: 'Load Balancing' },
   { path: '/api-design', label: 'API Design' },
   { path: '/scalability-concepts', label: 'Scalability Concepts' },
+  // Consider adding Networking & CDN, Case Studies, Trade-offs if they are main sections
 ];
 
 const Sidebar = () => {

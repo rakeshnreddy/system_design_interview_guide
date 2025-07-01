@@ -1,1 +1,13 @@
 /* Base styles can be added here later */
+
+.highlight-term {
+  animation: highlightAnimation 2s ease-out;
+  /* A slightly more subtle highlight that works in both light/dark modes might be: */
+  /* background-color: rgba(255, 220, 100, 0.5); */
+}
+
+@keyframes highlightAnimation {
+  0% { background-color: rgba(255, 255, 0, 0.7); } /* Brighter yellow start */
+  75% { background-color: rgba(255, 255, 0, 0.7); }
+  100% { background-color: transparent; }
+}

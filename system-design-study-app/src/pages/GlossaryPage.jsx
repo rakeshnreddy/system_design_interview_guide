@@ -13,6 +13,29 @@ const GlossaryPage = () => {
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Calculate processedTerms first as it's a dependency for the hash scrolling useEffect
+  const processedTerms = useMemo(() => {
+    const lowerCaseFilter = filterText.toLowerCase();
+
+    const filteredTerms = filterText
+      ? glossaryData.filter(term =>
+          term.term.toLowerCase().includes(lowerCaseFilter) ||
+          (term.definition && term.definition.toLowerCase().includes(lowerCaseFilter))
+        )
+      : glossaryData;
+
+    const sortedTerms = [...filteredTerms].sort((a, b) => a.term.localeCompare(b.term));
+
+    return sortedTerms.reduce((acc, term) => {
+      const firstLetter = term.term[0].toUpperCase();
+      if (!acc[firstLetter]) {
+        acc[firstLetter] = [];
+      }
+      acc[firstLetter].push(term);
+      return acc;
+    }, {});
+  }, [glossaryData, filterText]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchTerm = params.get('search');
@@ -38,6 +61,21 @@ const GlossaryPage = () => {
     };
   }, [location.search, pageTitle, pageDescription]); // pageTitle and pageDescription are stable but included for completeness
 
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.substring(1); // Remove #
+      setTimeout(() => { // setTimeout to allow DOM to render/update
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Optional: Add some visual indication like a temporary highlight
+          element.classList.add('highlight-term');
+          setTimeout(() => element.classList.remove('highlight-term'), 2000);
+        }
+      }, 100); // Adjust delay if necessary
+    }
+  }, [location.hash, processedTerms]); // Rerun if hash changes or processedTerms finishes loading
+
   const handleFilterChange = (event) => {
     setFilterText(event.target.value);
   };
@@ -57,28 +95,6 @@ const GlossaryPage = () => {
     const firstSentence = definition.split('.')[0];
     return `${firstSentence}.`;
   };
-
-  const processedTerms = useMemo(() => {
-    const lowerCaseFilter = filterText.toLowerCase();
-
-    const filteredTerms = filterText
-      ? glossaryData.filter(term =>
-          term.term.toLowerCase().includes(lowerCaseFilter) ||
-          (term.definition && term.definition.toLowerCase().includes(lowerCaseFilter))
-        )
-      : glossaryData;
-
-    const sortedTerms = [...filteredTerms].sort((a, b) => a.term.localeCompare(b.term));
-
-    return sortedTerms.reduce((acc, term) => {
-      const firstLetter = term.term[0].toUpperCase();
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = [];
-      }
-      acc[firstLetter].push(term);
-      return acc;
-    }, {});
-  }, [glossaryData, filterText]);
 
   return (
     <div className="container mx-auto p-4">
@@ -112,7 +128,7 @@ const GlossaryPage = () => {
             <h2 className="text-2xl font-semibold mb-3 text-blue-600 border-b pb-2">{letter}</h2>
             <dl>
               {terms.map((term) => (
-                <div key={term.id} className="mb-3 p-3 hover:bg-gray-50 rounded-md">
+                <div id={`term-${encodeURIComponent(term.term)}`} key={term.term} className="mb-3 p-3 hover:bg-gray-50 rounded-md">
                   <dt
                     className="font-bold text-lg text-gray-800 cursor-pointer hover:text-blue-700"
                     onClick={() => handleTermClick(term)}
