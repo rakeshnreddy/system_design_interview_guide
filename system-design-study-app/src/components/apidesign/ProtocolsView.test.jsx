@@ -146,7 +146,18 @@ describe('ProtocolsView', () => {
           expect(withinProtocolContainer.getByText(/Cons:/i)).toBeInTheDocument();
           protocol.cons.forEach(con => {
             const conSnippet = getSafeSnippet(con);
-            if(conSnippet) expect(withinProtocolContainer.getByText(new RegExp(conSnippet, "i"))).toBeInTheDocument();
+            if (conSnippet && conSnippet.trim().length > 0) {
+              // Use a function matcher to match text across element boundaries (e.g., glossary links)
+              // Using queryAllByText and then filtering to avoid the "multiple elements" error
+              const matchingElements = withinProtocolContainer.queryAllByText((content, node) => {
+                // Remove all whitespace for comparison, as React may split text nodes
+                const text = node.textContent.replace(/\s+/g, ' ').trim();
+                const snippet = conSnippet.replace(/\\/g, '').replace(/\s+/g, ' ').trim();
+                return text.toLowerCase().includes(snippet.toLowerCase());
+              });
+              // Expect at least one element to match the snippet
+              expect(matchingElements.length).toBeGreaterThan(0);
+            }
           });
         }
 
