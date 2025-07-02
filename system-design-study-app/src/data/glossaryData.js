@@ -1,5 +1,5 @@
 // system-design-study-app/src/data/glossaryData.js
-export const glossaryData = [
+const rawGlossaryData = [
   {
     term: "ACID Properties",
     definition: "A set of properties (Atomicity, Consistency, Isolation, Durability) that guarantee reliable processing of database transactions.",
@@ -2246,3 +2246,5 @@ export const glossaryData = [
     details: "Proper input validation and output encoding are crucial for preventing XSS."
   }
 ];
+
+export const glossaryData = [...rawGlossaryData].sort((a, b) => a.term.localeCompare(b.term));

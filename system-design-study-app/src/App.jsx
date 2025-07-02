@@ -36,7 +36,7 @@ function AppContent() {
   return (
     <MuiThemeProvider theme={muiTheme}>
       <CssBaseline /> {/* Normalizes styles and applies MUI's dark background in dark mode */}
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Layout> {/* Layout now has access to AuthContext and benefits from MuiThemeProvider */}
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
