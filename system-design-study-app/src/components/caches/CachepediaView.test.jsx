@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
 import CachepediaView from './CachepediaView';
 import { cachesAppData } from '../../data/cachesAppData'; // Sample data
 
@@ -37,25 +38,30 @@ describe('CachepediaView', () => {
     vi.spyOn(chartModule, 'Chart', 'get').mockReturnValue(ChartJSMock);
   });
 
+  const renderWithRouter = (ui, { route = '/' } = {}) => {
+    window.history.pushState({}, 'Test page', route);
+    return render(ui, { wrapper: MemoryRouter });
+  };
+
   it('renders the main heading', () => {
-    render(<CachepediaView appData={cachesAppData} />);
+    renderWithRouter(<CachepediaView appData={cachesAppData} />);
     expect(screen.getByRole('heading', { name: /Cachepedia/i })).toBeInTheDocument();
   });
 
   it('renders a select element for cache types', () => {
-    render(<CachepediaView appData={cachesAppData} />);
+    renderWithRouter(<CachepediaView appData={cachesAppData} />);
     expect(screen.getByLabelText(/Select Cache Type:/i)).toBeInTheDocument();
   });
 
   it('renders details when a cache type is selected (first one by default)', () => {
     // The component selects the first cache type by default via useEffect
-    render(<CachepediaView appData={cachesAppData} />);
+    renderWithRouter(<CachepediaView appData={cachesAppData} />);
     const firstCacheTypeName = Object.keys(cachesAppData.cachepedia)[0];
     expect(screen.getByRole('heading', { name: new RegExp(firstCacheTypeName, "i") })).toBeInTheDocument();
   });
 
   it('renders the chart area or placeholder', () => {
-    const { container } = render(<CachepediaView appData={cachesAppData} />);
+    const { container } = renderWithRouter(<CachepediaView appData={cachesAppData} />);
     // Try to find the placeholder text first
     let chartElement = screen.queryByText(/Select a cache type to view characteristics chart/i);
     if (!chartElement) {

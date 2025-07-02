@@ -15,27 +15,34 @@ const firebaseConfig = {
 };
 
 
+import { getApps } from 'firebase/app'; // Import getApps
+
 let app, auth, db;
 
-try {
-  app = initializeApp(firebaseConfig);
+// Check if Firebase has already been initialized
+if (!getApps().length) {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    console.log("Firebase initialized successfully.");
+  } catch (e) {
+    console.error("Firebase initialization error:", e);
+    console.warn("Please ensure you have provided your Firebase configuration in src/firebaseConfig.js. Some features may not work.");
+    // Provide mock objects or null if Firebase fails to initialize
+    app = null;
+    auth = {
+      onAuthStateChanged: () => () => {},
+      signInWithPopup: () => Promise.reject(new Error("Firebase not configured")),
+      signOut: () => Promise.reject(new Error("Firebase not configured")),
+    };
+    db = null;
+  }
+} else {
+  // If already initialized, use the existing app
+  app = getApps()[0];
   auth = getAuth(app);
   db = getFirestore(app);
-  console.log("Firebase initialized successfully.");
-} catch (e) {
-  console.error("Firebase initialization error:", e);
-  console.warn("Please ensure you have provided your Firebase configuration in src/firebaseConfig.js. Some features may not work.");
-  // Provide mock objects or null if Firebase fails to initialize
-  // to allow the rest of the app to function without Firebase features if designed to do so.
-  app = null;
-  auth = {
-    // Mock auth object
-    onAuthStateChanged: () => () => {}, // Returns an empty unsubscribe function
-    signInWithPopup: () => Promise.reject(new Error("Firebase not configured")),
-    signOut: () => Promise.reject(new Error("Firebase not configured")),
-    // Add other methods that your app might call on auth if it can run without Firebase
-  };
-  db = null; // Or mock Firestore if parts of the app can run without it
 }
 
 export { app, auth, db };
