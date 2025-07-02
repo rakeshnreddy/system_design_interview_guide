@@ -22,8 +22,8 @@ sequenceDiagram
 `,
     writeBack: `
 flowchart TD
-    App-->Cache: write(data)
-    Cache-- async -->DB: write(data)
+    App-->Cache
+    Cache-->DB: write(data) // Original "Cache-- async -->DB: write(data)"
     style Cache fill:#f9f,stroke:#333,stroke-width:1px
     note over Cache: Cache acknowledges immediately
 `
