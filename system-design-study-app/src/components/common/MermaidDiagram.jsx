@@ -87,36 +87,39 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       }
     };
 
-    const setupAndRender = () => {
+    // Simplified setup and render logic
+    const tryInitAndRender = () => {
+      if (!containerRef.current) {
+        // If the container isn't there yet, schedule a retry.
+        // This can happen if React hasn't mounted the div yet.
+        console.log("MermaidDiagram: Container ref not available yet for ID:", validDiagramId, ". Retrying soon.");
+        timeoutIdRef.current = setTimeout(tryInitAndRender, 50); // Short delay for retry
+        return;
+      }
+
       if (window.mermaid && typeof window.mermaid.initialize === 'function' && typeof window.mermaid.render === 'function') {
-        timeoutIdRef.current = setTimeout(performRender, 0);
+        performRender(); // Directly call performRender now that checks have passed
       } else {
-        if (containerRef.current) {
+        // Mermaid library itself isn't loaded yet.
+        if (containerRef.current) { // Check ref again before updating innerHTML
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
         }
-        timeoutIdRef.current = setTimeout(setupAndRender, 100);
+        console.log("MermaidDiagram: Mermaid library not ready for ID:", validDiagramId, ". Retrying soon.");
+        timeoutIdRef.current = setTimeout(tryInitAndRender, 150); // Longer delay for library loading
       }
     };
 
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setupAndRender();
-    } else {
-        console.log("MermaidDiagram: Document not ready, deferring Mermaid setup/render via load event.");
-        const loadHandler = () => {
-            console.log("MermaidDiagram: Document loaded, proceeding with Mermaid setup.");
-            setupAndRender();
-        };
-        window.addEventListener('load', loadHandler, { once: true });
-        return () => {
-            window.removeEventListener('load', loadHandler);
-            clearTimeout(timeoutIdRef.current);
-        };
-    }
+    tryInitAndRender(); // Initial attempt to render
 
     return () => {
       clearTimeout(timeoutIdRef.current);
+      // Optional: Clean up the container if the component unmounts while rendering or waiting
+      // if (containerRef.current) {
+      //   containerRef.current.innerHTML = '';
+      // }
+      console.log("MermaidDiagram: Cleanup for ID:", validDiagramId);
     };
-  }, [diagramDefinition, validDiagramId]);
+  }, [diagramDefinition, validDiagramId]); // performRender is not added as a dependency because it's defined within the effect or should be memoized if outside
 
   return (
     <Card
@@ -126,10 +129,11 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       className="mermaid-diagram-container my-4 flex justify-center items-center"
     >
       <div
-        key={validDiagramId} // React key
-        id={validDiagramId} // HTML id for potential direct targeting if needed, though current logic uses ref
+        key={validDiagramId}
+        id={validDiagramId}
         ref={containerRef}
         data-testid="mermaid-inner-container"
+        style={{ width: '100%', minHeight: '50px' }} // Ensure container has dimensions
       />
     </Card>
   );
