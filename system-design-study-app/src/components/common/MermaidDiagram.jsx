@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import Card from './Card';
 
-// Global flag to ensure Mermaid is initialized only once per app lifecycle
-let globalMermaidInitialized = false;
+// globalMermaidInitialized flag is no longer needed here as initialization is moved to main.jsx
 
 const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
   const containerRef = useRef(null);
@@ -19,75 +18,69 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
       return;
     }
 
-    const performRender = () => {
+    const performRender = async () => { // Added async here
       if (!containerRef.current) {
         console.log("MermaidDiagram: Render deferred but component unmounted for ID:", validDiagramId);
         return;
       }
       containerRef.current.innerHTML = '';
 
-      const mermaidInstance = window.mermaid;
+      const mermaidInstance = window.mermaid; // Assuming mermaid is globally available via import in main.jsx
 
-      // Initialize Mermaid globally only once.
-      if (!globalMermaidInitialized && typeof mermaidInstance.initialize === 'function') {
-        try {
-          mermaidInstance.initialize({ startOnLoad: false, theme: 'default' });
-          globalMermaidInitialized = true;
-          console.log("MermaidDiagram: Mermaid initialized globally for the first time.");
-        } catch (initError) {
-          console.error("MermaidDiagram: Error during global initialization:", initError);
-          if (containerRef.current) {
-              containerRef.current.innerHTML = `<p class="text-red-500">Error initializing Mermaid globally.</p>`;
-          }
-          return;
+      // Initialization is now handled globally in main.jsx
+      // No need for globalMermaidInitialized flag or initialize call here.
+
+      // Ensure mermaidInstance is available before proceeding
+      if (!mermaidInstance || typeof mermaidInstance.render !== 'function') {
+        console.error("MermaidDiagram: Mermaid instance or render function not available for ID:", validDiagramId);
+        if (containerRef.current) {
+            containerRef.current.innerHTML = `<p class="text-red-500">Mermaid library not fully loaded.</p>`;
         }
-      } else if (!globalMermaidInitialized && !(mermaidInstance && typeof mermaidInstance.initialize === 'function')) {
-          // Added check for mermaidInstance existence before typeof
-          console.warn("MermaidDiagram: Global init skipped as mermaidInstance.initialize not ready or mermaidInstance not fully available.");
+        return;
       }
 
       try {
-        console.log(`MermaidDiagram: Deferred rendering diagram for ID: ${validDiagramId}`);
+        console.log(`MermaidDiagram: Attempting to render diagram async for ID: ${validDiagramId}`);
 
-        new Promise((resolve, reject) => {
-          const tempRenderId = `m${Date.now()}${Math.random().toString(16).slice(2)}`;
-          mermaidInstance.render(tempRenderId, diagramDefinition, (svgCode, bindFunctions) => {
-              if (!containerRef.current) {
-                  console.warn("MermaidDiagram: Container ref became null during mermaid.render callback for ID:", validDiagramId);
-                  reject(new Error("Container ref became null during mermaid.render callback."));
-                  return;
-              }
-              try {
-                  containerRef.current.innerHTML = svgCode;
-                  if (bindFunctions) {
-                      bindFunctions(containerRef.current);
-                  }
-                  const svgElement = containerRef.current.querySelector('svg');
-                  if (svgElement) {
-                      svgElement.style.maxWidth = '100%';
-                      svgElement.style.height = 'auto';
-                  }
-                  resolve();
-              } catch (callbackError) {
-                  console.error("MermaidDiagram: Error processing SVG in mermaid.render callback for ID:", validDiagramId, callbackError);
-                  reject(callbackError);
-              }
-          });
-        }).catch(renderError => {
-            console.error("MermaidDiagram: Error during or after mermaid.render for ID:", validDiagramId, renderError);
-            if (containerRef.current) {
-                containerRef.current.innerHTML = `<p class="text-red-500" data-testid="mermaid-error">Error rendering diagram: ${renderError.message}. Check console.</p>`;
-            }
-        });
-      } catch (e) {
-        console.error("MermaidDiagram: Synchronous error in render setup for ID:", validDiagramId, e);
+        // Using async/await with mermaid.render, assuming it returns a promise {svg, bindFunctions}
+        // The first argument to mermaid.render is an ID for a temporary element Mermaid creates.
+        const tempRenderId = `mermaid-temp-${validDiagramId}-${Date.now()}`;
+
+        // Ensure the container is clear before attempting to render
         if (containerRef.current) {
-          containerRef.current.innerHTML = `<p class="text-red-500" data-testid="mermaid-error-setup">Error setting up render: ${e.message}. Check console.</p>`;
+          containerRef.current.innerHTML = '';
+        }
+
+        const { svg, bindFunctions } = await mermaidInstance.render(tempRenderId, diagramDefinition);
+
+        if (!containerRef.current) {
+            console.warn("MermaidDiagram: Container ref became null after async render for ID:", validDiagramId);
+            return; // Component might have unmounted
+        }
+
+        containerRef.current.innerHTML = svg;
+        if (bindFunctions) {
+            bindFunctions(containerRef.current);
+        }
+
+        const svgElement = containerRef.current.querySelector('svg');
+        if (svgElement) {
+            svgElement.style.maxWidth = '100%';
+            svgElement.style.height = 'auto';
+        }
+        console.log(`MermaidDiagram: Successfully rendered diagram for ID: ${validDiagramId}`);
+
+      } catch (error) {
+        console.error("MermaidDiagram: Error during async mermaid.render or processing for ID:", validDiagramId, error);
+        if (containerRef.current) {
+          // Check if the error object has a more specific message or details
+          const errorMessage = error.str || error.message || "Unknown error during rendering.";
+          containerRef.current.innerHTML = `<p class="text-red-500" data-testid="mermaid-error">Error rendering diagram: ${errorMessage}. Check console.</p>`;
         }
       }
     };
 
-    // Simplified setup and render logic
+    // tryInitAndRender calls performRender
     const tryInitAndRender = () => {
       if (!containerRef.current) {
         // If the container isn't there yet, schedule a retry.
@@ -97,10 +90,12 @@ const MermaidDiagram = ({ diagramDefinition, diagramId }) => {
         return;
       }
 
-      if (window.mermaid && typeof window.mermaid.initialize === 'function' && typeof window.mermaid.render === 'function') {
+      // Initialize is global, so we only need to check for render here,
+      // assuming mermaid object itself will exist if main.jsx import worked.
+      if (window.mermaid && typeof window.mermaid.render === 'function') {
         performRender(); // Directly call performRender now that checks have passed
       } else {
-        // Mermaid library itself isn't loaded yet.
+        // Mermaid library itself isn't loaded yet, or render function is missing.
         if (containerRef.current) { // Check ref again before updating innerHTML
           containerRef.current.innerHTML = `<p class="text-orange-500">Mermaid library not available yet. Retrying...</p>`;
         }
