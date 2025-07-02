@@ -23,18 +23,17 @@ function ScenariosView({ appData }) {
                   secondary={scenario.description}
                   sx={{ mb: 1 }}
                 />
-                <ListItemText
-                  primary={<strong>Key Considerations / Strategies:</strong>}
-                  secondary={
-                    <List dense disablePadding>
-                      {scenario.considerations.map((item, index) => (
-                        <ListItem key={index} sx={{ pl: 2, py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
-                          <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={item} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  }
-                />
+                {/* Moved Key Considerations out of ListItemText secondary */}
+                <Typography variant="body1" component="div" sx={{ mt: 1 }}>
+                  <strong>Key Considerations / Strategies:</strong>
+                </Typography>
+                <List dense disablePadding sx={{ pl: 2 }}>
+                  {scenario.considerations.map((item, index) => (
+                    <ListItem key={index} sx={{ py: 0.2, display: 'list-item', listStyleType: 'disc' }}>
+                      <ListItemText primaryTypographyProps={{ variant: 'body2' }} primary={item} />
+                    </ListItem>
+                  ))}
+                </List>
               </ListItem>
               <Divider component="li" sx={{ mb: 2 }} />
             </React.Fragment>

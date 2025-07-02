@@ -20,9 +20,10 @@ const PatternsView = ({ appData }) => {
       return (
         <div className="space-y-6 pt-4">
           {appData.writePatterns.map(pattern => {
-            const patternId = pattern.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+            const cleanPatternName = pattern.name.replace(/\{\{|\}\}/g, ''); // Remove {{ and }}
+            const patternIdBase = cleanPatternName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
             return (
-              <Card key={pattern.name} id={patternId} className="shadow-lg" padding="p-6">
+              <Card key={pattern.name} id={patternIdBase} className="shadow-lg" padding="p-6">
                 <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">{pattern.name}</h3>
                 <p className="text-base text-neutral-700 dark:text-neutral-300 mb-3 leading-relaxed">{pattern.description}</p>
                 {pattern.pros && (
@@ -44,7 +45,7 @@ const PatternsView = ({ appData }) => {
               {pattern.diagram && (
                 <MermaidDiagram
                   diagramDefinition={pattern.diagram}
-                  diagramId={`${pattern.name.toLowerCase().replace(/\s+/g, '-')}-diagram`}
+                  diagramId={`${patternIdBase}-diagram`}
                 />
               )}
             </Card>
