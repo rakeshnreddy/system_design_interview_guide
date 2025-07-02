@@ -1,9 +1,9 @@
 // src/components/databases/FundamentalsView.jsx
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Accordion from '../common/Accordion';
+import Accordion from '../common/Accordion.jsx';
 // import Glossary from '../common/Glossary'; // Will render terminology directly
-import Mermaid from '../common/Mermaid';
+import Mermaid from '../common/MermaidDiagram.jsx';
 import { databasesAppData } from '../../data/databasesAppData'; // Assuming appData is passed or use this directly
 import { glossaryData } from '../../data/glossaryData.js';
 import { Typography, Box, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
