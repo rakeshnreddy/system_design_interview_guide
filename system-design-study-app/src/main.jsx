@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css' // Tailwind directives
-import mermaid from 'mermaid';
+import mermaid from './components/common/MermaidDiagram.jsx';
 
 // Try to address potential D3 conflicts and initialize Mermaid early
 try {
