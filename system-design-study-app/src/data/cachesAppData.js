@@ -25,7 +25,6 @@ flowchart TD
     App-- "write(data)" -->Cache
     Cache-- "async" -->DB_Node["DB: write(data)"]
     style Cache fill:#f9f,stroke:#333,stroke-width:1px
-    %% note over Cache: "Cache acknowledges immediately"
 `
   },
   metrics: [

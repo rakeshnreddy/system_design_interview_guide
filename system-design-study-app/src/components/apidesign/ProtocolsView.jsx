@@ -22,7 +22,7 @@ function ProtocolsView({ appData }) {
         <Box sx={{ my: 3 }}>
           <Typography variant="h5" gutterBottom>REST API Call Flow</Typography>
           <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <MermaidDiagram chart={mermaidDiagrams.restFlow} diagramId="rest-flow-diagram" />
+            <MermaidDiagram diagramDefinition={mermaidDiagrams.restFlow} diagramId="rest-flow-diagram" />
           </Paper>
         </Box>
       )}
@@ -31,7 +31,7 @@ function ProtocolsView({ appData }) {
         <Box sx={{ my: 3 }}>
           <Typography variant="h5" gutterBottom>GraphQL Query Flow</Typography>
           <Paper elevation={2} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <MermaidDiagram chart={mermaidDiagrams.graphQLFlow} diagramId="graphql-flow-diagram" />
+            <MermaidDiagram diagramDefinition={mermaidDiagrams.graphQLFlow} diagramId="graphql-flow-diagram" />
           </Paper>
         </Box>
       )}

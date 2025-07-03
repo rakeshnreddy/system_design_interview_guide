@@ -93,7 +93,10 @@ function AlgorithmsView({ appData }) {
             Round-Robin Distribution
           </Typography>
           <Paper elevation={3} sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <MermaidDiagram chart={appData.mermaidDiagrams.roundRobin} />
+            <MermaidDiagram
+              diagramDefinition={appData.mermaidDiagrams.roundRobin}
+              diagramId="round-robin-lb-diagram"
+            />
           </Paper>
         </Box>
       )}

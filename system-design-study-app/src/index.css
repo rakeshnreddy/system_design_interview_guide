@@ -106,3 +106,40 @@
   /* color: #1d4ed8; */ /* Tailwind 'text-blue-700' or 'text-blue-800' */
   /* border-bottom-style: solid; */
 /* } */
+
+/* Mermaid Dark Mode Overrides */
+/* Applied when a parent element has the 'dark' class */
+.dark .mermaid svg text,
+.dark .mermaid svg tspan {
+  fill: var(--text-primary) !important; /* Use the dark theme's primary text color */
+}
+
+/* Node specific text (if different styling is applied by mermaid) */
+.dark .mermaid svg .node text,
+.dark .mermaid svg .node tspan {
+  fill: var(--text-primary) !important;
+}
+
+/* Edge labels - this selector might need to be more specific based on Mermaid's output */
+.dark .mermaid svg .edgeLabel text,
+.dark .mermaid svg .edgeLabels text,
+.dark .mermaid svg g[class*="edgeLabel"] text, /* Common pattern for edge label groups */
+.dark .mermaid svg .messageText { /* For sequence diagram messages */
+  fill: var(--text-primary) !important;
+}
+
+/* Arrowheads and lines (if not covered by lineColor themeVariable) */
+.dark .mermaid svg path,
+.dark .mermaid svg line,
+.dark .mermaid svg polyline,
+.dark .mermaid svg marker path {
+  stroke: var(--text-secondary) !important; /* Use a lighter secondary color for lines */
+}
+
+/* Ensure node borders are also visible */
+.dark .mermaid svg .node rect,
+.dark .mermaid svg .node circle,
+.dark .mermaid svg .node polygon,
+.dark .mermaid svg .node ellipse {
+  stroke: var(--text-secondary) !important;
+}
