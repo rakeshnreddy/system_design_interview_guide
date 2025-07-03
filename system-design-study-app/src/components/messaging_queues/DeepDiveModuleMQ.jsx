@@ -39,7 +39,7 @@ const DeepDiveModuleMQ = () => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Point-to-Point Queue</h2>
         {mermaidDiagrams && mermaidDiagrams.pointToPoint && (
           <div className="my-4 flex justify-center">
-            <MermaidDiagram chart={mermaidDiagrams.pointToPoint} />
+            <MermaidDiagram diagramDefinition={mermaidDiagrams.pointToPoint} diagramId="point-to-point-mq-diagram" />
           </div>
         )}
         <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">
@@ -53,7 +53,7 @@ const DeepDiveModuleMQ = () => {
         <h2 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Publish-Subscribe Pattern</h2>
         {mermaidDiagrams && mermaidDiagrams.pubSub && (
           <div className="my-4 flex justify-center">
-            <MermaidDiagram chart={mermaidDiagrams.pubSub} />
+            <MermaidDiagram diagramDefinition={mermaidDiagrams.pubSub} diagramId="pub-sub-mq-diagram" />
           </div>
         )}
         <div className="prose prose-lg dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300">

@@ -54,7 +54,7 @@ const SectionReplicationDB = ({ appData }) => {
 
             {getDiagramForPattern(pattern.id) && (
               <div className="my-4 flex justify-center p-2 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-800/30">
-                <MermaidDiagram chart={getDiagramForPattern(pattern.id)} diagramId={`${pattern.id}-diagram`} />
+                <MermaidDiagram diagramDefinition={getDiagramForPattern(pattern.id)} diagramId={`${pattern.id}-diagram`} />
               </div>
             )}
 
