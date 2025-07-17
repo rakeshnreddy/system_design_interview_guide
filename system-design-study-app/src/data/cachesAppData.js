@@ -24,7 +24,8 @@ sequenceDiagram
 flowchart TD
     App-- "write(data)" -->Cache
     Cache-- "async" -->DB_Node["DB: write(data)"]
-    style Cache fill:#f9f,stroke:#333,stroke-width:1px`
+    style Cache fill:#f9f,stroke:#333,stroke-width:1px
+`
   },
   metrics: [
     { id: "hit-rate", name: "{{Cache Hit Rate|Hit Rate / Hit Ratio}}", description: "Percentage of requests served from the cache vs. going to origin.", talk: "High hit rates are key to cache efficiency.",
