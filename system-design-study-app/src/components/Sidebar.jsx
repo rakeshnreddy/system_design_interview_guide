@@ -19,7 +19,10 @@ const navItems = [
   { path: '/load-balancing', label: 'Load Balancing' },
   { path: '/api-design', label: 'API Design' },
   { path: '/scalability-concepts', label: 'Scalability Concepts' },
-  // Consider adding Networking & CDN, Case Studies, Trade-offs if they are main sections
+  { path: '/networking-cdn', label: 'Networking & CDN' },
+  { path: '/case-studies', label: 'Case Studies' },
+  { path: '/trade-off-analysis', label: 'Trade-off Analysis' },
+  { path: '/interview-frameworks', label: 'Interview Frameworks' },
 ];
 
 const Sidebar = () => {

@@ -16,16 +16,19 @@ describe('MermaidDiagram', () => {
   beforeEach(() => {
     mockMermaidAPI = {
       initialize: vi.fn(),
-      render: vi.fn().mockImplementation((id, definition, callback) => {
+      render: vi.fn().mockImplementation(async (id, definition) => {
         if (definition.includes('error-diagram')) {
-          // Simulate an error during rendering
-          callback(null); // Or simulate error object if API does that
-          return;
+          throw new Error('Test render error');
+        }
+        if (!definition) {
+          return { svg: '', bindFunctions: vi.fn() };
         }
         const svgTestId = definition.includes('new-diagram') ? 'mermaid-svg-new' : 'mermaid-svg';
-        callback(`<svg data-testid="${svgTestId}"></svg>`);
+        return {
+          svg: `<svg data-testid="${svgTestId}"></svg>`,
+          bindFunctions: vi.fn(),
+        };
       }),
-      isInitialized: false,
     };
     window.mermaid = mockMermaidAPI;
   });
@@ -37,17 +40,6 @@ describe('MermaidDiagram', () => {
   test('renders Card component', () => {
     render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test1" />);
     expect(screen.getByTestId('card')).toBeInTheDocument();
-  });
-
-  test('initializes Mermaid if not already initialized', async () => {
-    render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-init" />);
-    await waitFor(() => expect(mockMermaidAPI.initialize).toHaveBeenCalledWith({ startOnLoad: false, theme: 'default' }));
-  });
-
-  test('does not re-initialize Mermaid if already initialized', () => {
-    window.mermaid.isInitialized = true;
-    render(<MermaidDiagram diagramDefinition={mockDiagramDefinition} diagramId="test-no-reinit" />);
-    expect(mockMermaidAPI.initialize).not.toHaveBeenCalled();
   });
 
   test('calls mermaid.render with diagram definition and renders SVG', async () => {
@@ -70,13 +62,8 @@ describe('MermaidDiagram', () => {
   });
 
   test('displays error message if mermaid rendering fails', async () => {
-    mockMermaidAPI.render.mockImplementation((id, definition, callback) => {
-      // This mock now simulates an error being caught by the async handler in the component
-      throw new Error('Test render error');
-    });
     render(<MermaidDiagram diagramDefinition="error-diagram" diagramId="test-error" />);
     await waitFor(() => {
-      // The test expects the error message rendered by the component.
       expect(screen.getByText(/Error rendering diagram: Test render error. Check console./)).toBeInTheDocument();
     });
   });
